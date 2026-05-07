@@ -1,17 +1,125 @@
 ---
+import Layout from "../layouts/Layout.astro";
+import ProjectCard from "../components/ProjectCard.astro";
 
+const projects = [
+  { title: "Commission", year: "2025", slug: "commission" },
+  { title: "Ekeg+", year: "2023", slug: "ekeg" },
+  { title: "Gener8", year: "2021", slug: "gener8" },
+  { title: "Larkbury", year: "2022", slug: "larkbury" },
+  { title: "Porsche", year: "2021", slug: "porsche" },
+  { title: "Toyota", year: "2020", slug: "toyota" },
+];
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout>
+
+  <header class="header">
+    <div class="header__stack">
+      <h1 class="h1">Sammy Norris</h1>
+      <p class="b1">Product <span style="color: #FF6A00;">designer</span> currently living in a regulated world.</p>    </div>
+  </header>
+
+  <section class="work">
+    <h2 class="h2">Work</h2>
+    <div class="work__grid">
+      {projects.map((project) => (
+        <ProjectCard
+          title={project.title}
+          year={project.year}
+          slug={project.slug}
+        />
+      ))}
+    </div>
+  </section>
+
+  <section class="about">
+    <h2 class="h2">About</h2>
+    <p class="b1">
+      I'm a Senior Product Designer with experience delivering complex digital products across automotive and financial services. I focus on designing clear, usable services that support confident decision-making in regulated environments. My work spans the full product lifecycle, from discovery and service design through to delivery. I've led work on customer-facing products and large-scale regulatory services, collaborating closely with engineering, legal and compliance teams.
+    </p>
+    <a href="/about" class="text-link b2-regular">Read more</a>
+  </section>
+
+  <footer class="footer">
+    <span class="b2-regular">© 2026 Sammy Norris.</span>
+  </footer>
+
+</Layout>
+
+<style>
+  .header {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 24px;
+  }
+
+  .header__stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .work {
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .work__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  @media (max-width: 768px) {
+    .work__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .about {
+    width: 100%;
+    max-width: 75%;
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 24px;
+    padding: 80px 24px 120px;
+  }
+
+  .text-link {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-color: var(--color-primary);
+    transition: opacity 0.2s ease;
+  }
+
+  .text-link:hover {
+    opacity: 0.6;
+  }
+
+  @media (max-width: 768px) {
+    .about {
+      max-width: 100%;
+      padding: 60px 24px 80px;
+    }
+  }
+
+  .footer {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px 24px 64px;
+  }
+
+</style>

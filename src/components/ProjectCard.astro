@@ -1,0 +1,97 @@
+---
+interface Props {
+  title: string;
+  year: string;
+  slug: string;
+}
+
+const { title, year, slug } = Astro.props;
+
+const desktopImage = `/images/projects/${slug}-desktop.png`;
+const mobileImage = `/images/projects/${slug}-mobile.png`;
+---
+
+<a href={`/${slug}`} class="project-card">
+  <div class="project-card__inner">
+    <div class="project-card__image">
+      <picture>
+        <source media="(max-width: 768px)" srcset={mobileImage} />
+        <img src={desktopImage} alt={`${title} case study`} loading="lazy" />
+      </picture>
+    </div>
+    <div class="project-card__meta">
+      <span class="b3">{title}</span>
+      <span class="project-card__year b3">{year}</span>
+    </div>
+  </div>
+</a>
+
+<style is:global>
+  .project-card {
+    display: block;
+    text-decoration: none;
+    color: #ffffff;
+  }
+
+  .project-card__inner {
+    position: relative;
+    border-radius: 8px;
+    background-color: #1A1A1A;
+    padding: 8px;
+  }
+
+  .project-card__image {
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: #292929;
+    transition: background-color 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .project-card__image picture {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+  }
+
+  .project-card__image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .project-card__meta {
+    position: absolute;
+    bottom: 32px;
+    left: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .project-card__year {
+    color: var(--color-secondary);
+  }
+
+  .project-card:hover .project-card__image {
+    background-color: #1A1A1A;
+  }
+
+  .project-card:hover .project-card__meta {
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    .project-card__image picture {
+      aspect-ratio: 3 / 4;
+    }
+
+    .project-card__meta {
+      opacity: 1;
+    }
+  }
+</style>

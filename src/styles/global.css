@@ -1,0 +1,169 @@
+:root {
+  /* Typography */
+  --font-serif: "Instrument Serif", serif;
+  --font-sans: "Geist", system-ui, sans-serif;
+
+  /* Type scale — matches Framer text styles */
+  --text-h1: 136px;
+  --text-h1-mob: 72px;
+  --text-h2: 64px;
+  --text-h2-mob: 40px;
+  --text-quote: 32px;
+  --text-quote-mob: 22px;
+  --text-b1: 18px;
+  --text-b2: 16px;
+  --text-b3: 14px;
+  --text-b4: 12px;
+
+  /* Colour tokens — light mode */
+  /* NOTE: these match current Framer values, not your earlier palette notes */
+  --color-bg: #F0F0F0;
+  --color-primary: #212121;
+  --color-secondary: #B85C3A;
+  --color-tertiary: #5A3F5D;
+  --color-card-bg: rgba(222, 222, 222, 0.98);
+  --color-card-image-bg: #F5F5F5;
+}
+
+.dark {
+  --color-bg: #1E1E1E;
+  --color-primary: #FFFFFF;
+  --color-secondary: #FF6A00;
+  --color-tertiary: #575656;
+  --color-card-bg: rgba(26, 26, 26, 0.98);
+  --color-card-image-bg: #292929;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  background-color: var(--color-bg);
+  color: var(--color-primary);
+  font-family: var(--font-sans);
+  font-weight: 200;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ---------- Type styles ---------- */
+
+.h1 {
+  font-family: var(--font-serif);
+  font-size: var(--text-h1);
+  line-height: 1.2;
+  letter-spacing: 0;
+  font-weight: 400;
+  text-align: center;
+  margin: 0;
+}
+
+.h1-mob {
+  font-family: var(--font-serif);
+  font-size: var(--text-h1-mob);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+  margin: 0;
+}
+
+.h2 {
+  font-family: var(--font-serif);
+  font-size: var(--text-h2);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+  margin: 0;
+}
+
+.h2-mob {
+  font-family: var(--font-serif);
+  font-size: var(--text-h2-mob);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+  margin: 0;
+}
+
+.quote {
+  font-family: var(--font-serif);
+  font-size: var(--text-quote);
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  font-weight: 400;
+  margin: 0;
+}
+
+.b1 {
+  font-family: var(--font-sans);
+  font-size: var(--text-b1);
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  font-weight: 200;
+  margin: 0;
+}
+
+.b2 {
+  font-family: var(--font-sans);
+  font-size: var(--text-b2);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  font-weight: 200;
+  margin: 0;
+}
+
+.b2-regular {
+  font-family: var(--font-sans);
+  font-size: var(--text-b2);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  font-weight: 300;
+  margin: 0;
+}
+
+.b3 {
+  font-family: var(--font-sans);
+  font-size: var(--text-b3);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  font-weight: 200;
+  margin: 0;
+}
+
+.b3-regular {
+  font-family: var(--font-sans);
+  font-size: var(--text-b3);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  font-weight: 300;
+  margin: 0;
+}
+
+.b4 {
+  font-family: var(--font-sans);
+  font-size: var(--text-b4);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  font-weight: 200;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .h1 {
+    font-size: var(--text-h1-mob);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    text-align: left;
+  }
+  .h2 {
+    font-size: var(--text-h2-mob);
+  }
+  .quote {
+    font-size: var(--text-quote-mob);
+  }
+}
