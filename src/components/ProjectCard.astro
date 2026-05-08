@@ -30,20 +30,20 @@ const mobileImage = `/images/projects/${slug}-mobile.png`;
   .project-card {
     display: block;
     text-decoration: none;
-    color: #ffffff;
+    color: var(--color-primary);
   }
 
   .project-card__inner {
     position: relative;
     border-radius: 8px;
-    background-color: #1A1A1A;
+    background-color: var(--color-card-bg);
     padding: 8px;
   }
 
   .project-card__image {
     border-radius: 4px;
     overflow: hidden;
-    background-color: #292929;
+    background-color: var(--color-card-image-bg);
     transition: background-color 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
@@ -78,7 +78,7 @@ const mobileImage = `/images/projects/${slug}-mobile.png`;
   }
 
   .project-card:hover .project-card__image {
-    background-color: #1A1A1A;
+    background-color: var(--color-card-bg);
   }
 
   .project-card:hover .project-card__meta {

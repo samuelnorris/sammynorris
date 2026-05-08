@@ -103,7 +103,7 @@ html, body {
   font-size: var(--text-b1);
   line-height: 1.5;
   letter-spacing: -0.01em;
-  font-weight: 200;
+  font-weight: 300;
   margin: 0;
 }
 
@@ -112,7 +112,7 @@ html, body {
   font-size: var(--text-b2);
   line-height: 1.4;
   letter-spacing: -0.01em;
-  font-weight: 200;
+  font-weight: 300;
   margin: 0;
 }
 
@@ -130,7 +130,7 @@ html, body {
   font-size: var(--text-b3);
   line-height: 1.4;
   letter-spacing: -0.01em;
-  font-weight: 200;
+  font-weight: 300;
   margin: 0;
 }
 
@@ -148,7 +148,7 @@ html, body {
   font-size: var(--text-b4);
   line-height: 1.4;
   letter-spacing: -0.01em;
-  font-weight: 200;
+  font-weight: 300;
   margin: 0;
 }
 
