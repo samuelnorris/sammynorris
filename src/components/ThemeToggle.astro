@@ -16,6 +16,8 @@
     align-items: center;
     justify-content: center;
     padding: 8px;
+    opacity: 0;
+    animation: toggleFadeIn 1.2s ease 5.3s forwards;
     background-color: var(--color-card-bg);
     border: 1px solid var(--color-tertiary);
     border-radius: 99px;
@@ -46,6 +48,10 @@
   }
   :global(.dark) .theme-toggle__icon--moon {
     display: none;
+  }
+
+  @keyframes toggleFadeIn {
+    to { opacity: 1; }
   }
 </style>
 

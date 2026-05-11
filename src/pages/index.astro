@@ -1,6 +1,5 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import ProjectCard from "../components/ProjectCard.astro";
 
 const projects = [
   { title: "Commission", year: "2025", slug: "commission" },
@@ -10,116 +9,475 @@ const projects = [
   { title: "Porsche", year: "2021", slug: "porsche" },
   { title: "Toyota", year: "2020", slug: "toyota" },
 ];
+
 ---
 
 <Layout>
 
-  <header class="header">
-    <div class="header__stack">
-      <h1 class="h1">Sammy Norris</h1>
-      <p class="b1">Product <span style="color: #FF6A00;">designer</span> currently living in a regulated world.</p>    </div>
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero__content">
+      <h1 class="hero__name h1" id="typewriter" aria-label="Sammy Norris"></h1>
+      <p class="hero__tagline">Product designer</p>
+    </div>
+    <a href="#work" class="hero__scroll" aria-label="Scroll to work">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 9l6 6 6-6" />
+      </svg>
+    </a>
   </header>
 
-  <section class="work">
-    <h2 class="h2">Work</h2>
+  <!-- Work -->
+  <section class="work" id="work">
+    <span class="section-label" data-reveal>Selected work</span>
     <div class="work__grid">
-      {projects.map((project) => (
-        <ProjectCard
-          title={project.title}
-          year={project.year}
-          slug={project.slug}
-        />
+      {projects.map((project, i) => (
+        <a
+          href={`/${project.slug}`}
+          class="card"
+          data-reveal
+          style={`--delay: ${i * 0.08}s`}
+        >
+          <div class="card__image">
+            <img
+              src={`/images/projects/${project.slug}-desktop.png`}
+              alt={`${project.title} case study`}
+              loading="lazy"
+            />
+          </div>
+          <div class="card__info">
+            <span class="card__title b2">{project.title}</span>
+            <span class="card__year b3">{project.year}</span>
+          </div>
+        </a>
       ))}
     </div>
   </section>
 
-  <section class="about">
-    <h2 class="h2">About</h2>
-    <p class="b1">
-      I'm a Senior Product Designer with experience delivering complex digital products across automotive and financial services. I focus on designing clear, usable services that support confident decision-making in regulated environments. My work spans the full product lifecycle, from discovery and service design through to delivery. I've led work on customer-facing products and large-scale regulatory services, collaborating closely with engineering, legal and compliance teams.
-    </p>
-    <a href="/about" class="text-link b2-regular">Read more</a>
+  <!-- About -->
+  <section class="about" id="about">
+    <div class="about__inner" data-reveal>
+      <blockquote class="about__quote">
+        Crafting clarity from complexity in regulated environments.
+      </blockquote>
+      <div class="about__body">
+        <p class="b1">
+          Senior Product Designer with experience delivering complex digital
+          products across automotive and financial services. I focus on the full
+          product lifecycle&hairsp;—&hairsp;from discovery and service design through to
+          delivery&hairsp;—&hairsp;collaborating with engineering, legal, and compliance teams.
+        </p>
+        <a href="mailto:hello@sammynorris.com" class="about__cta">
+          <span>Get in touch</span>
+          <span class="about__arrow">&rarr;</span>
+        </a>
+      </div>
+    </div>
   </section>
 
+  <!-- Footer -->
   <footer class="footer">
-    <span class="b2-regular">© 2026 Sammy Norris.</span>
+    <div class="footer__cta" data-reveal>
+      <h2 class="footer__heading">Let&rsquo;s work together.</h2>
+      <a href="mailto:hello@sammynorris.com" class="footer__email">hello@sammynorris.com</a>
+    </div>
+    <div class="footer__bottom">
+      <span class="b4">&copy; 2026 Sammy Norris</span>
+      <div class="footer__links">
+        <a href="https://linkedin.com" class="footer__link" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
   </footer>
 
 </Layout>
 
+<script>
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("revealed");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
+  );
+  document.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
+
+  (function () {
+    const el = document.getElementById("typewriter");
+    if (!el) return;
+
+    const typeSpeed = 200;
+    const deleteSpeed = 100;
+    const startDelay = 600;
+    const pauseBeforeDelete = 800;
+    const pauseBeforeRetype = 400;
+
+    el.classList.add("typewriter--typing");
+
+    function typeText(text, i, cb) {
+      if (i < text.length) {
+        el.textContent += text[i];
+        setTimeout(function () { typeText(text, i + 1, cb); }, typeSpeed);
+      } else if (cb) {
+        cb();
+      }
+    }
+
+    function deleteChars(count, cb) {
+      var current = el.textContent || "";
+      if (count > 0 && current.length > 0) {
+        el.textContent = current.slice(0, -1);
+        setTimeout(function () { deleteChars(count - 1, cb); }, deleteSpeed);
+      } else if (cb) {
+        cb();
+      }
+    }
+
+    setTimeout(function () {
+      typeText("Samuel", 0, function () {
+        setTimeout(function () {
+          deleteChars(3, function () {
+            setTimeout(function () {
+              typeText("my Norris", 0, function () {
+                el.classList.remove("typewriter--typing");
+                el.classList.add("typewriter--done");
+              });
+            }, pauseBeforeRetype);
+          });
+        }, pauseBeforeDelete);
+      });
+    }, startDelay);
+  })();
+</script>
+
 <style>
-  .header {
+  /* ===================== Hero ===================== */
+  .hero {
+    position: relative;
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 0 24px;
+    overflow: hidden;
   }
 
-  .header__stack {
+  .hero__content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 24px;
   }
 
+  .hero__name {
+    white-space: nowrap;
+    line-height: 0.85;
+    padding-bottom: 0.15em;
+  }
+
+  .hero__name::after {
+    content: "";
+    display: inline-block;
+    width: 2px;
+    height: 0.85em;
+    background: var(--color-primary);
+    margin-left: 4px;
+    vertical-align: baseline;
+    animation: blink 1s ease-in-out infinite;
+  }
+
+  .hero__name.typewriter--done::after {
+    animation: fadeOut 1.2s ease forwards;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  @keyframes fadeOut {
+    to { opacity: 0; }
+  }
+
+  .hero__tagline {
+    margin-top: 0;
+    font-family: var(--font-sans);
+    font-size: var(--text-b2);
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    opacity: 0;
+    animation: fadeIn 1.2s ease 5.3s forwards;
+    margin: 0;
+  }
+
+  .hero__scroll {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    animation: fadeInBounce 1.2s ease 5.3s forwards, bounce 2.5s ease 6.5s infinite;
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  /* ===================== Work ===================== */
   .work {
-    padding: 32px 24px;
+    padding: 120px 24px 80px;
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: 48px;
+    max-width: 1818px;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .section-label {
+    font-family: var(--font-serif);
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    line-height: 1.25;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    margin: 0;
   }
 
   .work__grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 16px;
   }
 
-  @media (max-width: 768px) {
-    .work__grid {
-      grid-template-columns: 1fr;
-    }
+  .card {
+    grid-column: span 6;
   }
 
-  .about {
+  .card {
+    text-decoration: none;
+    color: var(--color-primary);
+    background: var(--color-card-bg);
+    border-radius: 12px;
+    padding: 8px;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+  }
+
+  .card__image {
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--color-card-image-bg);
+  }
+
+  .card__image img {
+    display: block;
     width: 100%;
-    max-width: 75%;
-    min-height: 80vh;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .card:hover .card__image img {
+    transform: scale(1.03);
+  }
+
+  .card__info {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 12px 4px 4px;
+  }
+
+  .card__year {
+    color: var(--color-secondary);
+  }
+
+  /* ===================== About ===================== */
+  .about {
+    padding: 120px 24px;
+    max-width: 1818px;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .about__inner {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 64px;
+    align-items: start;
+  }
+
+  .about__quote {
+    font-family: var(--font-serif);
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    line-height: 1.25;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .about__body {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 24px;
-    padding: 80px 24px 120px;
+    gap: 32px;
+    padding-top: 8px;
   }
 
-  .text-link {
-    color: var(--color-primary);
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    text-decoration-color: var(--color-primary);
+  .about__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-secondary);
+    text-decoration: none;
+    font-family: var(--font-sans);
+    font-size: var(--text-b2);
+    font-weight: 400;
+    transition: gap 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    width: fit-content;
+  }
+
+  .about__cta:hover {
+    gap: 16px;
+  }
+
+  /* ===================== Footer ===================== */
+  .footer {
+    padding: 120px 24px 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 120px;
+    max-width: 1818px;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .footer__cta {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .footer__heading {
+    font-family: var(--font-serif);
+    font-size: clamp(3rem, 8vw, 7rem);
+    line-height: 0.95;
+    font-weight: 400;
+    white-space: nowrap;
+    letter-spacing: -0.02em;
+    margin: 0;
+  }
+
+  .footer__email {
+    font-family: var(--font-sans);
+    font-size: var(--text-b1);
+    font-weight: 300;
+    color: var(--color-secondary);
+    text-decoration: none;
+    width: fit-content;
     transition: opacity 0.2s ease;
   }
 
-  .text-link:hover {
+  .footer__email:hover {
     opacity: 0.6;
   }
 
-  @media (max-width: 768px) {
-    .about {
-      max-width: 100%;
-      padding: 60px 24px 80px;
-    }
-  }
-
-  .footer {
-    width: 100%;
+  .footer__bottom {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 40px 24px 64px;
+    padding-top: 24px;
+    border-top: 1px solid color-mix(in srgb, var(--color-primary) 10%, transparent);
   }
 
+  .footer__links {
+    display: flex;
+    gap: 24px;
+  }
+
+  .footer__link {
+    font-family: var(--font-sans);
+    font-size: var(--text-b4);
+    font-weight: 300;
+    color: var(--color-primary);
+    text-decoration: none;
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+  }
+
+  .footer__link:hover {
+    opacity: 1;
+  }
+
+  /* ===================== Scroll reveal ===================== */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s);
+  }
+
+  [data-reveal].revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ===================== Keyframes ===================== */
+  @keyframes revealUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-8px); }
+  }
+
+  @keyframes fadeInBounce {
+    to { opacity: 0.15; }
+  }
+
+  /* ===================== Mobile ===================== */
+  @media (max-width: 768px) {
+    .work {
+      padding: 80px 20px 60px;
+    }
+
+    .work__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .card:nth-child(n) {
+      grid-column: 1 / -1;
+    }
+
+    .about {
+      padding: 80px 20px;
+    }
+
+    .about__inner {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    .footer {
+      padding: 80px 20px 40px;
+      gap: 80px;
+    }
+  }
 </style>
