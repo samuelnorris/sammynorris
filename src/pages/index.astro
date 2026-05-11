@@ -109,6 +109,12 @@ const projects = [
     const el = document.getElementById("typewriter");
     if (!el) return;
 
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      el.textContent = "Sammy Norris";
+      el.classList.add("typewriter--done");
+      return;
+    }
+
     const typeSpeed = 200;
     const deleteSpeed = 100;
     const startDelay = 600;
@@ -230,7 +236,7 @@ const projects = [
     padding: 120px 24px 80px;
     display: flex;
     flex-direction: column;
-    gap: 48px;
+    gap: 24px;
     max-width: 1818px;
     box-sizing: border-box;
     width: 100%;

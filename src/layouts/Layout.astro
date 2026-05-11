@@ -8,8 +8,8 @@ interface Props {
 }
 
 const {
-  title = "Sammy Norris — Senior Product Designer",
-  description = "Product designer currently living in a regulated world.",
+  title = "Sammy Norris",
+  description = "A product designer based in London, specialising in creating clear, intuitive, and accessible digital experiences. Skilled across UI and UX design, research, service blueprints, and full product journeys.",
 } = Astro.props;
 ---
 <!doctype html>
@@ -28,6 +28,8 @@ const {
     <meta name="description" content={description} />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -49,5 +51,21 @@ const {
   <body>
     <ThemeToggle />
     <slot />
+    <script is:inline>
+      (function () {
+        var original = document.title;
+        var timer = null;
+        document.addEventListener('visibilitychange', function () {
+          if (document.hidden) {
+            timer = setTimeout(function () {
+              document.title = 'Where did you go?';
+            }, 30000);
+          } else {
+            if (timer) clearTimeout(timer);
+            document.title = original;
+          }
+        });
+      })();
+    </script>
   </body>
 </html>
