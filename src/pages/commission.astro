@@ -1,0 +1,549 @@
+---
+import Layout from "../layouts/Layout.astro";
+import BackButton from "../components/BackButton.astro";
+
+const meta = [
+  { label: "Year", value: "2024" },
+  { label: "Client", value: "Close Brothers" },
+  { label: "Role", value: "Senior Product Designer" },
+  { label: "Timeline", value: "7 weeks" },
+];
+
+const stats = [
+  { value: "91%", label: "Completion" },
+  { value: "93%", label: "Digital adoption" },
+  { value: "1.5m", label: "Avg. time" },
+  { value: "1.5%", label: "Drop-off" },
+];
+---
+
+<Layout title="Commission consent — Sammy Norris">
+
+  <!-- Back nav -->
+  <nav class="case-nav">
+    <BackButton />
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <span class="hero__eyebrow b3" data-reveal>Case study — 01</span>
+
+    <h1 class="hero__title" data-reveal style="--delay: 0.06s">
+      Commission <em>consent</em>
+    </h1>
+
+    <p class="hero__lede" data-reveal style="--delay: 0.14s">
+      A court ruling changed everything overnight.
+    </p>
+
+    <dl class="hero__meta" data-reveal style="--delay: 0.22s">
+      {meta.map((item) => (
+        <div class="hero__meta-row">
+          <dt class="b4">{item.label}</dt>
+          <dd class="b3">{item.value}</dd>
+        </div>
+      ))}
+    </dl>
+
+    <p class="hero__desc b1" data-reveal style="--delay: 0.3s">
+      Close Brothers' existing onboarding process became non-compliant overnight
+      when a court ruling changed the requirements around broker commission
+      disclosure. The business needed a fully compliant, customer-friendly
+      digital service — in seven weeks.
+    </p>
+  </header>
+
+  <!-- Figure 01 — single phone -->
+  <figure class="figure" data-reveal>
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-1-m.jpg" />
+      <img src="/images/projects/commission/image-commission-1.jpg" alt="OTP verification screen" loading="eager" />
+    </picture>
+  </figure>
+
+  <!-- Chapter I — Challenge -->
+  <section class="chapter" data-reveal>
+    <header class="chapter__head">
+      <span class="chapter__num">I.</span>
+      <span class="chapter__label b2">The challenge</span>
+    </header>
+
+    <blockquote class="chapter__quote">
+      The challenge was to design and ship a net-new disclosure and consent
+      journey that met regulatory requirements, worked across all customer
+      types, and didn't damage the broker relationship in the process.
+    </blockquote>
+
+    <div class="chapter__body">
+      <p class="b1">
+        The CDC service was built as a standalone digital journey — separate
+        from Close Brothers' existing broker portal — allowing it to be shipped
+        independently of wider platform changes. Every decision was weighed
+        against two constraints: legal compliance and customer trust.
+      </p>
+    </div>
+  </section>
+
+  <!-- Figure 02 — angled phone -->
+  <figure class="figure figure--inset" data-reveal>
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-2-m.jpg" />
+      <img src="/images/projects/commission/image-commission-2.jpg" alt="Consent journey screen" loading="lazy" />
+    </picture>
+  </figure>
+
+  <!-- Figure 03 — three phones -->
+  <figure class="figure" data-reveal>
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-3-m.jpg" />
+      <img src="/images/projects/commission/image-commission-3.jpg" alt="Multiple journey screens side by side" loading="lazy" />
+    </picture>
+  </figure>
+
+  <!-- Chapter II — Process -->
+  <section class="chapter" data-reveal>
+    <header class="chapter__head">
+      <span class="chapter__num">II.</span>
+      <span class="chapter__label b2">The process</span>
+    </header>
+
+    <div class="chapter__body chapter__body--double">
+      <p class="b1">
+        We started with a three-day sprint — mapping the regulatory requirements,
+        running a service blueprint with a cross-functional team of thirty, and
+        interviewing twenty-two customers to understand how they experienced
+        broker conversations around commission. The sprint produced a validated
+        journey framework and a prioritised backlog by day four.
+      </p>
+      <p class="b1">
+        Working alongside legal, compliance, and engineering, we iterated through
+        five rounds of concept testing before locking the final flow. A focus on
+        clear language and progressive disclosure resulted in an 85% reduction in
+        password reset errors — a signal that the experience felt familiar and
+        low-effort, even under regulatory pressure.
+      </p>
+    </div>
+  </section>
+
+  <!-- Figure 04 — service blueprint -->
+  <figure class="figure" data-reveal>
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-4-m.jpg" />
+      <img src="/images/projects/commission/image-commission-4.jpg" alt="Service blueprint diagram" loading="lazy" />
+    </picture>
+  </figure>
+
+  <!-- Chapter III — Outcome -->
+  <section class="chapter chapter--outcome" data-reveal>
+    <header class="chapter__head">
+      <span class="chapter__num">III.</span>
+      <span class="chapter__label b2">The outcome</span>
+    </header>
+
+    <h2 class="chapter__h2">
+      It shipped on time. Fully compliant. <em>And quietly, very well loved.</em>
+    </h2>
+
+    <div class="stats">
+      {stats.map((s, i) => (
+        <div class="stat">
+          <span class="stat__value">{s.value}</span>
+          <span class="stat__label b3">{s.label}</span>
+        </div>
+      ))}
+    </div>
+
+    <div class="chapter__body">
+      <p class="b1">
+        In the first month, 91% of customers completed the journey in under
+        ninety seconds — without a single call to the support team. Digital
+        adoption reached 93%, far exceeding the 70% target. The service has
+        since become the benchmark for Close Brothers' customer-facing
+        compliance work.
+      </p>
+    </div>
+  </section>
+
+  <!-- Figure 05 — two-phone pair -->
+  <figure class="figure figure--inset" data-reveal>
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-5-m.jpg" />
+      <img src="/images/projects/commission/image-commission-5.jpg" alt="Consent and error states" loading="lazy" />
+    </picture>
+  </figure>
+
+  <!-- Closing -->
+  <section class="closing" data-reveal>
+    <p class="closing__signoff">
+      <em>Designed at Close Brothers</em>, 2024.
+    </p>
+    <a href="/" class="closing__cta">
+      <span>Return to all work</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14M12 5l7 7-7 7" />
+      </svg>
+    </a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="case-footer">
+    <span class="b4">&copy; 2026 Sammy Norris</span>
+  </footer>
+
+</Layout>
+
+<script>
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("revealed");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
+  );
+  document.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
+</script>
+
+<style>
+  /* ===================== Constants ===================== */
+  /*
+    Content widths:
+    - Reading column: 640px (body text)
+    - Chapter container: 880px (head + body + quote)
+    - Inset figures: 1100px
+    - Full bleed: 100vw
+  */
+
+  /* ===================== Back nav ===================== */
+  .case-nav {
+    padding: 32px 10vw 0;
+  }
+
+  /* ===================== Hero ===================== */
+  .hero {
+    padding: 80px 10vw 120px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero__eyebrow {
+    color: var(--color-secondary);
+    font-weight: 300;
+    margin-bottom: 24px;
+  }
+
+  .hero__title {
+    font-family: var(--font-serif);
+    font-size: clamp(3rem, 7vw, 7rem);
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    font-weight: 400;
+    margin: 0 0 32px;
+  }
+
+  .hero__title em {
+    font-style: italic;
+    color: var(--color-primary);
+  }
+
+  .hero__lede {
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    line-height: 1.3;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: -0.01em;
+    margin: 0 0 64px;
+    color: var(--color-primary);
+    opacity: 0.85;
+  }
+
+  .hero__meta {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    margin: 0 0 64px;
+    padding: 32px 10vw;
+    border-top: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+  }
+
+  .hero__meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .hero__meta-row dt {
+    color: var(--color-secondary);
+    font-weight: 300;
+  }
+
+  .hero__meta-row dd {
+    margin: 0;
+    color: var(--color-primary);
+    font-weight: 400;
+  }
+
+  .hero__desc {
+    max-width: 56ch;
+  }
+
+  /* ===================== Figures ===================== */
+  .figure {
+    margin: 0 0 120px;
+    padding: 0 10vw;
+    box-sizing: border-box;
+  }
+
+  .figure > picture {
+    display: block;
+    background: var(--color-card-bg);
+    border-radius: 12px;
+    padding: 8px;
+  }
+
+  /* Adjacent images — tighter gap */
+  .figure + .figure {
+    margin-top: -80px;
+  }
+
+  .figure picture > img,
+  .figure > img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+  }
+
+
+  .caption span {
+    color: var(--color-secondary);
+    opacity: 1;
+  }
+
+  /* ===================== Chapters ===================== */
+  .chapter {
+    margin: 0 0 120px;
+    padding: 0 10vw;
+  }
+
+  .chapter__head {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+  }
+
+  .chapter__num {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 3vw, 2.5rem);
+    line-height: 1;
+    font-weight: 400;
+    color: var(--color-secondary);
+  }
+
+  .chapter__label {
+    color: var(--color-primary);
+    font-weight: 300;
+  }
+
+  .chapter__quote {
+    font-family: var(--font-serif);
+    font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+    line-height: 1.2;
+    font-weight: 400;
+    letter-spacing: -0.015em;
+    margin: 0 0 64px;
+    padding: 0;
+    border: 0;
+  }
+
+  .chapter__h2 {
+    font-family: var(--font-serif);
+    font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+    line-height: 1.15;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin: 0 0 40px;
+  }
+
+  .chapter__h2 em {
+    font-style: italic;
+    opacity: 0.6;
+  }
+
+  .chapter__body {
+    max-width: 640px;
+  }
+
+  .chapter__body--double {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* ===================== Stats — typographic moment ===================== */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin: 0 0 120px;
+    padding: 48px 0;
+    border-top: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .stat__index {
+    color: var(--color-secondary);
+    font-weight: 300;
+  }
+
+  .stat__value {
+    font-family: var(--font-serif);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: var(--color-primary);
+  }
+
+  .stat__label {
+    color: var(--color-primary);
+    opacity: 0.55;
+    font-weight: 400;
+  }
+
+  /* ===================== Closing ===================== */
+  .closing {
+    margin: 0 0 120px;
+    padding: 80px 10vw 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 48px;
+    border-top: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+  }
+
+  .closing__signoff {
+    font-family: var(--font-serif);
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
+    line-height: 1.4;
+    font-weight: 400;
+    color: var(--color-primary);
+    opacity: 0.6;
+    margin: 0;
+  }
+
+  .closing__signoff em {
+    font-style: italic;
+  }
+
+  .closing__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--color-secondary);
+    text-decoration: none;
+    font-family: var(--font-sans);
+    font-size: var(--text-b1);
+    font-weight: 300;
+    transition: gap 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .closing__cta:hover {
+    gap: 20px;
+  }
+
+  /* ===================== Footer ===================== */
+  .case-footer {
+    padding: 48px 10vw;
+    display: flex;
+    justify-content: flex-start;
+    color: var(--color-primary);
+    opacity: 0.4;
+  }
+
+  /* ===================== Scroll reveal ===================== */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s),
+      transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s);
+  }
+
+  [data-reveal].revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ===================== Mobile ===================== */
+  @media (max-width: 768px) {
+    .case-nav {
+      padding: 24px 20px 0;
+    }
+
+    .hero {
+      padding: 64px 20px 100px;
+    }
+
+    .hero__meta {
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 48px;
+      padding: 24px 20px;
+    }
+
+    .figure {
+      padding: 0 20px;
+      margin-bottom: 80px;
+    }
+
+.chapter {
+      padding: 0 20px;
+      margin-bottom: 80px;
+    }
+
+    .chapter__head {
+      margin-bottom: 32px;
+    }
+
+    .chapter__quote {
+      margin-bottom: 40px;
+    }
+
+    .chapter__h2 {
+      margin-bottom: 64px;
+    }
+
+    .stats {
+      grid-template-columns: 1fr 1fr;
+      gap: 32px 24px;
+      padding: 32px 0;
+      margin-bottom: 80px;
+    }
+
+    .closing {
+      padding: 56px 20px 0;
+      margin-bottom: 80px;
+      gap: 32px;
+    }
+
+    .case-footer {
+      padding: 32px 20px;
+    }
+  }
+</style>
