@@ -3,7 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import BackButton from "../components/BackButton.astro";
 
 const meta = [
-  { label: "Year", value: "2024" },
+  { label: "Year", value: "2025" },
   { label: "Client", value: "Close Brothers" },
   { label: "Role", value: "Senior Product Designer" },
   { label: "Timeline", value: "7 weeks" },
@@ -217,6 +217,15 @@ const stats = [
     - Full bleed: 100vw
   */
 
+  /* ===================== Spacing scale =====================
+     Tier 1 — Page break (curtain rise):   128px
+     Tier 2 — Section break:                96px
+     Tier 3 — Sub-section:                  48–64px
+     Tier 4 — Group (adjacent siblings):    32px
+     Tier 5 — Element:                      16–24px
+     Above headings > below headings (Gestalt: heading belongs with body).
+  */
+
   /* ===================== Back nav ===================== */
   .case-nav {
     padding: 32px 10vw 0;
@@ -224,7 +233,7 @@ const stats = [
 
   /* ===================== Hero ===================== */
   .hero {
-    padding: 80px 10vw 120px;
+    padding: 64px 10vw 128px;
     display: flex;
     flex-direction: column;
   }
@@ -232,7 +241,7 @@ const stats = [
   .hero__eyebrow {
     color: var(--color-secondary);
     font-weight: 300;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
   }
 
   .hero__title {
@@ -256,7 +265,7 @@ const stats = [
     font-weight: 400;
     font-style: italic;
     letter-spacing: -0.01em;
-    margin: 0 0 64px;
+    margin: 0 0 48px;
     color: var(--color-primary);
     opacity: 0.85;
   }
@@ -274,7 +283,7 @@ const stats = [
   .hero__meta-row {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
   }
 
   .hero__meta-row dt {
@@ -289,12 +298,12 @@ const stats = [
   }
 
   .hero__desc {
-    max-width: 56ch;
+    max-width: calc(56ch + 160px);
   }
 
   /* ===================== Figures ===================== */
   .figure {
-    margin: 0 0 120px;
+    margin: 0 0 96px;
     padding: 0 10vw;
     box-sizing: border-box;
   }
@@ -302,13 +311,13 @@ const stats = [
   .figure > picture {
     display: block;
     background: var(--color-card-bg);
-    border-radius: 12px;
+    border-radius: 24px;
     padding: 8px;
   }
 
-  /* Adjacent images — tighter gap */
+  /* Adjacent figures form a visual group — 32px gap */
   .figure + .figure {
-    margin-top: -80px;
+    margin-top: -64px;
   }
 
   .figure picture > img,
@@ -316,7 +325,7 @@ const stats = [
     display: block;
     width: 100%;
     height: auto;
-    border-radius: 6px;
+    border-radius: 18px;
   }
 
 
@@ -327,7 +336,7 @@ const stats = [
 
   /* ===================== Chapters ===================== */
   .chapter {
-    margin: 0 0 120px;
+    margin: 0 0 96px;
     padding: 0 10vw;
   }
 
@@ -335,7 +344,7 @@ const stats = [
     display: flex;
     align-items: baseline;
     gap: 24px;
-    margin-bottom: 40px;
+    margin-bottom: 48px;
     padding-bottom: 24px;
     border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
   }
@@ -362,6 +371,7 @@ const stats = [
     margin: 0 0 64px;
     padding: 0;
     border: 0;
+    max-width: 80%;
   }
 
   .chapter__h2 {
@@ -370,7 +380,7 @@ const stats = [
     line-height: 1.15;
     font-weight: 400;
     letter-spacing: -0.02em;
-    margin: 0 0 40px;
+    margin: 0 0 32px;
   }
 
   .chapter__h2 em {
@@ -379,7 +389,7 @@ const stats = [
   }
 
   .chapter__body {
-    max-width: 640px;
+    max-width: calc(56ch + 160px);
   }
 
   .chapter__body--double {
@@ -393,7 +403,7 @@ const stats = [
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 24px;
-    margin: 0 0 120px;
+    margin: 0 0 96px;
     padding: 48px 0;
     border-top: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
     border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
@@ -428,12 +438,12 @@ const stats = [
 
   /* ===================== Closing ===================== */
   .closing {
-    margin: 0 0 120px;
-    padding: 80px 10vw 0;
+    margin: 0 0 96px;
+    padding: 96px 10vw 0;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 48px;
+    gap: 40px;
     border-top: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
   }
 
@@ -469,7 +479,7 @@ const stats = [
 
   /* ===================== Footer ===================== */
   .case-footer {
-    padding: 48px 10vw;
+    padding: 64px 10vw;
     display: flex;
     justify-content: flex-start;
     color: var(--color-primary);
@@ -490,60 +500,116 @@ const stats = [
     transform: translateY(0);
   }
 
-  /* ===================== Mobile ===================== */
+  /* ===================== Mobile =====================
+     Same hierarchy as desktop, ~⅔ scale:
+     Tier 1 — Page break:        80px
+     Tier 2 — Section break:     64px
+     Tier 3 — Sub-section:       32–40px
+     Tier 4 — Group:             20px
+     Tier 5 — Element:           12–16px
+  */
   @media (max-width: 768px) {
+    /* Nav */
     .case-nav {
       padding: 24px 20px 0;
     }
 
+    /* Hero */
     .hero {
-      padding: 64px 20px 100px;
+      padding: 40px 20px 80px;
+    }
+
+    .hero__eyebrow {
+      margin-bottom: 12px;
+    }
+
+    .hero__title {
+      font-size: clamp(2.5rem, 11vw, 3.5rem);
+      margin-bottom: 20px;
+    }
+
+    .hero__lede {
+      font-size: clamp(1.125rem, 4.5vw, 1.375rem);
+      margin-bottom: 32px;
     }
 
     .hero__meta {
       grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      margin-bottom: 48px;
+      gap: 16px 16px;
       padding: 24px 20px;
+      margin-bottom: 40px;
     }
 
+    .hero__desc {
+      max-width: 100%;
+    }
+
+    /* Figures */
     .figure {
-      padding: 0 20px;
-      margin-bottom: 80px;
+      padding: 0 16px;
+      margin-bottom: 64px;
     }
 
-.chapter {
+    /* Adjacent figures: 20px gap */
+    .figure + .figure {
+      margin-top: -44px;
+    }
+
+    /* Chapters */
+    .chapter {
       padding: 0 20px;
-      margin-bottom: 80px;
+      margin-bottom: 64px;
     }
 
     .chapter__head {
       margin-bottom: 32px;
+      padding-bottom: 16px;
+    }
+
+    .chapter__num {
+      font-size: 1.5rem;
     }
 
     .chapter__quote {
+      font-size: clamp(1.25rem, 5.5vw, 1.5rem);
       margin-bottom: 40px;
+      max-width: 100%;
     }
 
     .chapter__h2 {
+      font-size: clamp(1.625rem, 7vw, 2rem);
+      margin-bottom: 20px;
+    }
+
+    .chapter__body--double {
+      gap: 20px;
+    }
+
+    /* Stats */
+    .stats {
+      grid-template-columns: 1fr 1fr;
+      gap: 32px 16px;
+      padding: 32px 0;
       margin-bottom: 64px;
     }
 
-    .stats {
-      grid-template-columns: 1fr 1fr;
-      gap: 32px 24px;
-      padding: 32px 0;
-      margin-bottom: 80px;
+    .stat {
+      gap: 8px;
     }
 
+    .stat__value {
+      font-size: clamp(2rem, 9vw, 2.5rem);
+    }
+
+    /* Closing */
     .closing {
-      padding: 56px 20px 0;
-      margin-bottom: 80px;
-      gap: 32px;
+      padding: 64px 20px 0;
+      margin-bottom: 64px;
+      gap: 28px;
     }
 
     .case-footer {
-      padding: 32px 20px;
+      padding: 40px 20px;
     }
   }
 </style>
