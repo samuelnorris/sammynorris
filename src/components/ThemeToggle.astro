@@ -1,7 +1,15 @@
 ---
+interface Props {
+  delayed?: boolean;
+}
+const { delayed = false } = Astro.props;
 ---
 
-<button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+<button
+  class:list={["theme-toggle", { "theme-toggle--delayed": delayed }]}
+  id="themeToggle"
+  aria-label="Toggle dark mode"
+>
   <span class="theme-toggle__icon theme-toggle__icon--sun material-symbols-rounded">light_mode</span>
   <span class="theme-toggle__icon theme-toggle__icon--moon material-symbols-rounded">dark_mode</span>
 </button>
@@ -16,8 +24,6 @@
     align-items: center;
     justify-content: center;
     padding: 8px;
-    opacity: 0;
-    animation: toggleFadeIn 1.2s ease 5.3s forwards;
     background-color: var(--color-card-bg);
     border: 1px solid var(--color-tertiary);
     border-radius: 99px;
@@ -28,6 +34,11 @@
 
   .theme-toggle:hover {
     border-color: var(--color-primary);
+  }
+
+  .theme-toggle--delayed {
+    opacity: 0;
+    animation: toggleFadeIn 1.2s ease 5.3s forwards;
   }
 
   .material-symbols-rounded {

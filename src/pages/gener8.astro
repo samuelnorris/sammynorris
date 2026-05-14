@@ -3,21 +3,21 @@ import Layout from "../layouts/Layout.astro";
 import BackButton from "../components/BackButton.astro";
 
 const meta = [
-  { label: "Year", value: "2025" },
-  { label: "Client", value: "Close Brothers" },
-  { label: "Role", value: "Senior Product Designer" },
-  { label: "Timeline", value: "7 weeks" },
+  { label: "Year", value: "2021" },
+  { label: "Client", value: "Gener8" },
+  { label: "Role", value: "Lead Product Designer" },
+  { label: "Timeline", value: "3 months" },
 ];
 
 const stats = [
-  { value: "91%", label: "Completion" },
-  { value: "93%", label: "Digital adoption" },
-  { value: "1.5m", label: "Avg. time" },
-  { value: "1.5%", label: "Drop-off" },
+  { value: "200k+", label: "Downloads" },
+  { value: "120k", label: "Daily users" },
+  { value: "7mo", label: "To Dragons' Den" },
+  { value: "1", label: "Sole designer" },
 ];
 ---
 
-<Layout title="Commission consent — Sammy Norris">
+<Layout title="Gener8 — Sammy Norris">
 
   <!-- Back nav -->
   <nav class="case-nav">
@@ -26,14 +26,14 @@ const stats = [
 
   <!-- Hero -->
   <header class="hero">
-    <span class="hero__eyebrow b3" data-reveal>Case study — 01</span>
+    <span class="hero__eyebrow b3" data-reveal>Case study — 03</span>
 
     <h1 class="hero__title" data-reveal style="--delay: 0.06s">
-      Commission <em>consent</em>
+      Gener<em>8</em>
     </h1>
 
     <p class="hero__lede" data-reveal style="--delay: 0.14s">
-      A court ruling changed everything overnight.
+      Flipping the ad model on its head.
     </p>
 
     <dl class="hero__meta" data-reveal style="--delay: 0.22s">
@@ -46,18 +46,17 @@ const stats = [
     </dl>
 
     <p class="hero__desc b1" data-reveal style="--delay: 0.3s">
-      Close Brothers' existing onboarding process became non-compliant overnight
-      when a court ruling changed the requirements around broker commission
-      disclosure. The business needed a fully compliant, customer-friendly
-      digital service — in seven weeks.
+      A marketing website and browser extension for a first-of-its-kind ad
+      platform — designed to make an unfamiliar proposition feel simple,
+      credible, and worth downloading.
     </p>
   </header>
 
-  <!-- Figure 01 — single phone -->
+  <!-- Figure 01 — hero shot -->
   <figure class="figure" data-reveal>
     <picture>
-      <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-1-m.jpg" />
-      <img src="/images/projects/commission/image-commission-1.jpg" alt="OTP verification screen" loading="eager" />
+      <source media="(max-width: 768px)" srcset="/images/projects/gener8/image-gener8-1-m.jpg" />
+      <img src="/images/projects/gener8/image-gener8-1.jpg" alt="Gener8 marketing site hero" loading="eager" />
     </picture>
   </figure>
 
@@ -69,34 +68,25 @@ const stats = [
     </header>
 
     <blockquote class="chapter__quote">
-      The challenge was to design and ship a net-new disclosure and consent
-      journey that met regulatory requirements, worked across all customer
-      types, and didn't damage the broker relationship in the process.
+      A genuinely novel product entering a crowded and sceptical market —
+      where the design challenge was as much about trust and clarity as it
+      was about aesthetics.
     </blockquote>
 
     <div class="chapter__body">
       <p class="b1">
-        The CDC service was built as a standalone digital journey — separate
-        from Close Brothers' existing broker portal — allowing it to be shipped
-        independently of wider platform changes. Every decision was weighed
-        against two constraints: legal compliance and customer trust.
+        Gener8 is a browser extension that flips the advertising model on its
+        head. Instead of passively serving ads to users, it lets them opt in,
+        profit from the ads they see, and take back control of their data.
       </p>
     </div>
   </section>
 
-  <!-- Figure 02 — angled phone -->
-  <figure class="figure figure--inset" data-reveal>
-    <picture>
-      <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-2-m.jpg" />
-      <img src="/images/projects/commission/image-commission-2.jpg" alt="Consent journey screen" loading="lazy" />
-    </picture>
-  </figure>
-
-  <!-- Figure 03 — three phones -->
+  <!-- Figure 02 -->
   <figure class="figure" data-reveal>
     <picture>
-      <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-3-m.jpg" />
-      <img src="/images/projects/commission/image-commission-3.jpg" alt="Multiple journey screens side by side" loading="lazy" />
+      <source media="(max-width: 768px)" srcset="/images/projects/gener8/image-gener8-2-m.jpg" />
+      <img src="/images/projects/gener8/image-gener8-2.jpg" alt="Gener8 marketing site sections" loading="lazy" />
     </picture>
   </figure>
 
@@ -107,29 +97,36 @@ const stats = [
       <span class="chapter__label b2">The process</span>
     </header>
 
+    <h2 class="chapter__h2">
+      One designer, one CEO, <em>three months.</em>
+    </h2>
+
     <div class="chapter__body chapter__body--double">
       <p class="b1">
-        We started with a three-day sprint — mapping the regulatory requirements,
-        running a service blueprint with a cross-functional team of thirty, and
-        interviewing twenty-two customers to understand how they experienced
-        broker conversations around commission. The sprint produced a validated
-        journey framework and a prioritised backlog by day four.
+        Working directly with the CEO, I was brought in as the sole designer
+        to deliver the full website and extension UI. The brief was clear:
+        make a complex, unfamiliar proposition feel simple and credible,
+        bring the product to the forefront, and build something that
+        converted. Over three months we worked closely together — his
+        product vision, my design execution — to produce a website built
+        around a CRO strategy designed to turn curiosity into downloads.
       </p>
       <p class="b1">
-        Working alongside legal, compliance, and engineering, we iterated through
-        five rounds of concept testing before locking the final flow. A focus on
-        clear language and progressive disclosure resulted in an 85% reduction in
-        password reset errors — a signal that the experience felt familiar and
-        low-effort, even under regulatory pressure.
+        The design had to do a lot of work. The extension itself was a new
+        category of product, so the website needed to explain what Gener8
+        was, why it was different, and why users could trust it — all without
+        overwhelming them. Simplicity and clarity drove every decision, from
+        the information hierarchy down to the interaction details of the
+        extension UI.
       </p>
     </div>
   </section>
 
-  <!-- Figure 04 — service blueprint -->
+  <!-- Figure 03 -->
   <figure class="figure" data-reveal>
     <picture>
-      <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-4-m.jpg" />
-      <img src="/images/projects/commission/image-commission-4.jpg" alt="Service blueprint diagram" loading="lazy" />
+      <source media="(max-width: 768px)" srcset="/images/projects/gener8/image-gener8-3-m.jpg" />
+      <img src="/images/projects/gener8/image-gener8-3.jpg" alt="Extension UI details" loading="lazy" />
     </picture>
   </figure>
 
@@ -140,42 +137,48 @@ const stats = [
       <span class="chapter__label b2">The outcome</span>
     </header>
 
-    <h2 class="chapter__h2">
-      It shipped on time. Fully compliant. <em>And quietly, very well loved.</em>
-    </h2>
+    <blockquote class="chapter__quote">
+      The site generated over 200,000 user downloads, and seven months after
+      launch Gener8 secured investment on Dragons' Den. The product now has
+      over 120,000 daily active users.
+    </blockquote>
 
     <div class="stats">
-      {stats.map((s, i) => (
+      {stats.map((s) => (
         <div class="stat">
           <span class="stat__value">{s.value}</span>
           <span class="stat__label b3">{s.label}</span>
         </div>
       ))}
     </div>
-
-    <div class="chapter__body">
-      <p class="b1">
-        In the first month, 91% of customers completed the journey in under
-        ninety seconds — without a single call to the support team. Digital
-        adoption reached 93%, far exceeding the 70% target. The service has
-        since become the benchmark for Close Brothers' customer-facing
-        compliance work.
-      </p>
-    </div>
   </section>
 
-  <!-- Figure 05 — two-phone pair -->
-  <figure class="figure figure--inset" data-reveal>
+  <!-- Figure 04 -->
+  <figure class="figure" data-reveal>
     <picture>
-      <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-5-m.jpg" />
-      <img src="/images/projects/commission/image-commission-5.jpg" alt="Consent and error states" loading="lazy" />
+      <source media="(max-width: 768px)" srcset="/images/projects/gener8/image-gener8-4-m.jpg" />
+      <img src="/images/projects/gener8/image-gener8-4.jpg" alt="Gener8 product screens" loading="lazy" />
     </picture>
+  </figure>
+
+  <!-- Figure 05 — YouTube video -->
+  <figure class="figure figure--video" data-reveal>
+    <div class="video-frame">
+      <iframe
+        src="https://www.youtube-nocookie.com/embed/dfUfwg1pY2s?rel=0"
+        title="Gener8 product video"
+        frameborder="0"
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+      ></iframe>
+    </div>
   </figure>
 
   <!-- Closing -->
   <section class="closing" data-reveal>
     <p class="closing__signoff">
-      <em>Designed at Close Brothers</em>, 2025.
+      <em>Designed at Gener8</em>, 2021.
     </p>
     <a href="/" class="closing__cta" aria-label="Return to all work">
       <span class="closing__cta-icon">
@@ -210,15 +213,6 @@ const stats = [
 </script>
 
 <style>
-  /* ===================== Constants ===================== */
-  /*
-    Content widths:
-    - Reading column: 640px (body text)
-    - Chapter container: 880px (head + body + quote)
-    - Inset figures: 1100px
-    - Full bleed: 100vw
-  */
-
   /* ===================== Spacing scale =====================
      Tier 1 — Page break (curtain rise):   128px
      Tier 2 — Section break:                96px
@@ -260,7 +254,7 @@ const stats = [
 
   .hero__title em {
     font-style: italic;
-    color: var(--color-primary);
+    color: var(--color-secondary);
   }
 
   .hero__lede {
@@ -333,10 +327,22 @@ const stats = [
     border-radius: 18px;
   }
 
+  /* Video figure — same card-frame as images */
+  .figure--video .video-frame {
+    position: relative;
+    background: var(--color-card-bg);
+    border-radius: 24px;
+    padding: 8px;
+    aspect-ratio: 16 / 9;
+  }
 
-  .caption span {
-    color: var(--color-secondary);
-    opacity: 1;
+  .figure--video iframe {
+    position: absolute;
+    inset: 8px;
+    width: calc(100% - 16px);
+    height: calc(100% - 16px);
+    border: 0;
+    border-radius: 18px;
   }
 
   /* ===================== Chapters ===================== */
@@ -403,7 +409,7 @@ const stats = [
     gap: 24px;
   }
 
-  /* ===================== Stats — typographic moment ===================== */
+  /* ===================== Stats ===================== */
   .stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -419,11 +425,6 @@ const stats = [
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
-  }
-
-  .stat__index {
-    color: var(--color-secondary);
-    font-weight: 300;
   }
 
   .stat__value {
@@ -526,22 +527,13 @@ const stats = [
     transform: translateY(0);
   }
 
-  /* ===================== Mobile =====================
-     Same hierarchy as desktop, ~⅔ scale:
-     Tier 1 — Page break:        80px
-     Tier 2 — Section break:     64px
-     Tier 3 — Sub-section:       32–40px
-     Tier 4 — Group:             20px
-     Tier 5 — Element:           12–16px
-  */
+  /* ===================== Mobile ===================== */
   @media (max-width: 768px) {
-    /* Nav */
     .case-nav {
       top: 20px;
       left: 20px;
     }
 
-    /* Hero */
     .hero {
       padding: 40px 20px 80px;
     }
@@ -571,18 +563,15 @@ const stats = [
       max-width: 100%;
     }
 
-    /* Figures */
     .figure {
       padding: 0 16px;
       margin-bottom: 64px;
     }
 
-    /* Adjacent figures: 20px gap */
     .figure + .figure {
       margin-top: -44px;
     }
 
-    /* Chapters */
     .chapter {
       padding: 0 20px;
       margin-bottom: 64px;
@@ -612,7 +601,6 @@ const stats = [
       gap: 20px;
     }
 
-    /* Stats */
     .stats {
       grid-template-columns: 1fr 1fr;
       gap: 32px 16px;
@@ -628,7 +616,6 @@ const stats = [
       font-size: clamp(2rem, 9vw, 2.5rem);
     }
 
-    /* Closing */
     .closing {
       padding: 64px 20px 0;
       margin-bottom: 64px;

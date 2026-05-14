@@ -11,6 +11,8 @@ const {
   title = "Sammy Norris",
   description = "A product designer based in London, specialising in creating clear, intuitive, and accessible digital experiences. Skilled across UI and UX design, research, service blueprints, and full product journeys.",
 } = Astro.props;
+
+const isHomepage = Astro.url.pathname === "/";
 ---
 <!doctype html>
 <html lang="en-GB">
@@ -49,7 +51,7 @@ const {
     <title>{title}</title>
   </head>
   <body>
-    <ThemeToggle />
+    <ThemeToggle delayed={isHomepage} />
     <slot />
     <script is:inline>
       (function () {
