@@ -1,0 +1,293 @@
+---
+import Layout from "../layouts/Layout.astro";
+import BackButton from "../components/BackButton.astro";
+
+const meta = [
+  { label: "Year", value: "2021" },
+  { label: "Client", value: "Porsche" },
+  { label: "Role", value: "Lead Product Designer" },
+  { label: "Agency", value: "Brandwidth" },
+];
+
+const stats = [
+  { value: "watchOS", label: "Native build" },
+  { value: "1", label: "Lead designer" },
+  { value: "4", label: "Vital stats" },
+  { value: "Live", label: "Telemetry" },
+];
+---
+
+<Layout title="Porsche — Sammy Norris">
+
+  <!-- Back nav -->
+  <nav class="case-nav">
+    <BackButton />
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <span class="hero__eyebrow b3" data-reveal>Case study — 05</span>
+
+    <h1 class="hero__title" data-reveal style="--delay: 0.06s">
+      Porsche
+    </h1>
+
+    <p class="hero__lede" data-reveal style="--delay: 0.14s">
+      Porsche on your wrist.
+    </p>
+
+    <dl class="hero__meta" data-reveal style="--delay: 0.22s">
+      {meta.map((item) => (
+        <div class="hero__meta-row">
+          <dt class="b4">{item.label}</dt>
+          <dd class="b3">{item.value}</dd>
+        </div>
+      ))}
+    </dl>
+
+    <p class="hero__desc b1" data-reveal style="--delay: 0.3s">
+      A smartwatch app giving Porsche owners real-time access to their car's
+      vital stats — designed from concept to handoff for Apple Watch.
+    </p>
+  </header>
+
+  <!-- Figure 01 -->
+  <figure class="figure" data-reveal>
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/projects/porsche/image-porsche-1-m.jpg" />
+      <img src="/images/projects/porsche/image-porsche-1.jpg" alt="Porsche Apple Watch app hero" loading="eager" />
+    </picture>
+  </figure>
+
+  <!-- Chapter I — Challenge -->
+  <section class="chapter" data-reveal>
+    <header class="chapter__head">
+      <span class="chapter__num">I.</span>
+      <span class="chapter__label b2">The challenge</span>
+    </header>
+
+    <blockquote class="chapter__quote">
+      Porsche owners have a particular relationship with their cars. The
+      brief was to deepen that connection — giving them instant, glanceable
+      access to the information that mattered most, without picking up their
+      phone.
+    </blockquote>
+
+    <div class="chapter__body">
+      <p class="b1">
+        The result was a native Apple Watch app that put charging status,
+        mileage, fuel levels, and lock status directly on the wrist —
+        translating Porsche's visual language to watchOS without losing its
+        character or becoming generic utility software.
+      </p>
+    </div>
+  </section>
+
+  <!-- Figure 02 -->
+  <figure class="figure" data-reveal>
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/projects/porsche/image-porsche-2-m.jpg" />
+      <img src="/images/projects/porsche/image-porsche-2.jpg" alt="Apple Watch interface screens" loading="lazy" />
+    </picture>
+  </figure>
+
+  <!-- Chapter II — Process -->
+  <section class="chapter" data-reveal>
+    <header class="chapter__head">
+      <span class="chapter__num">II.</span>
+      <span class="chapter__label b2">The process</span>
+    </header>
+
+    <h2 class="chapter__h2">
+      Research first, <em>pixels second.</em>
+    </h2>
+
+    <div class="chapter__body chapter__body--double">
+      <p class="b1">
+        Working as part of the agency team at Brandwidth, I was the primary
+        designer on the project, taking it from initial concept through to
+        final handoff. The challenge wasn't just designing for a small screen
+        — it was designing for a brand with exceptionally high standards,
+        where every detail needed to feel considered and premium.
+      </p>
+      <p class="b1">
+        The design process was grounded in research from the start. We spoke
+        with Porsche owners to understand how and when they actually wanted
+        to interact with their car's data — what was genuinely useful at a
+        glance versus what belonged in a deeper interface. That insight
+        shaped the information hierarchy and interaction model throughout.
+      </p>
+    </div>
+  </section>
+
+  <!-- Figure 03 -->
+  <figure class="figure" data-reveal>
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/projects/porsche/image-porsche-3-m.jpg" />
+      <img src="/images/projects/porsche/image-porsche-3.jpg" alt="Live telemetry on watchOS" loading="lazy" />
+    </picture>
+  </figure>
+
+  <!-- Chapter III — Outcome -->
+  <section class="chapter chapter--outcome" data-reveal>
+    <header class="chapter__head">
+      <span class="chapter__num">III.</span>
+      <span class="chapter__label b2">The outcome</span>
+    </header>
+
+    <h2 class="chapter__h2">
+      Now part of <em>Porsche Connect.</em>
+    </h2>
+
+    <div class="stats">
+      {stats.map((s) => (
+        <div class="stat">
+          <span class="stat__value">{s.value}</span>
+          <span class="stat__label b3">{s.label}</span>
+        </div>
+      ))}
+    </div>
+
+    <div class="chapter__body">
+      <p class="b1">
+        Telemetry communication was at the core of the product — real-time
+        data pulled directly from the vehicle and surfaced cleanly on the
+        watch face. Designing around live data meant accounting for edge
+        cases, connectivity states, and moments where information simply
+        wasn't available, all while keeping the experience feeling seamless.
+        The app shipped as part of what is now known as Porsche Connect.
+      </p>
+    </div>
+  </section>
+
+  <!-- Figure 04 -->
+  <figure class="figure" data-reveal>
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/projects/porsche/image-porsche-4-m.jpg" />
+      <img src="/images/projects/porsche/image-porsche-4.jpg" alt="Watch face detail" loading="lazy" />
+    </picture>
+  </figure>
+
+  <!-- Figure 05 -->
+  <figure class="figure" data-reveal>
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/projects/porsche/image-porsche-5-m.jpg" />
+      <img src="/images/projects/porsche/image-porsche-5.jpg" alt="Porsche Connect on Apple Watch" loading="lazy" />
+    </picture>
+  </figure>
+
+  <!-- Figure 06 -->
+  <figure class="figure" data-reveal>
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/projects/porsche/image-porsche-6-m.jpg" />
+      <img src="/images/projects/porsche/image-porsche-6.jpg" alt="Porsche Apple Watch detail" loading="lazy" />
+    </picture>
+  </figure>
+
+  <!-- Closing -->
+  <section class="closing" data-reveal>
+    <p class="closing__signoff">
+      <em>Designed at Brandwidth</em>, 2021.
+    </p>
+    <a href="/" class="closing__cta" aria-label="Return to all work">
+      <span class="closing__cta-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M5 12l7 7M5 12l7-7" />
+        </svg>
+      </span>
+      <span class="closing__cta-label">Return to all work</span>
+    </a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="case-footer">
+    <span class="b4">&copy; 2026 Sammy Norris</span>
+  </footer>
+
+</Layout>
+
+<script>
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("revealed");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
+  );
+  document.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
+</script>
+
+<style>
+  .case-nav { position: fixed; top: 24px; left: 24px; z-index: 100; }
+
+  .hero { padding: 160px 10vw 128px; display: flex; flex-direction: column; }
+  .hero__eyebrow { color: var(--color-secondary); font-weight: 300; margin-bottom: 16px; }
+  .hero__title { font-family: var(--font-serif); font-size: clamp(3rem, 7vw, 7rem); line-height: 0.95; letter-spacing: -0.025em; font-weight: 400; margin: 0 0 32px; }
+  .hero__title em { font-style: italic; color: var(--color-secondary); }
+  .hero__lede { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw, 2rem); line-height: 1.3; font-weight: 400; font-style: italic; letter-spacing: -0.01em; margin: 0 0 48px; color: var(--color-primary); opacity: 0.85; }
+  .hero__meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin: 0 0 64px; padding: 32px 10vw; border-top: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent); }
+  .hero__meta-row { display: flex; flex-direction: column; gap: 6px; }
+  .hero__meta-row dt { color: var(--color-secondary); font-weight: 300; }
+  .hero__meta-row dd { margin: 0; color: var(--color-primary); font-weight: 400; }
+  .hero__desc { max-width: calc(56ch + 160px); }
+
+  .figure { margin: 0 0 96px; padding: 0 10vw; box-sizing: border-box; }
+  .figure > picture { display: block; background: var(--color-card-bg); border-radius: 24px; padding: 8px; }
+  .figure + .figure { margin-top: -64px; }
+  .figure picture > img, .figure > img { display: block; width: 100%; height: auto; border-radius: 18px; }
+
+  .chapter { margin: 0 0 96px; padding: 0 10vw; }
+  .chapter__head { display: flex; align-items: baseline; gap: 24px; margin-bottom: 48px; padding-bottom: 24px; border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent); }
+  .chapter__num { font-family: var(--font-serif); font-size: clamp(2rem, 3vw, 2.5rem); line-height: 1; font-weight: 400; color: var(--color-secondary); }
+  .chapter__label { color: var(--color-primary); font-weight: 300; }
+  .chapter__quote { font-family: var(--font-serif); font-size: clamp(1.75rem, 3.5vw, 2.75rem); line-height: 1.2; font-weight: 400; letter-spacing: -0.015em; margin: 0 0 64px; padding: 0; border: 0; max-width: 80%; }
+  .chapter__h2 { font-family: var(--font-serif); font-size: clamp(2.25rem, 4.5vw, 3.5rem); line-height: 1.15; font-weight: 400; letter-spacing: -0.02em; margin: 0 0 32px; }
+  .chapter__h2 em { font-style: italic; opacity: 0.6; }
+  .chapter__body { max-width: calc(56ch + 160px); }
+  .chapter__body--double { display: flex; flex-direction: column; gap: 24px; }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin: 0 0 96px; padding: 48px 0; border-top: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent); }
+  .stat { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+  .stat__value { font-family: var(--font-serif); font-size: clamp(2rem, 4vw, 3.25rem); line-height: 1; font-weight: 400; letter-spacing: -0.02em; color: var(--color-primary); }
+  .stat__label { color: var(--color-primary); opacity: 0.55; font-weight: 400; }
+
+  .closing { margin: 0 0 96px; padding: 96px 10vw 0; display: flex; flex-direction: column; align-items: flex-start; gap: 40px; border-top: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent); }
+  .closing__signoff { font-family: var(--font-serif); font-size: clamp(1.25rem, 2vw, 1.5rem); line-height: 1.4; font-weight: 400; color: var(--color-primary); opacity: 0.6; margin: 0; }
+  .closing__signoff em { font-style: italic; }
+  .closing__cta { display: inline-flex; align-items: center; gap: 8px; padding: 4px 16px 4px 4px; background-color: var(--color-card-bg); border: 1px solid var(--color-tertiary); border-radius: 99px; text-decoration: none; color: var(--color-primary); cursor: pointer; transition: border-color 0.2s ease, background-color 0.3s ease; }
+  .closing__cta:hover { border-color: var(--color-primary); }
+  .closing__cta-label { font-family: var(--font-sans); font-size: var(--text-b3); font-weight: 300; letter-spacing: -0.01em; line-height: 1.4; }
+  .closing__cta-icon { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 100px; background-color: var(--color-card-image-bg); flex-shrink: 0; }
+
+  .case-footer { padding: 64px 10vw; display: flex; justify-content: flex-start; color: var(--color-primary); opacity: 0.4; }
+
+  [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s); }
+  [data-reveal].revealed { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    .case-nav { top: 20px; left: 20px; }
+    .hero { padding: 96px 20px 80px; }
+    .hero__eyebrow { margin-bottom: 12px; }
+    .hero__title { font-size: clamp(2.5rem, 11vw, 3.5rem); margin-bottom: 20px; }
+    .hero__lede { font-size: clamp(1.125rem, 4.5vw, 1.375rem); margin-bottom: 32px; }
+    .hero__meta { grid-template-columns: 1fr 1fr; gap: 16px 16px; padding: 24px 20px; margin-bottom: 40px; }
+    .hero__desc { max-width: 100%; }
+    .figure { padding: 0 16px; margin-bottom: 64px; }
+    .figure + .figure { margin-top: -44px; }
+    .chapter { padding: 0 20px; margin-bottom: 64px; }
+    .chapter__head { margin-bottom: 32px; padding-bottom: 16px; }
+    .chapter__num { font-size: 1.5rem; }
+    .chapter__quote { font-size: clamp(1.25rem, 5.5vw, 1.5rem); margin-bottom: 40px; max-width: 100%; }
+    .chapter__h2 { font-size: clamp(1.625rem, 7vw, 2rem); margin-bottom: 20px; }
+    .chapter__body--double { gap: 20px; }
+    .stats { grid-template-columns: 1fr 1fr; gap: 32px 16px; padding: 32px 0; margin-bottom: 64px; }
+    .stat { gap: 8px; }
+    .stat__value { font-size: clamp(1.5rem, 7vw, 2rem); }
+    .closing { padding: 64px 20px 0; margin-bottom: 64px; gap: 28px; }
+    .case-footer { padding: 40px 20px; }
+  }
+</style>
