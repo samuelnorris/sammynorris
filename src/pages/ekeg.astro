@@ -3,21 +3,21 @@ import Layout from "../layouts/Layout.astro";
 import BackButton from "../components/BackButton.astro";
 
 const meta = [
-  { label: "Year", value: "2025" },
+  { label: "Year", value: "2023" },
   { label: "Client", value: "Close Brothers" },
-  { label: "Role", value: "Senior Product Designer" },
-  { label: "Timeline", value: "7 weeks" },
+  { label: "Role", value: "Lead Product Designer" },
+  { label: "Timeline", value: "18 months" },
 ];
 
 const stats = [
-  { value: "91%", label: "Completion" },
-  { value: "93%", label: "Digital adoption" },
-  { value: "1.5m", label: "Avg. time" },
-  { value: "1.5%", label: "Drop-off" },
+  { value: "400k+", label: "Containers in fleet" },
+  { value: "150+", label: "Breweries onboarded" },
+  { value: "100", label: "Sign-ups in 6 weeks" },
+  { value: "95%", label: "Needed no training" },
 ];
 ---
 
-<Layout title="Commission consent — Sammy Norris">
+<Layout title="Ekeg+ — Sammy Norris">
 
   <!-- Back nav -->
   <nav class="case-nav">
@@ -26,14 +26,14 @@ const stats = [
 
   <!-- Hero -->
   <header class="hero">
-    <span class="hero__eyebrow b3" data-reveal>Case study — 01</span>
+    <span class="hero__eyebrow b3" data-reveal>Case study — 02</span>
 
     <h1 class="hero__title" data-reveal style="--delay: 0.06s">
-      Commission <em>consent</em>
+      Ekeg<em>+</em>
     </h1>
 
     <p class="hero__lede" data-reveal style="--delay: 0.14s">
-      A court ruling changed everything overnight.
+      Pay-per-fill kegs, tracked in real time.
     </p>
 
     <dl class="hero__meta" data-reveal style="--delay: 0.22s">
@@ -46,18 +46,17 @@ const stats = [
     </dl>
 
     <p class="hero__desc b1" data-reveal style="--delay: 0.3s">
-      Close Brothers' existing onboarding process became non-compliant overnight
-      when a court ruling changed the requirements around broker commission
-      disclosure. The business needed a fully compliant, customer-friendly
-      digital service — in seven weeks.
+      Ekeg+ gives breweries of any size on-demand access to over 400,000 kegs
+      and casks, tracked in real time and billed only when in use — removing
+      the upfront costs and logistical burden of managing their own fleet.
     </p>
   </header>
 
-  <!-- Figure 01 — single phone -->
+  <!-- Figure 01 — hero shot, two angled phones -->
   <figure class="figure" data-reveal>
     <picture>
-      <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-1-m.jpg" />
-      <img src="/images/projects/commission/image-commission-1.jpg" alt="OTP verification screen" loading="eager" />
+      <source media="(max-width: 768px)" srcset="/images/projects/ekeg/image-ekeg-1-m.jpg" />
+      <img src="/images/projects/ekeg/image-ekeg-1.jpg" alt="Container enquiry detail screen on phone" loading="eager" />
     </picture>
   </figure>
 
@@ -69,34 +68,30 @@ const stats = [
     </header>
 
     <blockquote class="chapter__quote">
-      The challenge was to design and ship a net-new disclosure and consent
-      journey that met regulatory requirements, worked across all customer
-      types, and didn't damage the broker relationship in the process.
+      Over seven million kegs and casks circulate across the UK brewing
+      industry. For breweries, managing that fleet means high upfront costs,
+      manual stock checking, and a constant battle to keep pace with
+      fluctuating demand.
     </blockquote>
 
     <div class="chapter__body">
       <p class="b1">
-        The CDC service was built as a standalone digital journey — separate
-        from Close Brothers' existing broker portal — allowing it to be shipped
-        independently of wider platform changes. Every decision was weighed
-        against two constraints: legal compliance and customer trust.
+        Ekeg+ is a pay-per-fill container rental platform that removes the
+        financial and logistical barriers to running a keg fleet. Breweries
+        rent from a pool of over 400,000 containers, paying only for the time
+        they're in use. RFID tracking and a management platform let brewers
+        scan and locate hundreds of containers in seconds, replacing
+        unreliable manual stock checks with real-time data on rental cycles,
+        usage, and billing.
       </p>
     </div>
   </section>
 
-  <!-- Figure 02 — angled phone -->
-  <figure class="figure figure--inset" data-reveal>
-    <picture>
-      <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-2-m.jpg" />
-      <img src="/images/projects/commission/image-commission-2.jpg" alt="Consent journey screen" loading="lazy" />
-    </picture>
-  </figure>
-
-  <!-- Figure 03 — three phones -->
+  <!-- Figure 02 — bento collage with hand-held phone -->
   <figure class="figure" data-reveal>
     <picture>
-      <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-3-m.jpg" />
-      <img src="/images/projects/commission/image-commission-3.jpg" alt="Multiple journey screens side by side" loading="lazy" />
+      <source media="(max-width: 768px)" srcset="/images/projects/ekeg/image-ekeg-2-m.jpg" />
+      <img src="/images/projects/ekeg/image-ekeg-2.jpg" alt="Scan, fill and location flows for managing kegs" loading="lazy" />
     </picture>
   </figure>
 
@@ -107,29 +102,34 @@ const stats = [
       <span class="chapter__label b2">The process</span>
     </header>
 
+    <h2 class="chapter__h2">
+      Eighteen months <em>embedded in the work.</em>
+    </h2>
+
     <div class="chapter__body chapter__body--double">
       <p class="b1">
-        We started with a three-day sprint — mapping the regulatory requirements,
-        running a service blueprint with a cross-functional team of thirty, and
-        interviewing twenty-two customers to understand how they experienced
-        broker conversations around commission. The sprint produced a validated
-        journey framework and a prioritised backlog by day four.
+        As lead designer, embedded in the delivery team for eighteen months,
+        the work was structured around an iterative discovery and design
+        process built on continuous user insight. That meant interviewing
+        brewers, shadowing front-office teams, observing training calls, and
+        feeding qualitative and quantitative feedback directly into the
+        backlog.
       </p>
       <p class="b1">
-        Working alongside legal, compliance, and engineering, we iterated through
-        five rounds of concept testing before locking the final flow. A focus on
-        clear language and progressive disclosure resulted in an 85% reduction in
-        password reset errors — a signal that the experience felt familiar and
-        low-effort, even under regulatory pressure.
+        The platform serves a wide range of users — master brewers, delivery
+        drivers, production managers, finance admins — so accessibility and
+        simplicity weren't optional. New features emerged directly from
+        research, including a Help Mode for new users and keg-fill warnings
+        to prevent production interruptions.
       </p>
     </div>
   </section>
 
-  <!-- Figure 04 — service blueprint -->
+  <!-- Figure 03 — features bento with plusportal -->
   <figure class="figure" data-reveal>
     <picture>
-      <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-4-m.jpg" />
-      <img src="/images/projects/commission/image-commission-4.jpg" alt="Service blueprint diagram" loading="lazy" />
+      <source media="(max-width: 768px)" srcset="/images/projects/ekeg/image-ekeg-3-m.jpg" />
+      <img src="/images/projects/ekeg/image-ekeg-3.jpg" alt="Feature overview and plusportal companion product" loading="lazy" />
     </picture>
   </figure>
 
@@ -141,11 +141,11 @@ const stats = [
     </header>
 
     <h2 class="chapter__h2">
-      It shipped on time. Fully compliant. <em>And quietly, very well loved.</em>
+      150+ breweries. <em>No training required.</em>
     </h2>
 
     <div class="stats">
-      {stats.map((s, i) => (
+      {stats.map((s) => (
         <div class="stat">
           <span class="stat__value">{s.value}</span>
           <span class="stat__label b3">{s.label}</span>
@@ -153,29 +153,46 @@ const stats = [
       ))}
     </div>
 
-    <div class="chapter__body">
+    <div class="chapter__body chapter__body--double">
       <p class="b1">
-        In the first month, 91% of customers completed the journey in under
-        ninety seconds — without a single call to the support team. Digital
-        adoption reached 93%, far exceeding the 70% target. The service has
-        since become the benchmark for Close Brothers' customer-facing
-        compliance work.
+        Over 100 customers signed up in the first six weeks. Self-serve
+        onboarding and a simplified interface meant 95% of brewers needed no
+        training at all. Today the platform is used by more than 150
+        breweries and growing.
+      </p>
+      <p class="b1">
+        Beyond the commercial outcomes, Ekeg+ has a tangible sustainability
+        angle — reducing surplus containers, minimising shipping through
+        combined delivery and collection runs, and giving breweries access to
+        a modern cleaning facility that uses significantly less acid and
+        bleach than traditional alternatives. The project was nominated for a
+        UX Design Award, recognised for its user-centred approach to solving
+        a genuinely complex operational problem for an industry under
+        pressure.
       </p>
     </div>
   </section>
 
-  <!-- Figure 05 — two-phone pair -->
-  <figure class="figure figure--inset" data-reveal>
+  <!-- Figure 04 — fill flow, three phones -->
+  <figure class="figure" data-reveal>
     <picture>
-      <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-5-m.jpg" />
-      <img src="/images/projects/commission/image-commission-5.jpg" alt="Consent and error states" loading="lazy" />
+      <source media="(max-width: 768px)" srcset="/images/projects/ekeg/image-ekeg-4-m.jpg" />
+      <img src="/images/projects/ekeg/image-ekeg-4.jpg" alt="Fill flow across three screens" loading="lazy" />
+    </picture>
+  </figure>
+
+  <!-- Figure 05 — login + brew assignment, three phones -->
+  <figure class="figure" data-reveal>
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/projects/ekeg/image-ekeg-5-m.jpg" />
+      <img src="/images/projects/ekeg/image-ekeg-5.jpg" alt="Login with Ekeg+ card and brew assignment screens" loading="lazy" />
     </picture>
   </figure>
 
   <!-- Closing -->
   <section class="closing" data-reveal>
     <p class="closing__signoff">
-      <em>Designed at Close Brothers</em>, 2025.
+      <em>Designed at Close Brothers</em>, 2023.
     </p>
     <a href="/" class="closing__cta" aria-label="Return to all work">
       <span class="closing__cta-icon">
@@ -210,15 +227,6 @@ const stats = [
 </script>
 
 <style>
-  /* ===================== Constants ===================== */
-  /*
-    Content widths:
-    - Reading column: 640px (body text)
-    - Chapter container: 880px (head + body + quote)
-    - Inset figures: 1100px
-    - Full bleed: 100vw
-  */
-
   /* ===================== Spacing scale =====================
      Tier 1 — Page break (curtain rise):   128px
      Tier 2 — Section break:                96px
@@ -260,7 +268,7 @@ const stats = [
 
   .hero__title em {
     font-style: italic;
-    color: var(--color-primary);
+    color: var(--color-secondary);
   }
 
   .hero__lede {

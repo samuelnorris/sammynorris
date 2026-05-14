@@ -3,21 +3,21 @@ import Layout from "../layouts/Layout.astro";
 import BackButton from "../components/BackButton.astro";
 
 const meta = [
-  { label: "Year", value: "2025" },
-  { label: "Client", value: "Close Brothers" },
-  { label: "Role", value: "Senior Product Designer" },
-  { label: "Timeline", value: "7 weeks" },
+  { label: "Year", value: "2022" },
+  { label: "Client", value: "The Sofa & Chair Company" },
+  { label: "Role", value: "Lead Product Designer" },
+  { label: "Timeline", value: "12 months" },
 ];
 
 const stats = [
-  { value: "91%", label: "Completion" },
-  { value: "93%", label: "Digital adoption" },
-  { value: "1.5m", label: "Avg. time" },
-  { value: "1.5%", label: "Drop-off" },
+  { value: "700+", label: "Artboards" },
+  { value: "7", label: "Viewports" },
+  { value: "12mo", label: "End-to-end build" },
+  { value: "1", label: "Sole designer" },
 ];
 ---
 
-<Layout title="Commission consent — Sammy Norris">
+<Layout title="Larkbury — Sammy Norris">
 
   <!-- Back nav -->
   <nav class="case-nav">
@@ -26,14 +26,14 @@ const stats = [
 
   <!-- Hero -->
   <header class="hero">
-    <span class="hero__eyebrow b3" data-reveal>Case study — 01</span>
+    <span class="hero__eyebrow b3" data-reveal>Case study — 04</span>
 
     <h1 class="hero__title" data-reveal style="--delay: 0.06s">
-      Commission <em>consent</em>
+      Larkbury
     </h1>
 
     <p class="hero__lede" data-reveal style="--delay: 0.14s">
-      A court ruling changed everything overnight.
+      A luxury brand built from scratch.
     </p>
 
     <dl class="hero__meta" data-reveal style="--delay: 0.22s">
@@ -46,18 +46,17 @@ const stats = [
     </dl>
 
     <p class="hero__desc b1" data-reveal style="--delay: 0.3s">
-      Close Brothers' existing onboarding process became non-compliant overnight
-      when a court ruling changed the requirements around broker commission
-      disclosure. The business needed a fully compliant, customer-friendly
-      digital service — in seven weeks.
+      A high-end luxury home and interiors brand built from scratch — brand
+      identity and ecommerce site designed solo across 700+ artboards and
+      seven viewports.
     </p>
   </header>
 
-  <!-- Figure 01 — single phone -->
+  <!-- Figure 01 — hero shot -->
   <figure class="figure" data-reveal>
     <picture>
-      <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-1-m.jpg" />
-      <img src="/images/projects/commission/image-commission-1.jpg" alt="OTP verification screen" loading="eager" />
+      <source media="(max-width: 768px)" srcset="/images/projects/larkbury/image-larkbury-1-m.jpg" />
+      <img src="/images/projects/larkbury/image-larkbury-1.jpg" alt="Larkbury London brand hero" loading="eager" />
     </picture>
   </figure>
 
@@ -69,34 +68,28 @@ const stats = [
     </header>
 
     <blockquote class="chapter__quote">
-      The challenge was to design and ship a net-new disclosure and consent
-      journey that met regulatory requirements, worked across all customer
-      types, and didn't damage the broker relationship in the process.
+      Larkbury London didn't exist before this project. The brief was to
+      create it — from the ground up — and to do it in a way that could hold
+      its own in the high-end interiors market.
     </blockquote>
 
     <div class="chapter__body">
       <p class="b1">
-        The CDC service was built as a standalone digital journey — separate
-        from Close Brothers' existing broker portal — allowing it to be shipped
-        independently of wider platform changes. Every decision was weighed
-        against two constraints: legal compliance and customer trust.
+        Working as the sole designer over twelve months, the scope covered
+        everything from foundational brand decisions through to a fully
+        responsive ecommerce site built on a custom platform. Seven viewports
+        meant designing for every context a customer might encounter the
+        brand — ensuring the luxury positioning translated consistently
+        whether someone was browsing on a large desktop display or a phone.
       </p>
     </div>
   </section>
 
-  <!-- Figure 02 — angled phone -->
-  <figure class="figure figure--inset" data-reveal>
-    <picture>
-      <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-2-m.jpg" />
-      <img src="/images/projects/commission/image-commission-2.jpg" alt="Consent journey screen" loading="lazy" />
-    </picture>
-  </figure>
-
-  <!-- Figure 03 — three phones -->
+  <!-- Figure 02 -->
   <figure class="figure" data-reveal>
     <picture>
-      <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-3-m.jpg" />
-      <img src="/images/projects/commission/image-commission-3.jpg" alt="Multiple journey screens side by side" loading="lazy" />
+      <source media="(max-width: 768px)" srcset="/images/projects/larkbury/image-larkbury-2-m.jpg" />
+      <img src="/images/projects/larkbury/image-larkbury-2.jpg" alt="Larkbury brand and identity work" loading="lazy" />
     </picture>
   </figure>
 
@@ -107,29 +100,28 @@ const stats = [
       <span class="chapter__label b2">The process</span>
     </header>
 
-    <div class="chapter__body chapter__body--double">
+    <h2 class="chapter__h2">
+      Seven hundred artboards, <em>one designer.</em>
+    </h2>
+
+    <div class="chapter__body">
       <p class="b1">
-        We started with a three-day sprint — mapping the regulatory requirements,
-        running a service blueprint with a cross-functional team of thirty, and
-        interviewing twenty-two customers to understand how they experienced
-        broker conversations around commission. The sprint produced a validated
-        journey framework and a prioritised backlog by day four.
-      </p>
-      <p class="b1">
-        Working alongside legal, compliance, and engineering, we iterated through
-        five rounds of concept testing before locking the final flow. A focus on
-        clear language and progressive disclosure resulted in an 85% reduction in
-        password reset errors — a signal that the experience felt familiar and
-        low-effort, even under regulatory pressure.
+        The scale of the project was significant. Over 700 artboards
+        documented the full design system and ecommerce experience, covering
+        the breadth of templates, states, and interactions needed to hand
+        off a production-ready build. Designing at that level of fidelity
+        solo required a structured approach — building out components and
+        patterns early that could scale across the full site without
+        becoming inconsistent.
       </p>
     </div>
   </section>
 
-  <!-- Figure 04 — service blueprint -->
+  <!-- Figure 03 -->
   <figure class="figure" data-reveal>
     <picture>
-      <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-4-m.jpg" />
-      <img src="/images/projects/commission/image-commission-4.jpg" alt="Service blueprint diagram" loading="lazy" />
+      <source media="(max-width: 768px)" srcset="/images/projects/larkbury/image-larkbury-3-m.jpg" />
+      <img src="/images/projects/larkbury/image-larkbury-3.jpg" alt="Larkbury ecommerce screens" loading="lazy" />
     </picture>
   </figure>
 
@@ -141,11 +133,11 @@ const stats = [
     </header>
 
     <h2 class="chapter__h2">
-      It shipped on time. Fully compliant. <em>And quietly, very well loved.</em>
+      Restraint <em>doing the heavy lifting.</em>
     </h2>
 
     <div class="stats">
-      {stats.map((s, i) => (
+      {stats.map((s) => (
         <div class="stat">
           <span class="stat__value">{s.value}</span>
           <span class="stat__label b3">{s.label}</span>
@@ -153,29 +145,44 @@ const stats = [
       ))}
     </div>
 
-    <div class="chapter__body">
+    <div class="chapter__body chapter__body--double">
       <p class="b1">
-        In the first month, 91% of customers completed the journey in under
-        ninety seconds — without a single call to the support team. Digital
-        adoption reached 93%, far exceeding the 70% target. The service has
-        since become the benchmark for Close Brothers' customer-facing
-        compliance work.
+        The design needed to feel restrained and considered rather than
+        feature-heavy, with typography, whitespace, and imagery doing the
+        heavy lifting. Informal testing throughout helped sense-check
+        decisions — particularly around the purchase journey, where friction
+        at any point risks undermining the premium experience the brand was
+        built on.
+      </p>
+      <p class="b1">
+        Larkbury London has since launched, and the finished product reflects
+        the ambition of the original brief — a brand and digital presence
+        that feels genuinely considered from the first touchpoint to the
+        last.
       </p>
     </div>
   </section>
 
-  <!-- Figure 05 — two-phone pair -->
-  <figure class="figure figure--inset" data-reveal>
+  <!-- Figure 04 -->
+  <figure class="figure" data-reveal>
     <picture>
-      <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-5-m.jpg" />
-      <img src="/images/projects/commission/image-commission-5.jpg" alt="Consent and error states" loading="lazy" />
+      <source media="(max-width: 768px)" srcset="/images/projects/larkbury/image-larkbury-4-m.jpg" />
+      <img src="/images/projects/larkbury/image-larkbury-4.jpg" alt="Larkbury responsive site" loading="lazy" />
+    </picture>
+  </figure>
+
+  <!-- Figure 05 -->
+  <figure class="figure" data-reveal>
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/projects/larkbury/image-larkbury-5-m.jpg" />
+      <img src="/images/projects/larkbury/image-larkbury-5.jpg" alt="Larkbury detail work" loading="lazy" />
     </picture>
   </figure>
 
   <!-- Closing -->
   <section class="closing" data-reveal>
     <p class="closing__signoff">
-      <em>Designed at Close Brothers</em>, 2025.
+      <em>Designed at The Sofa &amp; Chair Company</em>, 2022.
     </p>
     <a href="/" class="closing__cta" aria-label="Return to all work">
       <span class="closing__cta-icon">
@@ -210,24 +217,6 @@ const stats = [
 </script>
 
 <style>
-  /* ===================== Constants ===================== */
-  /*
-    Content widths:
-    - Reading column: 640px (body text)
-    - Chapter container: 880px (head + body + quote)
-    - Inset figures: 1100px
-    - Full bleed: 100vw
-  */
-
-  /* ===================== Spacing scale =====================
-     Tier 1 — Page break (curtain rise):   128px
-     Tier 2 — Section break:                96px
-     Tier 3 — Sub-section:                  48–64px
-     Tier 4 — Group (adjacent siblings):    32px
-     Tier 5 — Element:                      16–24px
-     Above headings > below headings (Gestalt: heading belongs with body).
-  */
-
   /* ===================== Back nav ===================== */
   .case-nav {
     position: fixed;
@@ -260,7 +249,7 @@ const stats = [
 
   .hero__title em {
     font-style: italic;
-    color: var(--color-primary);
+    color: var(--color-secondary);
   }
 
   .hero__lede {
@@ -320,7 +309,6 @@ const stats = [
     padding: 8px;
   }
 
-  /* Adjacent figures form a visual group — 32px gap */
   .figure + .figure {
     margin-top: -64px;
   }
@@ -331,12 +319,6 @@ const stats = [
     width: 100%;
     height: auto;
     border-radius: 18px;
-  }
-
-
-  .caption span {
-    color: var(--color-secondary);
-    opacity: 1;
   }
 
   /* ===================== Chapters ===================== */
@@ -403,7 +385,7 @@ const stats = [
     gap: 24px;
   }
 
-  /* ===================== Stats — typographic moment ===================== */
+  /* ===================== Stats ===================== */
   .stats {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -419,11 +401,6 @@ const stats = [
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
-  }
-
-  .stat__index {
-    color: var(--color-secondary);
-    font-weight: 300;
   }
 
   .stat__value {
@@ -526,22 +503,13 @@ const stats = [
     transform: translateY(0);
   }
 
-  /* ===================== Mobile =====================
-     Same hierarchy as desktop, ~⅔ scale:
-     Tier 1 — Page break:        80px
-     Tier 2 — Section break:     64px
-     Tier 3 — Sub-section:       32–40px
-     Tier 4 — Group:             20px
-     Tier 5 — Element:           12–16px
-  */
+  /* ===================== Mobile ===================== */
   @media (max-width: 768px) {
-    /* Nav */
     .case-nav {
       top: 20px;
       left: 20px;
     }
 
-    /* Hero */
     .hero {
       padding: 40px 20px 80px;
     }
@@ -571,18 +539,15 @@ const stats = [
       max-width: 100%;
     }
 
-    /* Figures */
     .figure {
       padding: 0 16px;
       margin-bottom: 64px;
     }
 
-    /* Adjacent figures: 20px gap */
     .figure + .figure {
       margin-top: -44px;
     }
 
-    /* Chapters */
     .chapter {
       padding: 0 20px;
       margin-bottom: 64px;
@@ -612,7 +577,6 @@ const stats = [
       gap: 20px;
     }
 
-    /* Stats */
     .stats {
       grid-template-columns: 1fr 1fr;
       gap: 32px 16px;
@@ -628,7 +592,6 @@ const stats = [
       font-size: clamp(2rem, 9vw, 2.5rem);
     }
 
-    /* Closing */
     .closing {
       padding: 64px 20px 0;
       margin-bottom: 64px;
