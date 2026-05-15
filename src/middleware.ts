@@ -35,18 +35,51 @@ export const onRequest = defineMiddleware(async (context, next) => {
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@200;300;400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@200;300;400&family=Instrument+Serif&display=swap" rel="stylesheet" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 64px;
+      padding: 24px;
       background: #1E1E1E;
       color: #ffffff;
       font-family: "Geist", system-ui, sans-serif;
       font-weight: 200;
+    }
+    .typewriter {
+      font-family: "Instrument Serif", serif;
+      font-size: clamp(3rem, 10vw, 6rem);
+      line-height: 0.85;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      padding-bottom: 0.15em;
+      font-weight: 400;
+      text-align: center;
+    }
+    .typewriter::after {
+      content: "";
+      display: inline-block;
+      width: 2px;
+      height: 0.85em;
+      background: #ffffff;
+      margin-left: 4px;
+      vertical-align: baseline;
+      animation: blink 1s ease-in-out infinite;
+    }
+    .typewriter.done::after {
+      animation: fadeOut 1.2s ease forwards;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; }
     }
     .gate {
       display: flex;
@@ -94,6 +127,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   </style>
 </head>
 <body>
+  <h1 class="typewriter" id="typewriter" aria-label="Sammy Norris"></h1>
   <div class="gate">
     <label>Password</label>
     <input type="password" id="pw" autofocus />
@@ -111,6 +145,47 @@ export const onRequest = defineMiddleware(async (context, next) => {
         window.location.href = '/?pw=' + encodeURIComponent(pw);
       }
     });
+
+    (function () {
+      var el = document.getElementById('typewriter');
+      if (!el) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        el.textContent = 'Sammy Norris';
+        el.classList.add('done');
+        return;
+      }
+      var typeSpeed = 200;
+      var deleteSpeed = 100;
+      var startDelay = 400;
+      var pauseBeforeDelete = 800;
+      var pauseBeforeRetype = 400;
+      function typeText(text, i, cb) {
+        if (i < text.length) {
+          el.textContent += text[i];
+          setTimeout(function () { typeText(text, i + 1, cb); }, typeSpeed);
+        } else if (cb) { cb(); }
+      }
+      function deleteChars(count, cb) {
+        var current = el.textContent || '';
+        if (count > 0 && current.length > 0) {
+          el.textContent = current.slice(0, -1);
+          setTimeout(function () { deleteChars(count - 1, cb); }, deleteSpeed);
+        } else if (cb) { cb(); }
+      }
+      setTimeout(function () {
+        typeText('Samuel', 0, function () {
+          setTimeout(function () {
+            deleteChars(3, function () {
+              setTimeout(function () {
+                typeText('my Norris', 0, function () {
+                  el.classList.add('done');
+                });
+              }, pauseBeforeRetype);
+            });
+          }, pauseBeforeDelete);
+        });
+      }, startDelay);
+    })();
   </script>
 </body>
 </html>`,
