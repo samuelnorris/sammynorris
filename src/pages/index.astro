@@ -490,6 +490,11 @@ const projects = [
 
   /* ===================== Mobile ===================== */
   @media (max-width: 768px) {
+    .hero,
+    .hero__content {
+      align-items: flex-start;
+    }
+
     .work {
       padding: 80px 20px 60px;
     }
@@ -500,6 +505,10 @@ const projects = [
 
     .card:nth-child(n) {
       grid-column: 1 / -1;
+    }
+
+    .card__image img {
+      aspect-ratio: 3 / 4;
     }
 
     .about {
