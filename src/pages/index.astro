@@ -67,9 +67,13 @@ const projects = [
           product lifecycle&hairsp;—&hairsp;from discovery and service design through to
           delivery&hairsp;—&hairsp;collaborating with engineering, legal, and compliance teams.
         </p>
-        <a href="mailto:hello@sammynorris.com" class="about__cta">
-          <span>Get in touch</span>
-          <span class="about__arrow">&rarr;</span>
+        <a href="/about" class="about__cta" aria-label="More about me">
+          <span class="about__cta-label">More about me</span>
+          <span class="about__cta-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </span>
         </a>
       </div>
     </div>
@@ -109,9 +113,14 @@ const projects = [
     const el = document.getElementById("typewriter");
     if (!el) return;
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    // Skip animation if arriving via anchor (e.g. back from a project page)
+    // or if the user prefers reduced motion.
+    const arrivingViaAnchor = !!window.location.hash;
+    if (arrivingViaAnchor || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       el.textContent = "Sammy Norris";
       el.classList.add("typewriter--done");
+      // Show the theme toggle immediately too — no fade-in delay.
+      document.getElementById("themeToggle")?.classList.remove("theme-toggle--delayed");
       return;
     }
 
@@ -340,17 +349,38 @@ const projects = [
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    color: var(--color-secondary);
+    padding: 4px 4px 4px 16px;
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-tertiary);
+    border-radius: 99px;
     text-decoration: none;
-    font-family: var(--font-sans);
-    font-size: var(--text-b2);
-    font-weight: 400;
-    transition: gap 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    color: var(--color-primary);
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.3s ease;
     width: fit-content;
   }
 
   .about__cta:hover {
-    gap: 16px;
+    border-color: var(--color-primary);
+  }
+
+  .about__cta-label {
+    font-family: var(--font-sans);
+    font-size: var(--text-b3);
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+  }
+
+  .about__cta-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 100px;
+    background-color: var(--color-card-image-bg);
+    flex-shrink: 0;
   }
 
   /* ===================== Footer ===================== */
