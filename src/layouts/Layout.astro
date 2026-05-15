@@ -24,7 +24,23 @@ const isHomepage = Astro.url.pathname === "/";
         if (theme !== 'light') {
           document.documentElement.classList.add('dark');
         }
+
+        // Refresh should always start at the top of the page.
+        if ('scrollRestoration' in history) {
+          history.scrollRestoration = 'manual';
+        }
       })();
+
+      // Strip the URL hash after the initial anchor jump so a refresh
+      // doesn't re-scroll to a section the visitor only meant to land
+      // on once (e.g. arriving via /#work from a project back-button).
+      window.addEventListener('load', function() {
+        if (window.location.hash) {
+          requestAnimationFrame(function() {
+            history.replaceState(null, '', window.location.pathname + window.location.search);
+          });
+        }
+      });
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
