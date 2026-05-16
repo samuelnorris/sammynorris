@@ -159,10 +159,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
       color: #FF6A00;
       font-size: 14px;
     }
+    @media (max-width: 768px) {
+      body { gap: 32px; }
+    }
   </style>
 </head>
 <body>
-  <h1 class="typewriter" id="typewriter" aria-label="Sammy Norris"></h1>
+  <h1 class="typewriter" id="typewriter" aria-label="Sammy"></h1>
   <div class="gate">
     <label>Password</label>
     <input type="password" id="pw" autofocus />
@@ -185,7 +188,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
       var el = document.getElementById('typewriter');
       if (!el) return;
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        el.textContent = 'Sammy Norris';
+        el.textContent = 'Sammy';
         el.classList.add('done');
         return;
       }
@@ -212,7 +215,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
           setTimeout(function () {
             deleteChars(3, function () {
               setTimeout(function () {
-                typeText('my Norris', 0, function () {
+                typeText('my', 0, function () {
                   el.classList.add('done');
                 });
               }, pauseBeforeRetype);
