@@ -14,6 +14,9 @@ const PUBLIC_PATHS = new Set([
   "/social-preview.jpg",
 ]);
 
+// Search engine crawlers that should see the full site for indexing.
+const BOT_PATTERN = /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegrambot/i;
+
 export const onRequest = defineMiddleware(async (context, next) => {
   // Skip the gate during build (prerender). Otherwise we'd bake the
   // password page into the static HTML for every route.
@@ -24,6 +27,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const url = new URL(context.request.url);
 
   if (PUBLIC_PATHS.has(url.pathname)) {
+    return next();
+  }
+
+  // Let search engines and social-preview crawlers through.
+  const ua = context.request.headers.get("user-agent") ?? "";
+  if (BOT_PATTERN.test(ua)) {
     return next();
   }
 
