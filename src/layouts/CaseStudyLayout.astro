@@ -1,0 +1,105 @@
+---
+import Layout from "./Layout.astro";
+import BackButton from "../components/BackButton.astro";
+import "../styles/case-study.css";
+
+interface MetaItem {
+  label: string;
+  value: string;
+}
+
+interface Props {
+  pageTitle: string;
+  caseNumber: string;       // e.g. "01"
+  lede: string;
+  meta: MetaItem[];
+  description: string;
+  signoff: string;          // e.g. "Designed at Close Brothers"
+  signoffYear: string;      // e.g. "2025"
+  ogImage?: string;
+}
+
+const {
+  pageTitle,
+  caseNumber,
+  lede,
+  meta,
+  description,
+  signoff,
+  signoffYear,
+  ogImage,
+} = Astro.props;
+---
+
+<Layout title={pageTitle} ogImage={ogImage}>
+
+  <!-- Back nav -->
+  <nav class="case-nav">
+    <BackButton />
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <span class="hero__eyebrow b3" data-reveal>Case study — {caseNumber}</span>
+
+    <h1 class="hero__title" data-reveal style="--delay: 0.06s">
+      <slot name="title" />
+    </h1>
+
+    <p class="hero__lede" data-reveal style="--delay: 0.14s">
+      {lede}
+    </p>
+
+    <dl class="hero__meta" data-reveal style="--delay: 0.22s">
+      {meta.map((item) => (
+        <div class="hero__meta-row">
+          <dt class="b4">{item.label}</dt>
+          <dd class="b3">{item.value}</dd>
+        </div>
+      ))}
+    </dl>
+
+    <p class="hero__desc b1" data-reveal style="--delay: 0.3s">
+      {description}
+    </p>
+  </header>
+
+  <!-- Page body: figures, chapters, stats -->
+  <slot />
+
+  <!-- Closing -->
+  <section class="closing" data-reveal>
+    <p class="closing__signoff">
+      <em>{signoff}</em>, {signoffYear}.
+    </p>
+    <a href="/#work" class="closing__cta" aria-label="Return to all work">
+      <span class="closing__cta-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M5 12l7 7M5 12l7-7" />
+        </svg>
+      </span>
+      <span class="closing__cta-label">Return to all work</span>
+    </a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="case-footer">
+    <span class="b4">&copy; {new Date().getFullYear()} Sammy Norris</span>
+  </footer>
+
+</Layout>
+
+<script>
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("revealed");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
+  );
+  document.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
+</script>
