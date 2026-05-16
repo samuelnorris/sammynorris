@@ -10,6 +10,7 @@ const projects = [
   { title: "Toyota", year: "2020", slug: "toyota" },
 ];
 
+export const prerender = true;
 ---
 
 <Layout>
@@ -471,13 +472,6 @@ const projects = [
   }
 
   /* ===================== Keyframes ===================== */
-  @keyframes revealUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
   @keyframes fadeIn {
     to {
       opacity: 1;
