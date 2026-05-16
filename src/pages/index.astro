@@ -40,10 +40,12 @@ const projects = [
         >
           <div class="card__image">
             <picture>
-              <source media="(max-width: 768px)" srcset={`/images/projects/${project.slug}-mobile.png`} />
+              <source media="(max-width: 768px)" srcset={`/images/projects/${project.slug}-mobile.png`} width="1125" height="1500" />
               <img
                 src={`/images/projects/${project.slug}-desktop.png`}
                 alt={`${project.title} case study`}
+                width="2000"
+                height="1500"
                 loading="lazy"
               />
             </picture>
@@ -108,7 +110,7 @@ const projects = [
         }
       });
     },
-    { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
+    { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
   );
   document.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
 
