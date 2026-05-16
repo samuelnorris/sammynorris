@@ -3,20 +3,44 @@ import { defineMiddleware } from "astro:middleware";
 const PASSWORD = "bmx";
 const COOKIE_NAME = "site-auth";
 
+// Public paths — bypass the gate so crawlers (robots, sitemap) and the
+// gate page's own favicons can render. Case-study images stay gated.
+const PUBLIC_PATHS = new Set([
+  "/robots.txt",
+  "/sitemap.xml",
+  "/favicon.svg",
+  "/favicon-32.png",
+  "/apple-touch-icon.png",
+]);
+
 export const onRequest = defineMiddleware(async (context, next) => {
+  // Skip the gate during build (prerender). Otherwise we'd bake the
+  // password page into the static HTML for every route.
+  if (context.isPrerendered) {
+    return next();
+  }
+
+  const url = new URL(context.request.url);
+
+  if (PUBLIC_PATHS.has(url.pathname)) {
+    return next();
+  }
+
   const cookie = context.cookies.get(COOKIE_NAME);
 
   if (cookie?.value === PASSWORD) {
     return next();
   }
 
-  const url = new URL(context.request.url);
   const attempt = url.searchParams.get("pw");
 
   if (attempt === PASSWORD) {
     context.cookies.set(COOKIE_NAME, PASSWORD, {
       path: "/",
       maxAge: 60 * 60 * 24 * 7,
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
     });
     return context.redirect("/");
   }
