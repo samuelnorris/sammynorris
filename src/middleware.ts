@@ -11,6 +11,7 @@ const PUBLIC_PATHS = new Set([
   "/favicon.svg",
   "/favicon-32.png",
   "/apple-touch-icon.png",
+  "/social-preview.jpg",
 ]);
 
 export const onRequest = defineMiddleware(async (context, next) => {
