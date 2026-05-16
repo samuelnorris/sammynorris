@@ -111,6 +111,10 @@ html, body {
   margin: 0;
 }
 
+@media (max-width: 768px) {
+  .b1 { font-size: var(--text-b2); }
+}
+
 .b2 {
   font-family: var(--font-sans);
   font-size: var(--text-b2);
