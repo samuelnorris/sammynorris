@@ -10,7 +10,6 @@ interface MetaItem {
 
 interface Props {
   pageTitle: string;
-  caseNumber: string;       // e.g. "01"
   lede: string;
   meta: MetaItem[];
   description: string;
@@ -21,7 +20,6 @@ interface Props {
 
 const {
   pageTitle,
-  caseNumber,
   lede,
   meta,
   description,
@@ -40,8 +38,6 @@ const {
 
   <!-- Hero -->
   <header class="hero">
-    <span class="hero__eyebrow b3" data-reveal>Case study — {caseNumber}</span>
-
     <h1 class="hero__title" data-reveal style="--delay: 0.06s">
       <slot name="title" />
     </h1>
