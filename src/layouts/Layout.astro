@@ -131,7 +131,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? "https://www.sammynorris.com")
           'transform:translate(-50%,4px);opacity:0;will-change:left,top;';
         document.body.appendChild(dot);
         var mx = 0, my = 0, dx = 0, dy = 0;
-        var spring = 0.06, damping = 0.82;
+        var spring = 0.03, damping = 0.88;
         var vx = 0, vy = 0;
         var visible = false;
         var raf;
