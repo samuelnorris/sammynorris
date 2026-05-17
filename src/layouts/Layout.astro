@@ -19,6 +19,13 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? "https://www.samm
 const ogImageURL = new URL(ogImage, Astro.site ?? "https://www.sammynorris.com").toString();
 ---
 <!doctype html>
+<!--
+
+  Do what makes you happy.
+
+  Designed & built by Sammy, Shy & Nova Norris.
+
+-->
 <html lang="en-GB">
   <head>
  <script is:inline>
@@ -83,16 +90,77 @@ const ogImageURL = new URL(ogImage, Astro.site ?? "https://www.sammynorris.com")
     <script is:inline>
       (function () {
         var original = document.title;
+        var messages = [
+          'Where did you go?',
+          'Come back!',
+          'I miss you already',
+          "I'm still here you know",
+          'Okay this is awkward',
+          "I'll just be here then...",
+          'You forgot about me'
+        ];
         var timer = null;
+        var interval = null;
+        var index = 0;
         document.addEventListener('visibilitychange', function () {
           if (document.hidden) {
             timer = setTimeout(function () {
-              document.title = 'Where did you go?';
-            }, 30000);
+              document.title = messages[0];
+              index = 1;
+              interval = setInterval(function () {
+                document.title = messages[index];
+                index = (index + 1) % messages.length;
+              }, 15000);
+            }, 15000);
           } else {
             if (timer) clearTimeout(timer);
+            if (interval) clearInterval(interval);
             document.title = original;
           }
+        });
+      })();
+    </script>
+    <script is:inline>
+      (function () {
+        if ('ontouchstart' in window) return;
+        var dot = document.createElement('div');
+        dot.setAttribute('aria-hidden', 'true');
+        dot.style.cssText =
+          'position:fixed;pointer-events:none;z-index:9999;width:8px;height:8px;' +
+          'border-radius:50%;border:0.75px solid #ffffff;background:transparent;' +
+          'transform:translate(-50%,4px);opacity:0;will-change:left,top;';
+        document.body.appendChild(dot);
+        var mx = 0, my = 0, dx = 0, dy = 0;
+        var spring = 0.06, damping = 0.82;
+        var vx = 0, vy = 0;
+        var visible = false;
+        var raf;
+        function tick() {
+          var ax = (mx - dx) * spring;
+          var ay = (my - dy) * spring;
+          vx = (vx + ax) * damping;
+          vy = (vy + ay) * damping;
+          dx += vx;
+          dy += vy;
+          dot.style.left = dx + 'px';
+          dot.style.top = dy + 'px';
+          raf = requestAnimationFrame(tick);
+        }
+        document.addEventListener('mousemove', function (e) {
+          mx = e.clientX;
+          my = e.clientY;
+          if (!visible) {
+            visible = true;
+            dx = mx;
+            dy = my;
+            dot.style.opacity = '1';
+            raf = requestAnimationFrame(tick);
+          }
+        });
+        document.addEventListener('mouseleave', function () {
+          visible = false;
+          dot.style.opacity = '0';
+          if (raf) cancelAnimationFrame(raf);
         });
       })();
     </script>
