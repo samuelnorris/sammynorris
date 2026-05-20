@@ -91,6 +91,7 @@ export const prerender = true;
     </div>
     <div class="footer__bottom">
       <span class="b4">&copy; 2026 Sammy Norris</span>
+      <p class="iss__coords b4">ISS&nbsp;&nbsp;<span id="iss-lat">—</span>&nbsp;&nbsp;<span id="iss-lng">—</span></p>
       <div class="footer__links">
         <a href="https://www.linkedin.com/in/sammy-norris-b0090912a/" class="footer__link" target="_blank" rel="noopener">LinkedIn</a>
       </div>
@@ -169,6 +170,30 @@ export const prerender = true;
         }, pauseBeforeDelete);
       });
     }, startDelay);
+  })();
+
+  // ISS tracker
+  (function () {
+    var latEl = document.getElementById('iss-lat');
+    var lngEl = document.getElementById('iss-lng');
+    if (!latEl) return;
+
+    function fmt(n, pos, neg) {
+      return Math.abs(n).toFixed(2) + '° ' + (n >= 0 ? pos : neg);
+    }
+
+    function update() {
+      fetch('https://api.wheretheiss.at/v1/satellites/25544')
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          latEl.textContent = fmt(d.latitude, 'N', 'S');
+          lngEl.textContent = fmt(d.longitude, 'E', 'W');
+        })
+        .catch(function () {});
+    }
+
+    update();
+    setInterval(update, 5000);
   })();
 </script>
 
@@ -386,6 +411,15 @@ export const prerender = true;
     border-radius: 100px;
     background-color: var(--color-card-image-bg);
     flex-shrink: 0;
+  }
+
+  /* ===================== ISS ===================== */
+  .iss__coords {
+    font-family: var(--font-sans);
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    opacity: 0.4;
+    color: var(--color-primary);
   }
 
   /* ===================== Footer ===================== */

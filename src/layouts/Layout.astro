@@ -92,8 +92,6 @@ const ogImageURL = new URL(ogImage, Astro.site ?? "https://www.sammynorris.com")
         var original = document.title;
         var messages = [
           'Where did you go?',
-          'Come back!',
-          'I miss you already',
           "I'm still here you know",
           'Okay this is awkward',
           "I'll just be here then...",
@@ -128,20 +126,14 @@ const ogImageURL = new URL(ogImage, Astro.site ?? "https://www.sammynorris.com")
         dot.style.cssText =
           'position:fixed;pointer-events:none;z-index:9999;width:8px;height:8px;' +
           'border-radius:50%;border:0.75px solid #ffffff;background:transparent;' +
-          'transform:translate(-50%,4px);opacity:0;will-change:left,top;';
+          'transform:translate(-50%,-50%);opacity:0;will-change:left,top;';
         document.body.appendChild(dot);
         var mx = 0, my = 0, dx = 0, dy = 0;
-        var spring = 0.03, damping = 0.88;
-        var vx = 0, vy = 0;
         var visible = false;
         var raf;
         function tick() {
-          var ax = (mx - dx) * spring;
-          var ay = (my - dy) * spring;
-          vx = (vx + ax) * damping;
-          vy = (vy + ay) * damping;
-          dx += vx;
-          dy += vy;
+          dx += (mx - dx) * 0.08;
+          dy += (my - dy) * 0.08;
           dot.style.left = dx + 'px';
           dot.style.top = dy + 'px';
           raf = requestAnimationFrame(tick);
@@ -151,8 +143,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? "https://www.sammynorris.com")
           my = e.clientY;
           if (!visible) {
             visible = true;
-            dx = mx;
-            dy = my;
+            dx = mx; dy = my;
             dot.style.opacity = '1';
             raf = requestAnimationFrame(tick);
           }
