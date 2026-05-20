@@ -94,4 +94,18 @@ const {
     { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
   );
   document.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
+
+  // Hide the fixed top nav when the bottom CTA is visible
+  const nav = document.querySelector('.case-nav');
+  const bottomCta = document.querySelector('.closing__cta');
+  if (nav && bottomCta) {
+    const navObserver = new IntersectionObserver(
+      (entries) => {
+        nav.style.opacity = entries[0].isIntersecting ? '0' : '';
+        nav.style.pointerEvents = entries[0].isIntersecting ? 'none' : '';
+      },
+      { threshold: 0 }
+    );
+    navObserver.observe(bottomCta);
+  }
 </script>
