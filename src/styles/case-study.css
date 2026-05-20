@@ -58,9 +58,12 @@
   .case-nav { top: 20px; left: 20px; }
   .hero { padding: 96px 20px 80px; }
   .hero__eyebrow { margin-bottom: 12px; }
-  .hero__title { font-size: clamp(2.5rem, 11vw, 3.5rem); margin-bottom: 20px; }
-  .hero__lede { font-size: clamp(1.125rem, 4.5vw, 1.375rem); margin-bottom: 32px; }
-  .hero__meta { grid-template-columns: 1fr 1fr; gap: 16px 16px; padding: 24px 20px; margin-bottom: 40px; }
+  .hero__title { font-size: clamp(3rem, 13vw, 4.5rem); margin-bottom: 20px; }
+  .hero__lede { font-size: clamp(1.375rem, 5.5vw, 1.75rem); margin-bottom: 32px; }
+  .hero__meta { display: flex; grid-template-columns: unset; gap: 0; padding: 20px 0; margin-bottom: 40px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .hero__meta-row { flex-direction: column; flex-shrink: 0; gap: 4px; padding: 0 24px; border-right: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent); }
+  .hero__meta-row:first-child { padding-left: 20px; }
+  .hero__meta-row:last-child { border-right: none; }
   .hero__desc { max-width: 100%; }
   .figure { padding: 0 16px; margin-bottom: 64px; }
   .figure + .figure { margin-top: -44px; }
