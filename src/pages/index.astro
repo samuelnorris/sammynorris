@@ -126,6 +126,13 @@ export const prerender = true;
       el.textContent = "Sammy Norris";
       el.classList.add("typewriter--done");
       document.getElementById("themeToggle")?.classList.remove("theme-toggle--delayed");
+      var tagline = document.querySelector('.hero__tagline');
+      if (tagline) {
+        tagline.style.animation = 'none';
+        tagline.style.opacity = '1';
+        tagline.style.maxHeight = '4em';
+        tagline.style.marginTop = '24px';
+      }
       return;
     }
     sessionStorage.setItem('sn-intro-played', '1');
@@ -216,7 +223,7 @@ export const prerender = true;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 24px;
+    gap: 0;
   }
 
   .hero__name {
@@ -249,14 +256,23 @@ export const prerender = true;
   }
 
   .hero__tagline {
-    margin-top: 0;
     font-family: var(--font-sans);
     font-size: var(--text-b2);
     font-weight: 300;
     letter-spacing: -0.01em;
     opacity: 0;
-    animation: fadeIn 1.2s ease 5.3s forwards;
-    margin: 0;
+    max-height: 0;
+    overflow: hidden;
+    margin-top: 0;
+    animation: taglineIn 1.2s ease 5.3s forwards;
+  }
+
+  @keyframes taglineIn {
+    to {
+      opacity: 1;
+      max-height: 4em;
+      margin-top: 24px;
+    }
   }
 
   .hero__scroll {
@@ -506,11 +522,6 @@ export const prerender = true;
   }
 
   /* ===================== Keyframes ===================== */
-  @keyframes fadeIn {
-    to {
-      opacity: 1;
-    }
-  }
 
   @keyframes bounce {
     0%, 100% { transform: translateX(-50%) translateY(0); }
