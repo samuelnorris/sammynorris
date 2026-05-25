@@ -118,16 +118,17 @@ export const prerender = true;
     const el = document.getElementById("typewriter");
     if (!el) return;
 
-    // Skip animation if arriving via anchor (e.g. back from a project page)
+    // Skip animation if already played this session, arriving via anchor,
     // or if the user prefers reduced motion.
+    const alreadyPlayed = sessionStorage.getItem('sn-intro-played');
     const arrivingViaAnchor = !!window.location.hash;
-    if (arrivingViaAnchor || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (alreadyPlayed || arrivingViaAnchor || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       el.textContent = "Sammy Norris";
       el.classList.add("typewriter--done");
-      // Show the theme toggle immediately too — no fade-in delay.
       document.getElementById("themeToggle")?.classList.remove("theme-toggle--delayed");
       return;
     }
+    sessionStorage.setItem('sn-intro-played', '1');
 
     const typeSpeed = 200;
     const deleteSpeed = 100;
