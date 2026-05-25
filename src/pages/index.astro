@@ -21,11 +21,6 @@ export const prerender = true;
       <h1 class="hero__name h1" id="typewriter" aria-label="Sammy Norris"></h1>
       <p class="hero__tagline">Product <span style="color: var(--color-secondary);">designer</span> currently living in a regulated world.</p>
     </div>
-    <a href="#work" class="hero__scroll" aria-label="Scroll to work">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M6 9l6 6 6-6" />
-      </svg>
-    </a>
   </header>
 
   <!-- Work -->
@@ -203,6 +198,7 @@ export const prerender = true;
     update();
     setInterval(update, 5000);
   })();
+
 </script>
 
 <style>
@@ -275,16 +271,6 @@ export const prerender = true;
     }
   }
 
-  .hero__scroll {
-    position: absolute;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    opacity: 0;
-    animation: fadeInBounce 1.2s ease 5.3s forwards, bounce 3.2s ease-in-out 6.5s infinite;
-    color: var(--color-primary);
-    text-decoration: none;
-  }
 
   /* ===================== Work ===================== */
   .work {
@@ -523,23 +509,6 @@ export const prerender = true;
 
   /* ===================== Keyframes ===================== */
 
-  @keyframes bounce {
-    0%, 100% { transform: translateX(-50%) translateY(0); }
-    50%      { transform: translateX(-50%) translateY(-10px); }
-  }
-
-  @keyframes bounceMobile {
-    0%, 100% { transform: translateY(0); }
-    50%      { transform: translateY(-10px); }
-  }
-
-  @keyframes fadeInBounce {
-    to { opacity: 0.15; }
-  }
-
-  @keyframes fadeInBounceMobile {
-    to { opacity: 0.7; }
-  }
 
   /* ===================== Mobile ===================== */
   @media (max-width: 768px) {
@@ -548,12 +517,6 @@ export const prerender = true;
       align-items: flex-start;
     }
 
-    .hero__scroll {
-      color: #ffffff !important;
-      left: 20px;
-      transform: translateY(0);
-      animation: fadeInBounceMobile 1.2s ease 5.3s forwards, bounceMobile 3.2s ease-in-out 6.5s infinite;
-    }
 
     .work {
       padding: 80px 20px 60px;
