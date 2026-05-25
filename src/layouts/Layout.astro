@@ -84,7 +84,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? "https://www.sammynorris.com")
 
     <title>{title}</title>
   </head>
-  <body>
+  <body class="page-enter">
     <ThemeToggle delayed={isHomepage} />
     <slot />
     <script is:inline>
@@ -117,6 +117,20 @@ const ogImageURL = new URL(ogImage, Astro.site ?? "https://www.sammynorris.com")
           }
         });
       })();
+    </script>
+    <script is:inline>
+      // Page transition — intercept internal links and slide out before navigating
+      document.addEventListener('click', function (e) {
+        var link = e.target.closest('a[href]');
+        if (!link || link.target === '_blank') return;
+        var href = link.getAttribute('href');
+        if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('http')) return;
+        e.preventDefault();
+        document.body.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+        document.body.style.opacity = '0';
+        document.body.style.transform = 'translateY(-16px)';
+        setTimeout(function () { window.location.href = href; }, 210);
+      });
     </script>
     <script is:inline>
       (function () {
