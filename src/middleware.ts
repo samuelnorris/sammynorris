@@ -1,6 +1,8 @@
 import { defineMiddleware } from "astro:middleware";
 
-const PASSWORD = "bmx";
+// Set COMMISSION_PASSWORD in your environment (.env locally, project settings
+// on Vercel). Empty string = fail closed: nobody gets in until it's configured.
+const PASSWORD = import.meta.env.COMMISSION_PASSWORD ?? "";
 const COOKIE_NAME = "commission-auth";
 
 // Only the commission page is gated.
@@ -20,18 +22,18 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   const cookie = context.cookies.get(COOKIE_NAME);
 
-  if (cookie?.value === PASSWORD) {
+  if (PASSWORD && cookie?.value === PASSWORD) {
     return next();
   }
 
   const attempt = url.searchParams.get("pw");
 
-  if (attempt === PASSWORD) {
+  if (PASSWORD && attempt === PASSWORD) {
     context.cookies.set(COOKIE_NAME, PASSWORD, {
       path: "/",
       maxAge: 60 * 60 * 24 * 7,
       httpOnly: true,
-      secure: true,
+      secure: import.meta.env.PROD,
       sameSite: "lax",
     });
     return context.redirect("/commission");

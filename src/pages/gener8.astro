@@ -4,7 +4,7 @@ import CaseStudyLayout from "../layouts/CaseStudyLayout.astro";
 const meta = [
   { label: "Year", value: "2021" },
   { label: "Client", value: "Gener8" },
-  { label: "Role", value: "Lead Product Designer" },
+  { label: "Role", value: "Senior Product Designer" },
   { label: "Timeline", value: "3 months" },
 ];
 
@@ -18,8 +18,7 @@ export const prerender = true;
 ---
 
 <CaseStudyLayout
-  pageTitle="Gener8 — Sammy Norris"
-  lede="A first-of-its-kind browser extension that lets users profit from the ads they see. I was brought in as the sole designer to turn a genuinely novel proposition into something simple enough to download and trust."
+  pageTitle="Gener8 - Sammy Norris"
   meta={meta}
   description="A first-of-its-kind browser extension that lets users profit from the ads they see. I was brought in as the sole designer to turn a genuinely novel proposition into something simple enough to download and trust."
   signoff="Designed at Gener8"
@@ -27,7 +26,7 @@ export const prerender = true;
 >
   <Fragment slot="title">Gener<em>8</em></Fragment>
 
-  <!-- Figure 01 — hero shot -->
+  <!-- Figure 01 - hero shot -->
   <figure class="figure" data-reveal>
     <picture>
       <source media="(max-width: 768px)" srcset="/images/projects/gener8/image-gener8-1-m.jpg" />
@@ -35,7 +34,7 @@ export const prerender = true;
     </picture>
   </figure>
 
-  <!-- Chapter I — Challenge -->
+  <!-- Chapter I - Challenge -->
   <section class="chapter" data-reveal>
     <header class="chapter__head">
       <span class="chapter__num">I.</span>
@@ -43,7 +42,7 @@ export const prerender = true;
     </header>
 
     <blockquote class="chapter__quote">
-      A genuinely novel product entering a crowded and sceptical market —
+      A genuinely novel product entering a crowded and sceptical market - 
       where the design challenge was as much about trust and clarity as it
       was about aesthetics.
     </blockquote>
@@ -63,7 +62,7 @@ export const prerender = true;
     </picture>
   </figure>
 
-  <!-- Chapter II — Process -->
+  <!-- Chapter II - Process -->
   <section class="chapter" data-reveal>
     <header class="chapter__head">
       <span class="chapter__num">II.</span>
@@ -79,7 +78,7 @@ export const prerender = true;
         Working directly with the CEO over three months, I delivered the full design across the marketing website, browser extension UI, and companion app. My work covered wireframes and user flows, copy direction to make an unfamiliar proposition feel simple and trustworthy, a CRO-led website structure designed to turn curiosity into downloads, and extension and app UI from low fidelity through to final assets.
       </p>
       <p class="b1">
-        The design had one job: explain what Gener8 was, why it was different, and why users could trust it — without overwhelming them. Every decision traced back to that.
+        The design had one job: explain what Gener8 was, why it was different, and why users could trust it - without overwhelming them. Every decision traced back to that.
       </p>
     </div>
   </section>
@@ -92,7 +91,7 @@ export const prerender = true;
     </picture>
   </figure>
 
-  <!-- Chapter III — Outcome -->
+  <!-- Chapter III - Outcome -->
   <section class="chapter" data-reveal>
     <header class="chapter__head">
       <span class="chapter__num">III.</span>
@@ -123,7 +122,7 @@ export const prerender = true;
     </picture>
   </figure>
 
-  <!-- Figure 05 — YouTube video -->
+  <!-- Figure 05 - YouTube video -->
   <figure class="figure figure--video" data-reveal>
     <div class="video-frame">
       <iframe
@@ -139,7 +138,7 @@ export const prerender = true;
 </CaseStudyLayout>
 
 <style is:global>
-  /* Video figure — same card-frame as images */
+  /* Video figure - same card-frame as images */
   .figure--video .video-frame {
     position: relative;
     background: var(--color-card-bg);
