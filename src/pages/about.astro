@@ -55,6 +55,11 @@ export const prerender = true;
       <button class="timeline__pill" data-tab="1">2021 - 2020</button>
       <button class="timeline__pill" data-tab="2">2020 - 2018</button>
       <button class="timeline__pill" data-tab="3">2017 - 2015</button>
+      <span class="timeline__chevron" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+      </span>
     </div>
     <div class="timeline__panels">
       <div class="timeline__panel active" data-panel="0">
@@ -115,6 +120,16 @@ export const prerender = true;
     { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
   );
   document.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
+
+  // Hide chevron when pills are scrolled to end
+  const pillsContainer = document.querySelector('.timeline__pills');
+  const chevron = document.querySelector('.timeline__chevron');
+  if (pillsContainer && chevron) {
+    pillsContainer.addEventListener('scroll', () => {
+      const atEnd = pillsContainer.scrollLeft + pillsContainer.clientWidth >= pillsContainer.scrollWidth - 8;
+      (chevron as HTMLElement).style.opacity = atEnd ? '0' : '0.3';
+    });
+  }
 
   // Timeline tabs
   document.querySelectorAll<HTMLElement>('.timeline__pill').forEach(btn => {
@@ -183,11 +198,14 @@ export const prerender = true;
   .timeline__pills {
     display: flex;
     gap: 10px;
+    position: relative;
   }
 
   .timeline__pill {
     display: inline-flex;
     align-items: center;
+    white-space: nowrap;
+    flex-shrink: 0;
     padding: 8px 20px;
     background-color: var(--color-card-bg);
     border: 1px solid var(--color-tertiary);
@@ -200,6 +218,8 @@ export const prerender = true;
     cursor: pointer;
     transition: border-color 0.2s ease;
   }
+
+  .timeline__chevron { display: none; }
 
   .timeline__pill:hover { border-color: var(--color-primary); }
   .timeline__pill.active { border-color: var(--color-secondary); color: var(--color-secondary); }
@@ -310,7 +330,29 @@ export const prerender = true;
     .hero__title { font-size: clamp(2.5rem, 11vw, 3.5rem); margin-bottom: 20px; }
     .hero__lede { font-size: clamp(1.125rem, 4.5vw, 1.375rem); }
     .about-body { padding: 0 20px; margin-bottom: 64px; gap: 20px; }
-    .timeline { padding: 0 20px; margin-bottom: 64px; gap: 40px; }
+    .timeline { padding: 0; margin-bottom: 64px; gap: 40px; }
+    .timeline__pills {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding: 0 20px;
+      mask-image: linear-gradient(to right, black calc(100% - 40px), transparent);
+      -webkit-mask-image: linear-gradient(to right, black calc(100% - 40px), transparent);
+    }
+    .timeline__pills::-webkit-scrollbar { display: none; }
+    .timeline__panels { padding: 0 20px; }
+    .timeline__chevron {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      color: var(--color-primary);
+      opacity: 0.3;
+      animation: nudge 1.5s ease-in-out infinite;
+    }
+    @keyframes nudge {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(4px); }
+    }
     .contact { padding: 64px 20px 0; margin-bottom: 64px; gap: 24px; }
     .contact__h2 { font-size: clamp(1.625rem, 7vw, 2rem); max-width: 100%; }
     .case-footer { padding: 40px 20px; }
