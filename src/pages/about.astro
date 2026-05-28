@@ -4,7 +4,7 @@ import BackButton from "../components/BackButton.astro";
 export const prerender = true;
 ---
 
-<Layout title="About — Sammy Norris">
+<Layout title="About - Sammy Norris">
 
   <!-- Back nav -->
   <nav class="case-nav">
@@ -17,20 +17,17 @@ export const prerender = true;
       Hi, I'm <em>Sammy.</em>
     </h1>
 
-    <p class="hero__lede" data-reveal style="--delay: 0.14s">
-      A product designer, working in regulated worlds.
-    </p>
   </header>
 
   <!-- Body -->
   <section class="about-body" data-reveal>
     <p class="b1">
       I design digital products in places where complexity is the default
-      and clarity is the work — automotive, finance, and the corners of the
+      and clarity is the work - automotive, finance, and the corners of the
       internet where someone has to make a hard decision feel simple.
     </p>
     <p class="b1">
-      I've worked across the full product lifecycle — early discovery,
+      I've worked across the full product lifecycle - early discovery,
       service design, prototyping, testing, delivery. Customer-facing tools
       like car configurators and connected vehicle apps. Large-scale
       regulatory services delivered under tight timelines. The work usually
@@ -46,9 +43,41 @@ export const prerender = true;
       My approach is practical and evidence-led. Clarity over novelty. Test
       assumptions early. Focus on outcomes, not outputs. I try to design
       things that hold up in the real world, not just in a portfolio
-      screenshot — which is probably why most of my work lives behind a
+      screenshot - which is probably why most of my work lives behind a
       login.
     </p>
+  </section>
+
+  <!-- Timeline -->
+  <section class="timeline" data-reveal>
+    <div class="timeline__pills">
+      <button class="timeline__pill active" data-tab="0">Present - 2021</button>
+      <button class="timeline__pill" data-tab="1">2021 - 2020</button>
+      <button class="timeline__pill" data-tab="2">2020 - 2018</button>
+      <button class="timeline__pill" data-tab="3">2017 - 2015</button>
+    </div>
+    <div class="timeline__panels">
+      <div class="timeline__panel active" data-panel="0">
+        <h3 class="timeline__company">Close Brothers</h3>
+        <span class="timeline__role b3">Senior Product Designer</span>
+        <p class="timeline__desc b2">Designing digital services across motor finance, asset finance, and insurance - all under FCA regulation. Led the Commission Disclosure and Consent service from brief to launch in seven weeks, and designed Ekeg+, a pay-per-fill keg rental platform managing over 400,000 containers. The work sits at the intersection of customer needs, business goals, and compliance.</p>
+      </div>
+      <div class="timeline__panel" data-panel="1">
+        <h3 class="timeline__company">Larkbury Group</h3>
+        <span class="timeline__role b3">Product Designer / Graphic Designer</span>
+        <p class="timeline__desc b2">Built Larkbury London from scratch - brand identity through to a fully responsive luxury ecommerce site across 700+ artboards and seven viewports. Maintained three primary brands - Larkbury Curtains, Luxsale, and The Sofa &amp; Chair Company - including brand guidelines, visual identity, and point-of-sale materials.</p>
+      </div>
+      <div class="timeline__panel" data-panel="2">
+        <h3 class="timeline__company">Brandwidth</h3>
+        <span class="timeline__role b3">Product Designer</span>
+        <p class="timeline__desc b2">Worked on connected vehicle and automotive experiences for Porsche and Toyota. Designed a native Apple Watch app giving Porsche owners glanceable access to their car's key stats, and owned the design execution across 70%+ of screens for Toyota's web-based car configurator.</p>
+      </div>
+      <div class="timeline__panel" data-panel="3">
+        <h3 class="timeline__company">Internet Fusion Group</h3>
+        <span class="timeline__role b3">Middleweight UI / Graphic Designer</span>
+        <p class="timeline__desc b2">As the lead designer, I managed the online content for 7 top level domains in 5 languages. This also involved advising on ecommerce best practices to optimise the customer journey and UX.</p>
+      </div>
+    </div>
   </section>
 
   <!-- Contact -->
@@ -86,6 +115,17 @@ export const prerender = true;
     { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
   );
   document.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
+
+  // Timeline tabs
+  document.querySelectorAll<HTMLElement>('.timeline__pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = btn.dataset.tab;
+      document.querySelectorAll('.timeline__pill').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.timeline__panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelector(`.timeline__panel[data-panel="${idx}"]`)?.classList.add('active');
+    });
+  });
 </script>
 
 <style>
@@ -128,6 +168,67 @@ export const prerender = true;
     flex-direction: column;
     gap: 24px;
     max-width: calc(72ch + 160px + 10vw);
+  }
+
+  /* ===== Timeline ===== */
+  .timeline {
+    padding: 0 10vw;
+    margin: 0 0 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    max-width: calc(72ch + 160px + 10vw);
+  }
+
+  .timeline__pills {
+    display: flex;
+    gap: 10px;
+  }
+
+  .timeline__pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 20px;
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-tertiary);
+    border-radius: 99px;
+    font-family: var(--font-sans);
+    font-size: var(--text-b3);
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    color: var(--color-primary);
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+
+  .timeline__pill:hover { border-color: var(--color-primary); }
+  .timeline__pill.active { border-color: var(--color-secondary); color: var(--color-secondary); }
+
+  .timeline__panel {
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .timeline__panel.active { display: flex; }
+
+  .timeline__company {
+    font-family: var(--font-serif);
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    font-weight: 400;
+    margin: 0;
+  }
+
+  .timeline__role {
+    color: var(--color-secondary);
+  }
+
+  .timeline__desc {
+    font-weight: 200;
+    line-height: 1.6;
+    margin: 4px 0 0;
   }
 
   /* ===== Contact ===== */
@@ -209,6 +310,7 @@ export const prerender = true;
     .hero__title { font-size: clamp(2.5rem, 11vw, 3.5rem); margin-bottom: 20px; }
     .hero__lede { font-size: clamp(1.125rem, 4.5vw, 1.375rem); }
     .about-body { padding: 0 20px; margin-bottom: 64px; gap: 20px; }
+    .timeline { padding: 0 20px; margin-bottom: 64px; gap: 40px; }
     .contact { padding: 64px 20px 0; margin-bottom: 64px; gap: 24px; }
     .contact__h2 { font-size: clamp(1.625rem, 7vw, 2rem); max-width: 100%; }
     .case-footer { padding: 40px 20px; }
