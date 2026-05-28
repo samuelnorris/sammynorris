@@ -139,6 +139,13 @@ export const prerender = true;
       document.querySelectorAll('.timeline__panel').forEach(p => p.classList.remove('active'));
       btn.classList.add('active');
       document.querySelector(`.timeline__panel[data-panel="${idx}"]`)?.classList.add('active');
+
+      // Scroll active pill to center on mobile
+      const container = document.querySelector('.timeline__pills');
+      if (container && window.innerWidth <= 768) {
+        const scrollLeft = btn.offsetLeft - container.clientWidth / 2 + btn.offsetWidth / 2;
+        container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+      }
     });
   });
 </script>
