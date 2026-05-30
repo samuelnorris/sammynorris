@@ -50,11 +50,11 @@ export const prerender = true;
 
   <!-- Timeline -->
   <section class="timeline" data-reveal>
-    <div class="timeline__pills">
-      <button class="timeline__pill active" data-tab="0">Present - 2021</button>
-      <button class="timeline__pill" data-tab="1">2021 - 2020</button>
-      <button class="timeline__pill" data-tab="2">2020 - 2018</button>
-      <button class="timeline__pill" data-tab="3">2017 - 2015</button>
+    <div class="timeline__pills" role="tablist" aria-label="Career timeline">
+      <button class="timeline__pill active" type="button" role="tab" id="tl-tab-0" aria-controls="tl-panel-0" aria-selected="true" tabindex="0" data-tab="0">Present - 2021</button>
+      <button class="timeline__pill" type="button" role="tab" id="tl-tab-1" aria-controls="tl-panel-1" aria-selected="false" tabindex="-1" data-tab="1">2021 - 2020</button>
+      <button class="timeline__pill" type="button" role="tab" id="tl-tab-2" aria-controls="tl-panel-2" aria-selected="false" tabindex="-1" data-tab="2">2020 - 2018</button>
+      <button class="timeline__pill" type="button" role="tab" id="tl-tab-3" aria-controls="tl-panel-3" aria-selected="false" tabindex="-1" data-tab="3">2017 - 2015</button>
       <span class="timeline__chevron" aria-hidden="true">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 18l6-6-6-6" />
@@ -62,22 +62,22 @@ export const prerender = true;
       </span>
     </div>
     <div class="timeline__panels">
-      <div class="timeline__panel active" data-panel="0">
+      <div class="timeline__panel active" id="tl-panel-0" role="tabpanel" aria-labelledby="tl-tab-0" tabindex="0" data-panel="0">
         <h3 class="timeline__company">Close Brothers</h3>
         <span class="timeline__role b3">Senior Product Designer</span>
         <p class="timeline__desc b2">Designing digital services across motor finance, asset finance, and insurance - all under FCA regulation. Led the Commission Disclosure and Consent service from brief to launch in seven weeks, and designed Ekeg+, a pay-per-fill keg rental platform managing over 400,000 containers. The work sits at the intersection of customer needs, business goals, and compliance.</p>
       </div>
-      <div class="timeline__panel" data-panel="1">
+      <div class="timeline__panel" id="tl-panel-1" role="tabpanel" aria-labelledby="tl-tab-1" tabindex="0" data-panel="1">
         <h3 class="timeline__company">Larkbury Group</h3>
         <span class="timeline__role b3">Product Designer / Graphic Designer</span>
         <p class="timeline__desc b2">Built Larkbury London from scratch - brand identity through to a fully responsive luxury ecommerce site across 700+ artboards and seven viewports. Maintained three primary brands - Larkbury Curtains, Luxsale, and The Sofa &amp; Chair Company - including brand guidelines, visual identity, and point-of-sale materials.</p>
       </div>
-      <div class="timeline__panel" data-panel="2">
+      <div class="timeline__panel" id="tl-panel-2" role="tabpanel" aria-labelledby="tl-tab-2" tabindex="0" data-panel="2">
         <h3 class="timeline__company">Brandwidth</h3>
         <span class="timeline__role b3">Product Designer</span>
         <p class="timeline__desc b2">Worked on connected vehicle and automotive experiences for Porsche and Toyota. Designed a native Apple Watch app giving Porsche owners glanceable access to their car's key stats, and owned the design execution across 70%+ of screens for Toyota's web-based car configurator.</p>
       </div>
-      <div class="timeline__panel" data-panel="3">
+      <div class="timeline__panel" id="tl-panel-3" role="tabpanel" aria-labelledby="tl-tab-3" tabindex="0" data-panel="3">
         <h3 class="timeline__company">Internet Fusion Group</h3>
         <span class="timeline__role b3">Middleweight UI / Graphic Designer</span>
         <p class="timeline__desc b2">As the lead designer, I managed the online content for 7 top level domains in 5 languages. This also involved advising on ecommerce best practices to optimise the customer journey and UX.</p>
@@ -118,6 +118,7 @@ export const prerender = true;
       'مرحبا', 'Привет', 'こんにちは', '안녕', '你好', 'नमस्ते',
     ];
     const typeSpeed = 110, deleteSpeed = 55, holdFull = 1300, holdEmpty = 250;
+    const stopAt = Date.now() + 120000; // stop the loop after 2 minutes
 
     let gi = 0;
     el.textContent = '';
@@ -126,6 +127,7 @@ export const prerender = true;
     const typeWord = (word, i) => {
       el.textContent = word.slice(0, i);
       if (i < word.length) setTimeout(() => typeWord(word, i + 1), typeSpeed);
+      else if (Date.now() >= stopAt) el.classList.remove('hero__greeting--typing'); // settle on this word, stop blinking
       else setTimeout(() => deleteWord(word, word.length), holdFull);
     };
     const deleteWord = (word, i) => {
@@ -162,21 +164,39 @@ export const prerender = true;
     });
   }
 
-  // Timeline tabs
-  document.querySelectorAll<HTMLElement>('.timeline__pill').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const idx = btn.dataset.tab;
-      document.querySelectorAll('.timeline__pill').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.timeline__panel').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.querySelector(`.timeline__panel[data-panel="${idx}"]`)?.classList.add('active');
+  // Timeline tabs (ARIA tablist: roving tabindex + arrow-key navigation)
+  const tabs = Array.from(document.querySelectorAll<HTMLElement>('.timeline__pill'));
+  const panels = Array.from(document.querySelectorAll<HTMLElement>('.timeline__panel'));
 
-      // Scroll active pill to center on mobile
-      const container = document.querySelector('.timeline__pills');
-      if (container && window.innerWidth <= 768) {
-        const scrollLeft = btn.offsetLeft - container.clientWidth / 2 + btn.offsetWidth / 2;
-        container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
-      }
+  const selectTab = (idx: number, setFocus: boolean) => {
+    tabs.forEach((tab, i) => {
+      const selected = i === idx;
+      tab.classList.toggle('active', selected);
+      tab.setAttribute('aria-selected', selected ? 'true' : 'false');
+      tab.tabIndex = selected ? 0 : -1;
+      if (selected && setFocus) tab.focus();
+    });
+    panels.forEach((panel, i) => panel.classList.toggle('active', i === idx));
+
+    // Scroll active pill to centre on mobile
+    if (pillsContainer && window.innerWidth <= 768) {
+      const tab = tabs[idx];
+      const left = tab.offsetLeft - pillsContainer.clientWidth / 2 + tab.offsetWidth / 2;
+      pillsContainer.scrollTo({ left, behavior: 'smooth' });
+    }
+  };
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => selectTab(i, false));
+    tab.addEventListener('keydown', (e) => {
+      let next: number | null = null;
+      if (e.key === 'ArrowRight') next = (i + 1) % tabs.length;
+      else if (e.key === 'ArrowLeft') next = (i - 1 + tabs.length) % tabs.length;
+      else if (e.key === 'Home') next = 0;
+      else if (e.key === 'End') next = tabs.length - 1;
+      if (next === null) return;
+      e.preventDefault();
+      selectTab(next, true);
     });
   });
 </script>
