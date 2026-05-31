@@ -85,8 +85,11 @@ const ogImageURL = new URL(ogImage, Astro.site ?? "https://www.sammynorris.com")
     <title>{title}</title>
   </head>
   <body class="page-enter">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <ThemeToggle delayed={isHomepage} />
-    <slot />
+    <main id="main-content" tabindex="-1">
+      <slot />
+    </main>
     <script is:inline>
       (function () {
         var original = document.title;
@@ -168,6 +171,17 @@ const ogImageURL = new URL(ogImage, Astro.site ?? "https://www.sammynorris.com")
           if (raf) cancelAnimationFrame(raf);
         });
       })();
+    </script>
+    <script is:inline>
+      document.querySelector('.skip-link').addEventListener('click', function(e) {
+        e.preventDefault();
+        // On homepage, skip past the hero to the work section
+        // On other pages, focus the main content landmark
+        // On homepage, focus the first project card
+        // On other pages, focus the main content landmark
+        var target = document.querySelector('#work .card') || document.getElementById('main-content');
+        if (target) target.focus();
+      });
     </script>
   </body>
 </html>

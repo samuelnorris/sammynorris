@@ -70,8 +70,11 @@ const { delayed = false } = Astro.props;
   const toggle = document.getElementById('themeToggle');
   const html = document.documentElement;
 
+  toggle?.setAttribute('aria-pressed', String(html.classList.contains('dark')));
+
   toggle?.addEventListener('click', () => {
     const isDark = html.classList.toggle('dark');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    toggle.setAttribute('aria-pressed', String(isDark));
   });
 </script>

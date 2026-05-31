@@ -25,7 +25,7 @@ export const prerender = true;
 
   <!-- Work -->
   <section class="work" id="work">
-    <span class="section-label" data-reveal>Selected work</span>
+    <h2 class="section-label" data-reveal>Selected work</h2>
     <div class="work__grid">
       {projects.map((project, i) => (
         <a
@@ -69,7 +69,7 @@ export const prerender = true;
         <a href="/about" class="about__cta" aria-label="More about me">
           <span class="about__cta-label">More about me</span>
           <span class="about__cta-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </span>

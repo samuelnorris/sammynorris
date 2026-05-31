@@ -29,7 +29,7 @@
   --color-bg: #1E1E1E;
   --color-primary: #FFFFFF;
   --color-secondary: #FF6A00;
-  --color-tertiary: #575656;
+  --color-tertiary: #6E6E6E;
   --color-card-bg: rgba(26, 26, 26, 0.98);
   --color-card-image-bg: #292929;
 }
@@ -48,7 +48,7 @@ html, body {
   background-color: var(--color-bg);
   color: var(--color-primary);
   font-family: var(--font-sans);
-  font-weight: 200;
+  font-weight: 250;
   margin: 0;
   padding: 0;
   min-height: 100vh;
@@ -62,6 +62,40 @@ body.page-enter {
 @keyframes pageEnter {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Skip link ---------- */
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 8px;
+  z-index: 9999;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background-color: var(--color-card-bg);
+  border: 1px solid var(--color-tertiary);
+  color: var(--color-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-b3);
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+.skip-link:focus {
+  top: 8px;
+}
+
+/* ---------- Keyboard focus ---------- */
+:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+}
+
+/* Cards get the ring + their hover lift */
+.card:focus-visible {
+  transform: translateY(-4px);
+}
+.card:focus-visible .card__image img {
+  transform: scale(1.03);
 }
 
 /* ---------- Type styles ---------- */
@@ -117,7 +151,7 @@ body.page-enter {
   font-size: var(--text-b1);
   line-height: 1.5;
   letter-spacing: -0.01em;
-  font-weight: 200;
+  font-weight: 250;
   margin: 0;
 }
 
@@ -130,7 +164,7 @@ body.page-enter {
   font-size: var(--text-b2);
   line-height: 1.4;
   letter-spacing: -0.01em;
-  font-weight: 300;
+  font-weight: 250;
   margin: 0;
 }
 
@@ -139,7 +173,7 @@ body.page-enter {
   font-size: var(--text-b2);
   line-height: 1.4;
   letter-spacing: -0.01em;
-  font-weight: 300;
+  font-weight: 250;
   margin: 0;
 }
 
@@ -148,7 +182,7 @@ body.page-enter {
   font-size: var(--text-b3);
   line-height: 1.4;
   letter-spacing: -0.01em;
-  font-weight: 300;
+  font-weight: 250;
   margin: 0;
 }
 
@@ -157,7 +191,7 @@ body.page-enter {
   font-size: var(--text-b3);
   line-height: 1.4;
   letter-spacing: -0.01em;
-  font-weight: 300;
+  font-weight: 250;
   margin: 0;
 }
 
@@ -166,7 +200,7 @@ body.page-enter {
   font-size: var(--text-b4);
   line-height: 1.4;
   letter-spacing: -0.01em;
-  font-weight: 300;
+  font-weight: 250;
   margin: 0;
 }
 
