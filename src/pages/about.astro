@@ -63,22 +63,22 @@ export const prerender = true;
     </div>
     <div class="timeline__panels">
       <div class="timeline__panel active" id="tl-panel-0" role="tabpanel" aria-labelledby="tl-tab-0" tabindex="0" data-panel="0">
-        <h3 class="timeline__company">Close Brothers</h3>
+        <h2 class="timeline__company">Close Brothers</h2>
         <span class="timeline__role b3">Senior Product Designer</span>
         <p class="timeline__desc b2">Designing digital services across motor finance, asset finance, and insurance - all under FCA regulation. Led the Commission Disclosure and Consent service from brief to launch in seven weeks, and designed Ekeg+, a pay-per-fill keg rental platform managing over 400,000 containers. The work sits at the intersection of customer needs, business goals, and compliance.</p>
       </div>
       <div class="timeline__panel" id="tl-panel-1" role="tabpanel" aria-labelledby="tl-tab-1" tabindex="0" data-panel="1">
-        <h3 class="timeline__company">Larkbury Group</h3>
+        <h2 class="timeline__company">Larkbury Group</h2>
         <span class="timeline__role b3">Product Designer / Graphic Designer</span>
         <p class="timeline__desc b2">Built Larkbury London from scratch - brand identity through to a fully responsive luxury ecommerce site across 700+ artboards and seven viewports. Maintained three primary brands - Larkbury Curtains, Luxsale, and The Sofa &amp; Chair Company - including brand guidelines, visual identity, and point-of-sale materials.</p>
       </div>
       <div class="timeline__panel" id="tl-panel-2" role="tabpanel" aria-labelledby="tl-tab-2" tabindex="0" data-panel="2">
-        <h3 class="timeline__company">Brandwidth</h3>
+        <h2 class="timeline__company">Brandwidth</h2>
         <span class="timeline__role b3">Product Designer</span>
         <p class="timeline__desc b2">Worked on connected vehicle and automotive experiences for Porsche and Toyota. Designed a native Apple Watch app giving Porsche owners glanceable access to their car's key stats, and owned the design execution across 70%+ of screens for Toyota's web-based car configurator.</p>
       </div>
       <div class="timeline__panel" id="tl-panel-3" role="tabpanel" aria-labelledby="tl-tab-3" tabindex="0" data-panel="3">
-        <h3 class="timeline__company">Internet Fusion Group</h3>
+        <h2 class="timeline__company">Internet Fusion Group</h2>
         <span class="timeline__role b3">Middleweight UI / Graphic Designer</span>
         <p class="timeline__desc b2">As the lead designer, I managed the online content for 7 top level domains in 5 languages. This also involved advising on ecommerce best practices to optimise the customer journey and UX.</p>
       </div>
@@ -93,7 +93,7 @@ export const prerender = true;
     <a href="mailto:hello@sammynorris.com" class="contact__cta" aria-label="Email Sammy">
       <span class="contact__cta-label">hello@sammynorris.com</span>
       <span class="contact__cta-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M5 12h14M12 5l7 7-7 7" />
         </svg>
       </span>
@@ -114,25 +114,36 @@ export const prerender = true;
     if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const greetings = [
-      'Hello', 'Bonjour', 'Hola', 'Ciao', 'Olá', 'Hej',
-      'مرحبا', 'Привет', 'こんにちは', '안녕', '你好', 'नमस्ते',
+      { t: 'Hello',     lang: 'en' },
+      { t: 'Bonjour',   lang: 'fr' },
+      { t: 'Hola',      lang: 'es' },
+      { t: 'Ciao',      lang: 'it' },
+      { t: 'Olá',       lang: 'pt' },
+      { t: 'Hej',       lang: 'sv' },
+      { t: 'مرحبا', lang: 'ar', dir: 'rtl' },
+      { t: 'Привет', lang: 'ru' },
+      { t: 'こんにちは', lang: 'ja' },
+      { t: '안녕',  lang: 'ko' },
+      { t: '你好',  lang: 'zh' },
+      { t: 'नमस्ते', lang: 'hi' },
     ];
     const typeSpeed = 110, deleteSpeed = 55, holdFull = 1300, holdEmpty = 250;
-    const stopAt = Date.now() + 120000; // stop the loop after 2 minutes
+    const stopAt = Date.now() + 120000;
 
     let gi = 0;
     el.textContent = '';
     el.classList.add('hero__greeting--typing');
 
-    const typeWord = (word, i) => {
-      el.textContent = word.slice(0, i);
-      if (i < word.length) setTimeout(() => typeWord(word, i + 1), typeSpeed);
-      else if (Date.now() >= stopAt) el.classList.remove('hero__greeting--typing'); // settle on this word, stop blinking
-      else setTimeout(() => deleteWord(word, word.length), holdFull);
+    const typeWord = (g, i) => {
+      if (i === 0) { el.lang = g.lang; el.dir = g.dir || 'ltr'; }
+      el.textContent = g.t.slice(0, i);
+      if (i < g.t.length) setTimeout(() => typeWord(g, i + 1), typeSpeed);
+      else if (Date.now() >= stopAt) el.classList.remove('hero__greeting--typing');
+      else setTimeout(() => deleteWord(g, g.t.length), holdFull);
     };
-    const deleteWord = (word, i) => {
-      el.textContent = word.slice(0, i);
-      if (i > 0) setTimeout(() => deleteWord(word, i - 1), deleteSpeed);
+    const deleteWord = (g, i) => {
+      el.textContent = g.t.slice(0, i);
+      if (i > 0) setTimeout(() => deleteWord(g, i - 1), deleteSpeed);
       else {
         gi = (gi + 1) % greetings.length;
         setTimeout(() => typeWord(greetings[gi], 0), holdEmpty);
