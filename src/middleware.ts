@@ -116,8 +116,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
 <body>
   <div class="gate">
     <label for="pw">Password</label>
-    <input type="password" id="pw" autofocus />
-    ${wrong ? '<p class="error">Wrong password</p>' : ''}
+    <input type="password" id="pw" autofocus ${wrong ? 'aria-invalid="true" aria-describedby="pw-error"' : ''} />
+    ${wrong ? '<p class="error" id="pw-error" role="alert">Wrong password</p>' : ''}
     <button id="submit">Enter</button>
   </div>
   <script>
