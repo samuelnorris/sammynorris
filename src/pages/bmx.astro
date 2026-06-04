@@ -414,6 +414,15 @@ export const prerender = true;
   canvas.setAttribute("tabindex", "0");
   // Ensure overlay is shown at the start.
   overlay.classList.add("show");
+
+  // Touch devices: swap the keyboard legend for the on-screen Hop/Flip buttons.
+  if (
+    window.matchMedia("(pointer: coarse)").matches ||
+    "ontouchstart" in window ||
+    navigator.maxTouchPoints > 0
+  ) {
+    document.body.classList.add("is-touch");
+  }
 </script>
 
 <style>
@@ -574,10 +583,11 @@ export const prerender = true;
   }
   .touch__btn:active { transform: scale(0.97); }
 
-  @media (pointer: coarse) {
-    .touch { display: flex; }
-    .controls { display: none; }
-  }
+  /* Touch devices get the on-screen buttons; the keyboard legend is hidden.
+     Detected in JS (pointer/touch capability) so it's reliable across phones,
+     tablets, and touch laptops — not just a media-query guess. */
+  :global(body.is-touch) .touch { display: flex; }
+  :global(body.is-touch) .controls { display: none; }
 
   /* ---- Footer ---- */
   .case-footer {
