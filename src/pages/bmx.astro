@@ -1,0 +1,597 @@
+---
+import Layout from "../layouts/Layout.astro";
+import BackButton from "../components/BackButton.astro";
+export const prerender = true;
+---
+
+<Layout
+  title="BMX - Sammy Norris"
+  description="A tiny BMX trick game. Hop off the hills, spin some flips, and try to land it clean."
+>
+  <!-- Back nav -->
+  <nav class="case-nav">
+    <BackButton href="/" label="Back to home" />
+  </nav>
+
+  <section class="game">
+    <header class="game__head">
+      <h1 class="game__title">BMX</h1>
+      <p class="game__lede">Hop the hills, spin the flips, land it clean.</p>
+    </header>
+
+    <div class="stage">
+      <canvas id="bmx-canvas" role="img"
+        aria-label="A side-scrolling BMX game. Ride over rolling hills, hop to launch, and rotate in the air for tricks."></canvas>
+
+      <!-- Overlay: start / game over -->
+      <div id="overlay" class="overlay">
+        <div class="overlay__card">
+          <p id="overlay-title" class="overlay__title">Ready to ride?</p>
+          <p id="overlay-sub" class="overlay__sub">Hop off ramps and flip for points. Land upright or you bail.</p>
+          <button id="start-btn" type="button" class="btn">Start riding</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls" aria-label="Controls">
+      <div class="controls__row">
+        <span class="key-combo">
+          <kbd>Space</kbd><span class="key-or">/</span><kbd>↑</kbd>
+        </span>
+        <span class="controls__label">Hop</span>
+      </div>
+      <div class="controls__row">
+        <span class="key-combo">
+          <kbd>←</kbd><span class="key-or">/</span><kbd>→</kbd>
+        </span>
+        <span class="controls__label">Flip in the air</span>
+      </div>
+      <div class="controls__row">
+        <span class="key-combo"><kbd>R</kbd></span>
+        <span class="controls__label">Restart</span>
+      </div>
+    </div>
+
+    <!-- Touch controls (mobile) -->
+    <div class="touch" aria-hidden="true">
+      <button id="touch-flip" type="button" class="touch__btn">Flip</button>
+      <button id="touch-hop" type="button" class="touch__btn touch__btn--primary">Hop</button>
+    </div>
+  </section>
+
+  <footer class="case-footer">
+    <span class="b4">&copy; 2026 Sammy Norris</span>
+  </footer>
+</Layout>
+
+<script>
+  type Phase = "ready" | "playing" | "over";
+
+  const canvas = document.getElementById("bmx-canvas") as HTMLCanvasElement;
+  const ctx = canvas.getContext("2d")!;
+  const overlay = document.getElementById("overlay")!;
+  const overlayTitle = document.getElementById("overlay-title")!;
+  const overlaySub = document.getElementById("overlay-sub")!;
+  const startBtn = document.getElementById("start-btn") as HTMLButtonElement;
+  const touchHop = document.getElementById("touch-hop") as HTMLButtonElement;
+  const touchFlip = document.getElementById("touch-flip") as HTMLButtonElement;
+
+  // ---- Theme-aware colours (read from CSS custom properties) ----
+  const css = (name: string) =>
+    getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  let COL = { bg: "", ink: "", accent: "", ground: "" };
+  const readColours = () => {
+    COL = {
+      bg: css("--color-bg") || "#1E1E1E",
+      ink: css("--color-primary") || "#fff",
+      accent: css("--color-secondary") || "#FF6A00",
+      ground: css("--color-tertiary") || "#6E6E6E",
+    };
+  };
+  readColours();
+
+  // ---- Canvas sizing (handles device pixel ratio + resize) ----
+  let W = 0, H = 0, DPR = 1;
+  const resize = () => {
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = canvas.getBoundingClientRect();
+    W = rect.width;
+    H = rect.height;
+    canvas.width = Math.round(W * DPR);
+    canvas.height = Math.round(H * DPR);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  };
+
+  // ---- Terrain: smooth rolling hills from layered sines ----
+  const GROUND = () => H * 0.62; // baseline ground height
+  const terrainY = (x: number) => {
+    const b = GROUND();
+    return (
+      b -
+      Math.sin(x * 0.0042) * (H * 0.16) -
+      Math.sin(x * 0.011 + 1.3) * (H * 0.07) -
+      Math.sin(x * 0.027 + 0.5) * (H * 0.025)
+    );
+  };
+  // Slope angle of the terrain at x (radians).
+  const terrainAngle = (x: number) => {
+    const d = 4;
+    return Math.atan2(terrainY(x + d) - terrainY(x - d), 2 * d);
+  };
+
+  // ---- Game state ----
+  type Bike = {
+    x: number; y: number; vy: number;
+    angle: number; spin: number; onGround: boolean;
+    rotAcc: number; // radians accumulated this air-time
+  };
+  let phase: Phase = "ready";
+  let bike: Bike;
+  let speed = 0;
+  let score = 0;
+  let best = Number(localStorage.getItem("bmx-best") || 0);
+  let flips = 0;
+  let flash = 0; // landing celebration flash timer
+  const keys = new Set<string>();
+
+  const BASE_SPEED = 4.6;
+  const GRAVITY = 0.5;
+  const HOP = 14;
+  const SPIN_RATE = 0.16;
+  const LAND_TOLERANCE = 1.4; // radians (~80°) you can be off upright and still land
+  const CAM_X = 0.28; // bike sits this far across the screen
+
+  const reset = () => {
+    const startX = 200;
+    bike = {
+      x: startX,
+      y: terrainY(startX),
+      vy: 0,
+      angle: terrainAngle(startX),
+      spin: 0,
+      onGround: true,
+      rotAcc: 0,
+    };
+    speed = BASE_SPEED;
+    score = 0;
+    flips = 0;
+    flash = 0;
+  };
+
+  const start = () => {
+    reset();
+    phase = "playing";
+    overlay.classList.remove("show");
+    canvas.focus();
+  };
+
+  const gameOver = () => {
+    phase = "over";
+    best = Math.max(best, Math.floor(score));
+    localStorage.setItem("bmx-best", String(best));
+    overlayTitle.textContent = "You bailed!";
+    overlaySub.innerHTML =
+      `Score <strong>${Math.floor(score)}</strong> · Best <strong>${best}</strong>`;
+    startBtn.textContent = "Ride again";
+    overlay.classList.add("show");
+  };
+
+  // ---- Input ----
+  const doHop = () => {
+    if (phase === "playing" && bike.onGround) {
+      bike.vy = -HOP;
+      bike.onGround = false;
+      bike.rotAcc = 0;
+    }
+  };
+  const normAngleToGround = (a: number) => {
+    // smallest distance from angle to a "wheels-down" orientation (mod 2π)
+    let d = ((a % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+    if (d > Math.PI) d -= Math.PI * 2;
+    return Math.abs(d);
+  };
+
+  window.addEventListener("keydown", (e) => {
+    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(e.key))
+      e.preventDefault();
+    if (e.repeat) return;
+    keys.add(e.key);
+    if (e.key === " " || e.key === "ArrowUp") {
+      if (phase === "ready" || phase === "over") start();
+      else doHop();
+    }
+    if ((e.key === "r" || e.key === "R") && phase !== "ready") start();
+  });
+  window.addEventListener("keyup", (e) => keys.delete(e.key));
+
+  startBtn.addEventListener("click", start);
+
+  // Touch / pointer
+  const press = (set: boolean, key: string) =>
+    set ? keys.add(key) : keys.delete(key);
+  touchHop.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    if (phase === "playing") doHop();
+    else start();
+  });
+  touchFlip.addEventListener("pointerdown", (e) => { e.preventDefault(); press(true, "ArrowLeft"); });
+  touchFlip.addEventListener("pointerup", () => press(false, "ArrowLeft"));
+  touchFlip.addEventListener("pointercancel", () => press(false, "ArrowLeft"));
+  touchFlip.addEventListener("pointerleave", () => press(false, "ArrowLeft"));
+
+  // ---- Update ----
+  const update = () => {
+    if (phase !== "playing") return;
+
+    // Forward motion; a touch faster downhill, slower uphill for "feel".
+    const slope = terrainAngle(bike.x);
+    speed = BASE_SPEED + Math.sin(slope) * 2.2;
+    speed = Math.max(2.6, speed);
+    bike.x += speed;
+    score += speed * 0.05;
+
+    const tY = terrainY(bike.x);
+
+    if (bike.onGround) {
+      bike.y = tY;
+      // ease the bike to follow the slope
+      const target = terrainAngle(bike.x);
+      bike.angle += (target - bike.angle) * 0.25;
+      bike.vy = 0;
+    } else {
+      // airborne
+      bike.vy += GRAVITY;
+      bike.y += bike.vy;
+
+      // flip with left/right
+      let s = 0;
+      if (keys.has("ArrowLeft")) s -= SPIN_RATE;
+      if (keys.has("ArrowRight")) s += SPIN_RATE;
+      bike.angle += s;
+      bike.rotAcc += Math.abs(s);
+
+      // landing — judged against world-upright (wheels down), not the slope,
+      // so a plain hop is forgiving and only a head-first angle bails you.
+      if (bike.y >= terrainY(bike.x) && bike.vy > 0) {
+        const off = normAngleToGround(bike.angle);
+        if (off < LAND_TOLERANCE) {
+          // clean landing
+          const fl = Math.floor(bike.rotAcc / (Math.PI * 2));
+          if (fl > 0) {
+            flips += fl;
+            score += fl * 50;
+            flash = 1;
+          }
+          bike.y = terrainY(bike.x);
+          bike.onGround = true;
+          bike.angle = terrainAngle(bike.x);
+          bike.rotAcc = 0;
+        } else {
+          gameOver();
+        }
+      }
+    }
+    if (flash > 0) flash = Math.max(0, flash - 0.04);
+  };
+
+  // ---- Draw ----
+  const drawBike = (px: number, py: number, angle: number) => {
+    ctx.save();
+    ctx.translate(px, py);
+    ctx.rotate(angle);
+    const r = 9; // wheel radius
+    const wb = 13; // half wheelbase
+    ctx.lineWidth = 2.2;
+    ctx.strokeStyle = COL.ink;
+    ctx.fillStyle = "transparent";
+    // wheels
+    ctx.beginPath(); ctx.arc(-wb, 0, r, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(wb, 0, r, 0, Math.PI * 2); ctx.stroke();
+    // frame
+    ctx.strokeStyle = COL.accent;
+    ctx.beginPath();
+    ctx.moveTo(-wb, 0); ctx.lineTo(0, -8); ctx.lineTo(wb, 0);
+    ctx.moveTo(0, -8); ctx.lineTo(-4, 0); ctx.lineTo(-wb, 0);
+    ctx.stroke();
+    // handlebar + seat posts
+    ctx.beginPath();
+    ctx.moveTo(wb, 0); ctx.lineTo(wb + 2, -11);
+    ctx.moveTo(0, -8); ctx.lineTo(-2, -13);
+    ctx.stroke();
+    // rider (simple stick)
+    ctx.strokeStyle = COL.ink;
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.moveTo(-3, -12); ctx.lineTo(2, -22); // torso
+    ctx.lineTo(wb, -10); // arm to bars
+    ctx.moveTo(2, -22); ctx.lineTo(-4, -1); // leg to pedals
+    ctx.stroke();
+    ctx.fillStyle = COL.ink;
+    ctx.beginPath(); ctx.arc(3, -25, 3, 0, Math.PI * 2); ctx.fill(); // head
+    ctx.restore();
+  };
+
+  const draw = () => {
+    ctx.clearRect(0, 0, W, H);
+
+    // camera offset so the bike stays at CAM_X across the canvas
+    const camX = bike.x - W * CAM_X;
+
+    // ground fill
+    ctx.beginPath();
+    ctx.moveTo(0, H);
+    for (let sx = 0; sx <= W; sx += 6) {
+      ctx.lineTo(sx, terrainY(sx + camX));
+    }
+    ctx.lineTo(W, H);
+    ctx.closePath();
+    const g = ctx.createLinearGradient(0, GROUND() - H * 0.2, 0, H);
+    g.addColorStop(0, COL.ground);
+    g.addColorStop(1, COL.bg);
+    ctx.globalAlpha = 0.28;
+    ctx.fillStyle = g;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // ground stroke line
+    ctx.beginPath();
+    for (let sx = 0; sx <= W; sx += 6) {
+      const y = terrainY(sx + camX);
+      sx === 0 ? ctx.moveTo(sx, y) : ctx.lineTo(sx, y);
+    }
+    ctx.strokeStyle = COL.ground;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // bike (in screen space)
+    drawBike(bike.x - camX, bike.y, bike.angle);
+
+    // HUD
+    ctx.fillStyle = COL.ink;
+    ctx.font = "600 22px Geist, system-ui, sans-serif";
+    ctx.textBaseline = "top";
+    ctx.fillText(String(Math.floor(score)), 18, 16);
+    ctx.font = "400 12px Geist, system-ui, sans-serif";
+    ctx.globalAlpha = 0.6;
+    ctx.fillText("SCORE", 18, 42);
+    ctx.globalAlpha = 1;
+    if (best > 0) {
+      ctx.textAlign = "right";
+      ctx.font = "400 12px Geist, system-ui, sans-serif";
+      ctx.globalAlpha = 0.6;
+      ctx.fillText("BEST " + best, W - 18, 20);
+      ctx.globalAlpha = 1;
+      ctx.textAlign = "left";
+    }
+
+    // in-air spin meter
+    if (phase === "playing" && !bike.onGround && bike.rotAcc > 0.4) {
+      const fl = (bike.rotAcc / (Math.PI * 2));
+      ctx.fillStyle = COL.accent;
+      ctx.font = "600 16px Geist, system-ui, sans-serif";
+      ctx.textAlign = "center";
+      const label = fl >= 1 ? `${Math.floor(fl)}× FLIP!` : "spin…";
+      ctx.fillText(label, bike.x - camX, bike.y - 56);
+      ctx.textAlign = "left";
+    }
+
+    // clean-landing flash
+    if (flash > 0) {
+      ctx.fillStyle = COL.accent;
+      ctx.globalAlpha = flash * 0.6;
+      ctx.font = "600 20px Geist, system-ui, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("NICE!", bike.x - camX, bike.y - 70);
+      ctx.textAlign = "left";
+      ctx.globalAlpha = 1;
+    }
+  };
+
+  // ---- Loop ----
+  let raf = 0;
+  const loop = () => {
+    update();
+    draw();
+    raf = requestAnimationFrame(loop);
+  };
+
+  // ---- Boot ----
+  const boot = () => {
+    resize();
+    reset();
+    draw();
+  };
+  window.addEventListener("resize", () => { resize(); if (phase !== "playing") draw(); });
+  // Re-read theme colours when the toggle flips the .dark class.
+  new MutationObserver(readColours).observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"],
+  });
+
+  boot();
+  raf = requestAnimationFrame(loop);
+  canvas.setAttribute("tabindex", "0");
+  // Ensure overlay is shown at the start.
+  overlay.classList.add("show");
+</script>
+
+<style>
+  .case-nav { position: fixed; top: 24px; left: 24px; z-index: 100; }
+
+  .game {
+    padding: 120px 6vw 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .game__head { display: flex; flex-direction: column; gap: 10px; }
+  .game__title {
+    font-family: var(--font-serif);
+    font-size: clamp(3rem, 8vw, 6rem);
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    font-weight: 400;
+    margin: 0;
+  }
+  .game__lede {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+    color: var(--color-secondary);
+    margin: 0;
+  }
+
+  /* ---- Stage / canvas ---- */
+  .stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--color-tertiary);
+    background:
+      radial-gradient(120% 80% at 50% 0%,
+        color-mix(in srgb, var(--color-secondary) 10%, transparent),
+        transparent 60%),
+      var(--color-card-image-bg);
+  }
+  #bmx-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    outline: none;
+  }
+
+  /* ---- Overlay ---- */
+  .overlay {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--color-bg) 55%, transparent);
+    backdrop-filter: blur(3px);
+  }
+  .overlay.show { display: flex; }
+  .overlay__card {
+    text-align: center;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    max-width: 420px;
+  }
+  .overlay__title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    line-height: 1.1;
+    margin: 0;
+  }
+  .overlay__sub {
+    font-size: var(--text-b2);
+    font-weight: 300;
+    opacity: 0.8;
+    margin: 0;
+    line-height: 1.5;
+  }
+  .overlay__sub :global(strong) { color: var(--color-secondary); font-weight: 500; }
+
+  .btn {
+    margin-top: 6px;
+    padding: 12px 24px;
+    border-radius: 99px;
+    border: 1px solid var(--color-secondary);
+    background: var(--color-secondary);
+    color: #fff;
+    font-family: var(--font-sans);
+    font-size: var(--text-b2);
+    font-weight: 400;
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.2s ease;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0); }
+
+  /* ---- Controls legend ---- */
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 28px;
+    align-items: center;
+  }
+  .controls__row { display: inline-flex; align-items: center; gap: 10px; }
+  .key-combo { display: inline-flex; align-items: center; gap: 4px; }
+  .key-or { opacity: 0.4; font-size: var(--text-b3); }
+  kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 30px;
+    padding: 0 8px;
+    border-radius: 7px;
+    border: 1px solid var(--color-tertiary);
+    border-bottom-width: 2px;
+    background: var(--color-card-bg);
+    color: var(--color-primary);
+    font-family: var(--font-sans);
+    font-size: var(--text-b3);
+    font-weight: 400;
+  }
+  .controls__label {
+    font-size: var(--text-b3);
+    font-weight: 300;
+    opacity: 0.8;
+  }
+
+  /* ---- Touch controls (hidden unless coarse pointer) ---- */
+  .touch { display: none; gap: 12px; }
+  .touch__btn {
+    flex: 1;
+    padding: 18px;
+    border-radius: 14px;
+    border: 1px solid var(--color-tertiary);
+    background: var(--color-card-bg);
+    color: var(--color-primary);
+    font-family: var(--font-sans);
+    font-size: var(--text-b1);
+    font-weight: 400;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+  }
+  .touch__btn--primary {
+    border-color: var(--color-secondary);
+    background: var(--color-secondary);
+    color: #fff;
+  }
+  .touch__btn:active { transform: scale(0.97); }
+
+  @media (pointer: coarse) {
+    .touch { display: flex; }
+    .controls { display: none; }
+  }
+
+  /* ---- Footer ---- */
+  .case-footer {
+    padding: 48px 6vw;
+    display: flex;
+    justify-content: flex-start;
+    color: var(--color-primary);
+    opacity: 0.65;
+  }
+
+  @media (max-width: 768px) {
+    .case-nav { top: 20px; left: 20px; }
+    .game { padding: 96px 20px 32px; gap: 20px; }
+    .stage { aspect-ratio: 4 / 3; border-radius: 12px; }
+    .case-footer { padding: 32px 20px; }
+  }
+</style>
