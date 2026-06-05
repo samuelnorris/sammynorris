@@ -84,37 +84,12 @@ const ogImageURL = new URL(ogImage, Astro.site ?? "https://www.sammynorris.com")
 
     <title>{title}</title>
   </head>
-  <style>
-    .getfit-bar {
-      padding: 0 10vw 48px;
-      display: flex;
-    }
-    .getfit-link {
-      font-family: var(--font-sans);
-      font-size: var(--text-b3);
-      font-weight: 300;
-      color: var(--color-primary);
-      opacity: 0.5;
-      text-decoration: none;
-      letter-spacing: -0.01em;
-      transition: opacity 0.2s ease;
-    }
-    .getfit-link:hover { opacity: 1; }
-    @media (max-width: 768px) {
-      .getfit-bar { padding: 0 20px 40px; }
-    }
-  </style>
   <body class="page-enter">
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <ThemeToggle delayed={isHomepage} />
     <main id="main-content" tabindex="-1">
       <slot />
     </main>
-    {!isHomepage && (
-      <div class="getfit-bar">
-        <a href="/bmx" class="getfit-link">Get fit</a>
-      </div>
-    )}
     <script is:inline>
       (function () {
         var original = document.title;
