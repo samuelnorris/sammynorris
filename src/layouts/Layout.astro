@@ -1,4 +1,5 @@
 ---
+import { Analytics } from "@vercel/analytics/astro";
 import ThemeToggle from "../components/ThemeToggle.astro";
 import "../styles/global.css";
 
@@ -183,5 +184,6 @@ const ogImageURL = new URL(ogImage, Astro.site ?? "https://www.sammynorris.com")
         if (target) target.focus();
       });
     </script>
+    <Analytics />
   </body>
 </html>
