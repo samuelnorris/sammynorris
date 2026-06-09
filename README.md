@@ -14,7 +14,6 @@ Built with [Astro](https://astro.build), hand-written CSS, and deployed on Verce
 
 ```sh
 npm install
-cp .env.example .env   # then set COMMISSION_PASSWORD
 npm run dev            # http://localhost:4321
 ```
 
@@ -28,12 +27,13 @@ npm run dev            # http://localhost:4321
 
 ## Environment variables
 
-| Variable              | Purpose                                              |
-| --------------------- | --------------------------------------------------- |
-| `COMMISSION_PASSWORD` | Password for the gated `/commission` case study.    |
+| Variable              | Purpose                                                       |
+| --------------------- | ------------------------------------------------------------- |
+| `COMMISSION_PASSWORD` | Optional override for the `/commission` case study password.  |
 
-Set it locally in `.env` and on Vercel under Project Settings → Environment
-Variables. If it's unset the commission page stays locked for everyone.
+If it's unset, the default password in `src/middleware.ts` is used. To
+override it, set it locally in `.env` (copy `.env.example`) and on Vercel
+under Project Settings → Environment Variables.
 
 ## Structure
 

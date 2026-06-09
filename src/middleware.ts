@@ -1,8 +1,8 @@
 import { defineMiddleware } from "astro:middleware";
 
 // Set COMMISSION_PASSWORD in your environment (.env locally, project settings
-// on Vercel). Empty string = fail closed: nobody gets in until it's configured.
-const PASSWORD = import.meta.env.COMMISSION_PASSWORD ?? "";
+// on Vercel) to override the default password.
+const PASSWORD = import.meta.env.COMMISSION_PASSWORD || "bmx";
 const COOKIE_NAME = "commission-auth";
 
 // Only the commission page is gated.
