@@ -6,6 +6,12 @@ const PASSWORD = import.meta.env.SITE_PASSWORD ?? "";
 const COOKIE_NAME = "site-auth";
 
 export const onRequest = defineMiddleware(async (context, next) => {
+  // Local dev (`astro dev`) skips the gate entirely — the password only
+  // protects the deployed site.
+  if (import.meta.env.DEV) {
+    return next();
+  }
+
   if (context.isPrerendered) {
     return next();
   }
