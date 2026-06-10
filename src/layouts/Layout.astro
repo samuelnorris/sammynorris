@@ -1,5 +1,6 @@
 ---
 import Analytics from "@vercel/analytics/astro";
+import BmxBike from "../components/BmxBike.astro";
 import ThemeToggle from "../components/ThemeToggle.astro";
 import "../styles/global.css";
 
@@ -87,6 +88,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? "https://www.sammynorris.com")
   </head>
   <body class="page-enter">
     <a href="#main-content" class="skip-link">Skip to main content</a>
+    <BmxBike delayed={isHomepage} />
     <ThemeToggle delayed={isHomepage} />
     <main id="main-content" tabindex="-1">
       <slot />
