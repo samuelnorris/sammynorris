@@ -1,12 +1,9 @@
 import { defineMiddleware } from "astro:middleware";
 
-// Set COMMISSION_PASSWORD in your environment (.env locally, project settings
-// on Vercel) to override the default password.
-const PASSWORD = import.meta.env.COMMISSION_PASSWORD || "bmx";
-const COOKIE_NAME = "commission-auth";
-
-// Only the commission page is gated.
-const GATED_PATHS = new Set(["/commission"]);
+// Set SITE_PASSWORD in your environment (.env locally, project settings on
+// Vercel). Empty string = fail closed: nobody gets in until it's configured.
+const PASSWORD = import.meta.env.SITE_PASSWORD ?? "";
+const COOKIE_NAME = "site-auth";
 
 export const onRequest = defineMiddleware(async (context, next) => {
   if (context.isPrerendered) {
@@ -14,11 +11,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   const url = new URL(context.request.url);
-
-  // Let everything through except gated paths.
-  if (!GATED_PATHS.has(url.pathname)) {
-    return next();
-  }
+  const pathname = url.pathname;
 
   const cookie = context.cookies.get(COOKIE_NAME);
 
@@ -36,7 +29,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
       secure: import.meta.env.PROD,
       sameSite: "lax",
     });
-    return context.redirect("/commission");
+    return context.redirect(pathname);
   }
 
   const wrong = attempt !== null && attempt !== PASSWORD;
@@ -121,14 +114,15 @@ export const onRequest = defineMiddleware(async (context, next) => {
     <button id="submit">Enter</button>
   </div>
   <script>
+    var dest = ${JSON.stringify(pathname)};
     document.getElementById('submit').addEventListener('click', function() {
       var pw = document.getElementById('pw').value;
-      window.location.href = '/commission?pw=' + encodeURIComponent(pw);
+      window.location.href = dest + '?pw=' + encodeURIComponent(pw);
     });
     document.getElementById('pw').addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         var pw = document.getElementById('pw').value;
-        window.location.href = '/commission?pw=' + encodeURIComponent(pw);
+        window.location.href = dest + '?pw=' + encodeURIComponent(pw);
       }
     });
   </script>
