@@ -1,11 +1,11 @@
 /* ===================== Case study layout =====================
    Shared CSS for the six project pages (commission, ekeg, gener8,
    larkbury, porsche, toyota). Spacing hierarchy:
-     Tier 1 — Page break:    128px
-     Tier 2 — Section break:  96px
-     Tier 3 — Sub-section:    48–64px
-     Tier 4 — Group:          32px
-     Tier 5 — Element:        16–24px
+     Tier 1, Page break:    128px
+     Tier 2, Section break:  96px
+     Tier 3, Sub-section:    48 to 64px
+     Tier 4, Group:          32px
+     Tier 5, Element:        16 to 24px
 */
 
 .case-nav { position: fixed; top: 24px; left: 24px; z-index: 100; }
