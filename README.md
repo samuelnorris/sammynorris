@@ -1,6 +1,6 @@
 # sammynorris.com
 
-Personal portfolio for Sammy Norris — Senior Product Designer.
+Personal portfolio for Sammy Norris, Senior Product Designer.
 Built with [Astro](https://astro.build), hand-written CSS, and deployed on Vercel.
 
 ## Stack

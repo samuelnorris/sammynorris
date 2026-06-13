@@ -3,7 +3,7 @@
   --font-serif: "Instrument Serif", serif;
   --font-sans: "Geist", system-ui, sans-serif;
 
-  /* Type scale — matches Framer text styles */
+  /* Type scale: matches Framer text styles */
   --text-h1: 136px;
   --text-h1-mob: 72px;
   --text-h2: 64px;
@@ -15,7 +15,7 @@
   --text-b3: 14px;
   --text-b4: 12px;
 
-  /* Colour tokens — light mode */
+  /* Colour tokens: light mode */
   /* NOTE: these match current Framer values, not your earlier palette notes */
   --color-bg: #F0F0F0;
   --color-primary: #212121;

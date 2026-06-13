@@ -32,7 +32,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? "https://www.sammynorris.com")
  <script is:inline>
       (function() {
         var theme = localStorage.getItem('theme');
-        // Dark is the default — only opt out when explicitly set to 'light'.
+        // Dark is the default; only opt out when explicitly set to 'light'.
         if (theme !== 'light') {
           document.documentElement.classList.add('dark');
         }
@@ -123,7 +123,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? "https://www.sammynorris.com")
       })();
     </script>
     <script is:inline>
-      // Page transition — intercept internal links and slide out before navigating
+      // Page transition: intercept internal links and slide out before navigating
       document.addEventListener('click', function (e) {
         var link = e.target.closest('a[href]');
         if (!link || link.target === '_blank') return;
