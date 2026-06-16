@@ -5,7 +5,7 @@ Built with [Astro](https://astro.build), hand-written CSS, and deployed on Verce
 
 ## Stack
 
-- **Astro 6** (`output: 'server'`, pages prerendered except the gated `/commission`)
+- **Astro 6** (`output: 'server'`); a password gate in `src/middleware.ts` protects the deployed site
 - **Vercel** adapter for deployment
 - Custom CSS with design tokens in `src/styles/global.css` (no UI framework)
 - Fonts: Instrument Serif + Geist (Google Fonts)
@@ -27,13 +27,12 @@ npm run dev            # http://localhost:4321
 
 ## Environment variables
 
-| Variable              | Purpose                                                       |
-| --------------------- | ------------------------------------------------------------- |
-| `COMMISSION_PASSWORD` | Optional override for the `/commission` case study password.  |
+| Variable        | Purpose                                                                          |
+| --------------- | -------------------------------------------------------------------------------- |
+| `SITE_PASSWORD` | Password for the gated site. If unset in production, the gate fails closed.       |
 
-If it's unset, the default password in `src/middleware.ts` is used. To
-override it, set it locally in `.env` (copy `.env.example`) and on Vercel
-under Project Settings → Environment Variables.
+Set it on Vercel under Project Settings → Environment Variables, and locally
+in `.env` (copy `.env.example`). Local `astro dev` skips the gate entirely.
 
 ## Structure
 

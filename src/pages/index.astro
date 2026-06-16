@@ -19,7 +19,7 @@ const projects = [
   <header class="hero">
     <div class="hero__content">
       <BmxBike delayed />
-      <h1 class="hero__name h1" id="typewriter" aria-label="Sammy Norris"></h1>
+      <h1 class="hero__name h1" id="typewriter" aria-label="Sammy Norris">Sammy Norris</h1>
       <p class="hero__tagline">Product <span style="color: var(--color-secondary);">designer</span> currently living in a regulated world.</p>
     </div>
   </header>
@@ -37,11 +37,15 @@ const projects = [
         >
           <div class="card__image">
             <picture>
-              <source media="(max-width: 768px)" srcset={`/images/projects/${project.slug}-mobile.png`} />
+              <source media="(max-width: 768px)" type="image/webp" srcset={`/images/projects/${project.slug}-mobile.webp`} width="1125" height="1500" />
+              <source media="(max-width: 768px)" srcset={`/images/projects/${project.slug}-mobile.png`} width="1125" height="1500" />
+              <source type="image/webp" srcset={`/images/projects/${project.slug}-desktop.webp`} width="2000" height="1500" />
               <img
                 src={`/images/projects/${project.slug}-desktop.png`}
                 alt=""
                 loading="lazy"
+                width="2000"
+                height="1500"
               />
             </picture>
           </div>
@@ -97,18 +101,7 @@ const projects = [
 </Layout>
 
 <script>
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("revealed");
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
-  );
-  document.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
+  import "../scripts/reveal.ts";
 
   (function () {
     const el = document.getElementById("typewriter");
@@ -133,6 +126,9 @@ const projects = [
       return;
     }
     sessionStorage.setItem('sn-intro-played', '1');
+
+    // Clear the server-rendered name so the typewriter builds it from empty.
+    el.textContent = "";
 
     const typeSpeed = 200;
     const deleteSpeed = 100;
@@ -197,8 +193,14 @@ const projects = [
         .catch(function () {});
     }
 
-    update();
-    setInterval(update, 5000);
+    // Poll only while the tab is visible; pause when it's backgrounded.
+    var timer = null;
+    function start() { if (!timer) { update(); timer = setInterval(update, 5000); } }
+    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stop(); else start();
+    });
+    start();
   })();
 
 </script>

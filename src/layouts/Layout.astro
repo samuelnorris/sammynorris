@@ -7,17 +7,30 @@ interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  ogImageAlt?: string;
 }
 
 const {
   title = "Sammy Norris",
   description = "A product designer based in London, specialising in creating clear, intuitive, and accessible digital experiences. Skilled across UI and UX design, research, service blueprints, and full product journeys.",
   ogImage = "/social-preview.jpg",
+  ogImageAlt = "Sammy Norris, a product designer based in London",
 } = Astro.props;
 
 const isHomepage = Astro.url.pathname === "/";
-const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? "https://www.sammynorris.com").toString();
-const ogImageURL = new URL(ogImage, Astro.site ?? "https://www.sammynorris.com").toString();
+const siteOrigin = Astro.site ?? "https://www.sammynorris.com";
+const canonicalURL = new URL(Astro.url.pathname, siteOrigin).toString();
+const ogImageURL = new URL(ogImage, siteOrigin).toString();
+
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Sammy Norris",
+  url: new URL("/", siteOrigin).toString(),
+  jobTitle: "Senior Product Designer",
+  description,
+  sameAs: ["https://www.linkedin.com/in/sammy-norris-b0090912a/"],
+};
 ---
 <!doctype html>
 <!--
@@ -69,6 +82,7 @@ const ogImageURL = new URL(ogImage, Astro.site ?? "https://www.sammynorris.com")
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImageURL} />
+    <meta property="og:image:alt" content={ogImageAlt} />
     <meta property="og:site_name" content="Sammy Norris" />
 
     <!-- Twitter -->
@@ -76,14 +90,18 @@ const ogImageURL = new URL(ogImage, Astro.site ?? "https://www.sammynorris.com")
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageURL} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@200;300;400;500&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL@20,300,0&icon_names=dark_mode,light_mode&display=block" rel="stylesheet" />
 
     <title>{title}</title>
+
+    {isHomepage && (
+      <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+    )}
   </head>
   <body class="page-enter">
     <a href="#main-content" class="skip-link">Skip to main content</a>

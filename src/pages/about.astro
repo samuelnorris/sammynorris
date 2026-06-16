@@ -107,6 +107,8 @@ import BackButton from "../components/BackButton.astro";
 </Layout>
 
 <script>
+  import "../scripts/reveal.ts";
+
   // Hero greeting: type a greeting, hold, delete, type the next language, loop
   (() => {
     const el = document.getElementById('greeting');
@@ -150,19 +152,6 @@ import BackButton from "../components/BackButton.astro";
     };
     typeWord(greetings[gi], 0);
   })();
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("revealed");
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
-  );
-  document.querySelectorAll("[data-reveal]").forEach((el) => observer.observe(el));
 
   // Hide chevron when pills are scrolled to end
   const pillsContainer = document.querySelector('.timeline__pills');
