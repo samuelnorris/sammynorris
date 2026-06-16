@@ -323,6 +323,17 @@ const projects = [
     transform: translateY(-4px);
   }
 
+  /* Keyboard focus: snap the card fully visible with a clear ring straight away.
+     The scroll-reveal starts cards at opacity:0, so without this the focus ring
+     is painted on an invisible card and keyboard users cannot track focus. */
+  .card:focus-visible {
+    opacity: 1;
+    transform: translateY(-4px);
+    outline: 3px solid var(--color-secondary);
+    outline-offset: 3px;
+    transition: none;
+  }
+
   .card__image {
     border-radius: 6px;
     overflow: hidden;
