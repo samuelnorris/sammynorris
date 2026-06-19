@@ -49,12 +49,17 @@ import BmxBike from "../components/BmxBike.astro";
         <div class="overlay__card">
           <p class="overlay__eyebrow">BMX</p>
           <h2 class="overlay__title">Halfpipe</h2>
-          <ul class="controls">
+          <ul class="controls controls--keys">
             <li><span class="key">←</span><span class="key">→</span><span>or</span><span class="key">A</span><span class="key">D</span> &nbsp;pump up the walls &amp; build speed</li>
             <li><span class="hint">In the air</span> tap <span class="key">←</span><span class="key">→</span> to <strong>spin 180°</strong> (tap again for more)</li>
-            <li><span class="hint">Flip</span> tap <span class="key">↑</span><span class="key">↓</span> for back / front flips — or the ↻ button</li>
+            <li><span class="hint">Flip</span> tap <span class="key">↑</span><span class="key">↓</span> for back / front flips</li>
             <li><span class="hint">Auto-land</span> the bike always drops back in the right way up</li>
-            <li><span class="hint">Touch</span> hold the left / right half of the screen</li>
+          </ul>
+          <ul class="controls controls--touch">
+            <li><span class="hint">Hold</span> the left / right side to pump up the walls</li>
+            <li><span class="hint">In the air</span> tap the left / right side to <strong>spin 180°</strong> (tap again for more)</li>
+            <li><span class="hint">Flip</span> tap the <span class="ico">↻</span> button to backflip</li>
+            <li><span class="hint">Auto-land</span> the bike always drops back in the right way up</li>
           </ul>
           <button class="overlay__btn" id="btn-start" type="button">Drop in</button>
         </div>
@@ -130,6 +135,9 @@ import BmxBike from "../components/BmxBike.astro";
         var(--color-bg) 100%);
     touch-action: none;
     user-select: none;
+    -webkit-user-select: none;       /* iOS Safari ignores the unprefixed one */
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
   /* Fixed logical 900x560 world, scaled to fit the stage by JS. */
@@ -324,6 +332,21 @@ import BmxBike from "../components/BmxBike.astro";
     color: var(--color-secondary);
     font-weight: 400;
   }
+  .ico {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: 1px solid var(--color-tertiary);
+    border-radius: 50%;
+  }
+  /* Show keyboard controls on pointer devices, touch controls on touchscreens. */
+  .controls--touch { display: none; }
+  @media (pointer: coarse) {
+    .controls--keys { display: none; }
+    .controls--touch { display: flex; }
+  }
   .overlay__btn {
     margin-top: 8px;
     padding: 12px 28px;
@@ -382,6 +405,8 @@ import BmxBike from "../components/BmxBike.astro";
     color: var(--color-primary);
     font-family: var(--font-sans);
     font-size: var(--text-b3);
+    user-select: text;
+    -webkit-user-select: text;
   }
   .score-save__input:focus-visible {
     outline: 2px solid var(--color-secondary);
