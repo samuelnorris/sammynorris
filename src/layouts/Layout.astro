@@ -112,29 +112,14 @@ const personSchema = {
     <script is:inline>
       (function () {
         var original = document.title;
-        var messages = [
-          'Where did you go?',
-          "I'm still here you know",
-          'Okay this is awkward',
-          "I'll just be here then...",
-          'You forgot about me'
-        ];
         var timer = null;
-        var interval = null;
-        var index = 0;
         document.addEventListener('visibilitychange', function () {
           if (document.hidden) {
             timer = setTimeout(function () {
-              document.title = messages[0];
-              index = 1;
-              interval = setInterval(function () {
-                document.title = messages[index];
-                index = (index + 1) % messages.length;
-              }, 15000);
+              document.title = 'miss you';
             }, 15000);
           } else {
             if (timer) clearTimeout(timer);
-            if (interval) clearInterval(interval);
             document.title = original;
           }
         });
