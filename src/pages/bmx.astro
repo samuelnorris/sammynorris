@@ -38,7 +38,7 @@ import BmxBike from "../components/BmxBike.astro";
 
       <!-- Touch backflip button -->
       <button class="flip-btn" id="flip-btn" type="button" aria-label="Backflip">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M3.5 12a8.5 8.5 0 1 1 2.2 5.7" />
           <path d="M3.5 17.5v-5h5" />
         </svg>
@@ -58,7 +58,7 @@ import BmxBike from "../components/BmxBike.astro";
           <ul class="controls controls--touch">
             <li><span class="hint">Hold</span> the left / right side to pump up the walls</li>
             <li><span class="hint">In the air</span> tap the left / right side to <strong>spin 180°</strong> (tap again for more)</li>
-            <li><span class="hint">Flip</span> tap the <span class="ico">↻</span> button to backflip</li>
+            <li><span class="hint">Flip</span> tap the <span class="ico">↻</span> button to backflip — even just before you launch</li>
             <li><span class="hint">Auto-land</span> the bike always drops back in the right way up</li>
           </ul>
           <button class="overlay__btn" id="btn-start" type="button">Drop in</button>
@@ -197,14 +197,14 @@ import BmxBike from "../components/BmxBike.astro";
     right: 18px;
     bottom: 18px;
     z-index: 5;
-    width: 60px;
-    height: 60px;
+    width: 64px;
+    height: 64px;
     display: none;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
     border: 1px solid var(--color-tertiary);
-    background: color-mix(in srgb, var(--color-card-bg) 86%, transparent);
+    background: color-mix(in srgb, var(--color-card-bg) 92%, transparent);
     color: var(--color-primary);
     cursor: pointer;
     touch-action: none;
@@ -213,6 +213,11 @@ import BmxBike from "../components/BmxBike.astro";
   }
   .stage.playing .flip-btn { display: flex; }
   .flip-btn:active { border-color: var(--color-secondary); transform: scale(0.94); }
+  .flip-btn--armed {
+    border-color: var(--color-secondary);
+    color: var(--color-secondary);
+    background: color-mix(in srgb, var(--color-secondary) 22%, var(--color-card-bg));
+  }
 
   /* ---------- HUD ---------- */
   .hud {
@@ -534,7 +539,7 @@ import BmxBike from "../components/BmxBike.astro";
     .overlay__card { gap: 12px; }
     .overlay__title { font-size: clamp(2rem, 12vw, 3rem); }
     .controls { font-size: var(--text-b4); gap: 8px; }
-    .flip-btn { width: 64px; height: 64px; right: 14px; bottom: 14px; }
+    .flip-btn { width: 78px; height: 78px; right: 16px; bottom: 16px; }
     .board-btn { padding: 12px 26px; font-size: var(--text-b2); }
   }
 </style>
@@ -607,6 +612,7 @@ import BmxBike from "../components/BmxBike.astro";
       rot: 0.6,               // wall-lean tilt (radians)
       spin: 0, spinTarget: 0, // flat spin about the vertical axis (degrees)
       flip: 0, flipTarget: 0, // back / front flip about the screen axis (degrees)
+      flipQueued: false,      // touch: a backflip pre-loaded for the next launch
       face: 1,
       input: 0,
       score: 0, combo: 1, final: 0,
@@ -662,6 +668,7 @@ import BmxBike from "../components/BmxBike.astro";
       s.phi = -0.6; s.phiVel = 0;
       s.airborne = false;
       s.rot = 0.6; s.spin = 0; s.spinTarget = 0; s.flip = 0; s.flipTarget = 0;
+      s.flipQueued = false;
       s.input = 0; s.face = 1;
       if (full) { s.score = 0; s.combo = 1; s.time = RUN_TIME; }
     }
@@ -685,7 +692,9 @@ import BmxBike from "../components/BmxBike.astro";
       s.vy = -s.phiVel * Rc * sin;
       s.rot = -s.phi;
       s.spin = 0; s.spinTarget = 0;
-      s.flip = 0; s.flipTarget = 0;
+      s.flip = 0;
+      s.flipTarget = s.flipQueued ? -360 : 0;   // fire a pre-loaded backflip on launch
+      s.flipQueued = false;
     }
 
     function land() {
@@ -780,6 +789,7 @@ import BmxBike from "../components/BmxBike.astro";
       bike.style.transform =
         `translate(${px - ORIGIN_X}px, ${py - ORIGIN_Y}px) perspective(640px) ` +
         `rotateY(${s.spin}deg) rotate(${s.rot * DEG + s.flip}deg) scaleX(${s.face})`;
+      if (flipBtn) flipBtn.classList.toggle("flip-btn--armed", s.flipQueued);
 
       elScore.textContent = String(Math.round(s.score));
       elTime.textContent = String(Math.ceil(s.time));
@@ -955,9 +965,11 @@ import BmxBike from "../components/BmxBike.astro";
     // Touch backflip button (doesn't trigger a spin via the stage handler)
     const flipBtn = document.getElementById("flip-btn");
     flipBtn?.addEventListener("pointerdown", (e) => {
+      if (s.mode !== "play") return;
       e.preventDefault();
       e.stopPropagation();
-      if (s.mode === "play" && s.airborne) addFlip(-1);
+      if (s.airborne) addFlip(-1);     // in the air: backflip now
+      else s.flipQueued = true;        // on the ground: pre-load it for the next launch
     });
   }
 </script>
