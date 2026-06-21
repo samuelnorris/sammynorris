@@ -523,24 +523,46 @@ import BmxBike from "../components/BmxBike.astro";
   }
 
   @media (max-width: 768px) {
-    .case-nav { top: 20px; left: 20px; }
-    .game { padding: 72px 12px 20px; align-items: flex-start; }
-    .play-area { gap: 12px; }
-    /* Tall portrait play area — the world adapts to fill it (see layout() in JS). */
-    .stage {
-      aspect-ratio: auto;
+    .case-nav { top: 16px; left: 16px; }
+    /* Full-bleed: the play box fills the viewport, scoreboard button beneath it. */
+    .game {
+      padding: 0;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+    }
+    .play-area {
+      flex: 1;
       width: 100%;
       max-width: none;
-      height: min(68dvh, 640px);
+      gap: 0;
     }
-    .hud { padding: 14px 16px; }
+    /* Stage fills the space; the world auto-adapts to it (see layout() in JS). */
+    .stage {
+      flex: 1;
+      width: 100%;
+      max-width: none;
+      height: auto;
+      aspect-ratio: auto;
+      border-radius: 0;
+      outline: none;
+      box-shadow: none;
+    }
+    /* Drop the HUD below the floating Back / Light buttons. */
+    .hud { padding: 70px 16px 14px; }
     .hud__item span:last-child { font-size: 1.5rem; }
-    .overlay { padding: 18px; }
+    .overlay { padding: 70px 18px 18px; }
     .overlay__card { gap: 12px; }
     .overlay__title { font-size: clamp(2rem, 12vw, 3rem); }
     .controls { font-size: var(--text-b4); gap: 8px; }
     .flip-btn { width: 78px; height: 78px; right: 16px; bottom: 16px; }
-    .board-btn { padding: 12px 26px; font-size: var(--text-b2); }
+    .board-btn {
+      padding: 12px 26px;
+      font-size: var(--text-b2);
+      margin: 12px auto calc(10px + env(safe-area-inset-bottom));
+    }
   }
 </style>
 
