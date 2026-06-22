@@ -25,7 +25,7 @@ const stats = [
   <Fragment slot="title">Commission <em>consent</em></Fragment>
 
   <!-- Figure 01 - single phone -->
-  <figure class="figure" data-reveal>
+  <figure class="figure is-loose is-bind-top" data-reveal>
     <picture>
       <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-1-m.jpg" width="2250" height="3000" />
       <img src="/images/projects/commission/image-commission-1.jpg" alt="OTP verification screen" loading="eager" width="2400" height="1800" />
@@ -33,7 +33,7 @@ const stats = [
   </figure>
 
   <!-- Chapter I - Challenge -->
-  <section class="chapter" data-reveal>
+  <section class="chapter is-tight" data-reveal>
     <header class="chapter__head">
       <span class="chapter__num" aria-hidden="true">I.</span>
       <h2 class="chapter__label b2">The challenge</h2>
@@ -58,7 +58,7 @@ const stats = [
   </figure>
 
   <!-- Figure 03 - three phones -->
-  <figure class="figure" data-reveal>
+  <figure class="figure is-loose" data-reveal>
     <picture>
       <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-3-m.jpg" width="2250" height="3000" />
       <img src="/images/projects/commission/image-commission-3.jpg" alt="Multiple journey screens side by side" loading="lazy" width="2400" height="1800" />
@@ -66,7 +66,7 @@ const stats = [
   </figure>
 
   <!-- Chapter II - Process -->
-  <section class="chapter" data-reveal>
+  <section class="chapter is-tight" data-reveal>
     <header class="chapter__head">
       <span class="chapter__num" aria-hidden="true">II.</span>
       <h2 class="chapter__label b2">The process</h2>
@@ -83,7 +83,7 @@ const stats = [
   </section>
 
   <!-- Figure 04 - service blueprint -->
-  <figure class="figure" data-reveal>
+  <figure class="figure is-loose-max" data-reveal>
     <picture>
       <source media="(max-width: 768px)" srcset="/images/projects/commission/image-commission-4-m.jpg" width="2250" height="2394" />
       <img src="/images/projects/commission/image-commission-4.jpg" alt="Service blueprint diagram" loading="lazy" width="2400" height="932" />
@@ -125,3 +125,23 @@ const stats = [
     </picture>
   </figure>
 </CaseStudyLayout>
+
+<style>
+  /* Editorial spacing rhythm (commission only).
+     Tight gaps bind a chapter to the figures that illustrate it;
+     loose gaps open a real break between the acts of the story. */
+  .is-tight { margin-bottom: 48px; }
+  .is-loose { margin-bottom: 144px; }
+  /* Biggest break: the pause before the outcome/stats payoff. */
+  .is-loose-max { margin-bottom: 160px; }
+  /* Bind the hero shot up under the hero: hero base 128 -> 48. */
+  .is-bind-top { margin-top: -80px; }
+
+  @media (max-width: 768px) {
+    .is-tight { margin-bottom: 32px; }
+    .is-loose { margin-bottom: 88px; }
+    .is-loose-max { margin-bottom: 96px; }
+    /* Mobile hero base 80 -> 32. */
+    .is-bind-top { margin-top: -48px; }
+  }
+</style>
