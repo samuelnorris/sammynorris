@@ -125,16 +125,3 @@ const stats = [
     </picture>
   </figure>
 </CaseStudyLayout>
-
-<style>
-  /* Editorial spacing rhythm (commission only).
-     Tight gaps bind a chapter to the figures that illustrate it;
-     loose gaps open a real break between the acts of the story.
-     Tokens (and their mobile values) live in global.css. */
-  .is-tight { margin-bottom: var(--space-bind); }
-  .is-loose { margin-bottom: var(--space-act); }
-  /* Biggest break: the pause before the outcome/stats payoff. */
-  .is-loose-max { margin-bottom: var(--space-act-max); }
-  /* Bind the hero shot up under the hero: pull it from the hero base to the tight gap. */
-  .is-bind-top { margin-top: calc(var(--space-bind) - var(--space-hero)); }
-</style>

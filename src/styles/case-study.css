@@ -56,6 +56,15 @@
 [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s); }
 [data-reveal].revealed { opacity: 1; transform: translateY(0); }
 
+/* Editorial rhythm modifiers — opt a block into a tighter or looser gap.
+   Tight binds a chapter to the figure it explains; loose/max open a break
+   between acts. Declared after the base rules so they win on equal specificity.
+   Values come from the mobile-aware --space-* scale. */
+.is-tight { margin-bottom: var(--space-bind); }
+.is-loose { margin-bottom: var(--space-act); }
+.is-loose-max { margin-bottom: var(--space-act-max); }
+.is-bind-top { margin-top: calc(var(--space-bind) - var(--space-hero)); }
+
 @media (max-width: 768px) {
   .case-nav { top: 20px; left: 20px; }
   .hero { padding: 96px 20px var(--space-hero); }
