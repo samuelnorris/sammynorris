@@ -27,7 +27,7 @@
 .figure picture > img, .figure > img { display: block; width: 100%; height: auto; border-radius: 18px; }
 
 .chapter { margin: 0 0 96px; padding: 0 10vw; }
-.chapter__head { display: flex; align-items: baseline; gap: 24px; margin-bottom: 48px; padding-bottom: 24px; border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent); }
+.chapter__head { display: flex; align-items: baseline; gap: 24px; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent); }
 .chapter__num { font-family: var(--font-serif); font-size: clamp(2rem, 3vw, 2.5rem); line-height: 1; font-weight: 400; color: var(--color-secondary); }
 .chapter__label { color: var(--color-primary); font-weight: 300; font-size: var(--text-b1); }
 .chapter__quote { font-family: var(--font-serif); font-size: clamp(1.75rem, 3.5vw, 2.75rem); line-height: 1.2; font-weight: 400; letter-spacing: -0.015em; margin: 0 0 64px; padding: 0; border: 0; max-width: 80%; }
