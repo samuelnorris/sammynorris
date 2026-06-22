@@ -15,6 +15,14 @@
   --text-b3: 14px;
   --text-b4: 12px;
 
+  /* Editorial section rhythm: vertical breaks between case-study blocks.
+     Mobile values are overridden in the max-width:768px :root block below. */
+  --space-bind: 48px;     /* tight — bind a chapter to the figure it explains */
+  --space-rhythm: 96px;   /* base — standard break between blocks */
+  --space-act: 144px;     /* loose — open break between acts of the story */
+  --space-act-max: 160px; /* biggest break — the pause before the payoff */
+  --space-hero: 128px;    /* hero's bottom padding — used to bind the first figure up under it */
+
   /* Colour tokens: light mode */
   /* NOTE: these match current Framer values, not your earlier palette notes */
   --color-bg: #F0F0F0;
@@ -32,6 +40,17 @@
   --color-tertiary: #6E6E6E;
   --color-card-bg: rgba(26, 26, 26, 0.98);
   --color-card-image-bg: #292929;
+}
+
+/* Tighten the section rhythm on mobile. */
+@media (max-width: 768px) {
+  :root {
+    --space-bind: 32px;
+    --space-rhythm: 64px;
+    --space-act: 88px;
+    --space-act-max: 96px;
+    --space-hero: 80px;
+  }
 }
 
 *, *::before, *::after {

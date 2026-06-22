@@ -129,19 +129,12 @@ const stats = [
 <style>
   /* Editorial spacing rhythm (commission only).
      Tight gaps bind a chapter to the figures that illustrate it;
-     loose gaps open a real break between the acts of the story. */
-  .is-tight { margin-bottom: 48px; }
-  .is-loose { margin-bottom: 144px; }
+     loose gaps open a real break between the acts of the story.
+     Tokens (and their mobile values) live in global.css. */
+  .is-tight { margin-bottom: var(--space-bind); }
+  .is-loose { margin-bottom: var(--space-act); }
   /* Biggest break: the pause before the outcome/stats payoff. */
-  .is-loose-max { margin-bottom: 160px; }
-  /* Bind the hero shot up under the hero: hero base 128 -> 48. */
-  .is-bind-top { margin-top: -80px; }
-
-  @media (max-width: 768px) {
-    .is-tight { margin-bottom: 32px; }
-    .is-loose { margin-bottom: 88px; }
-    .is-loose-max { margin-bottom: 96px; }
-    /* Mobile hero base 80 -> 32. */
-    .is-bind-top { margin-top: -48px; }
-  }
+  .is-loose-max { margin-bottom: var(--space-act-max); }
+  /* Bind the hero shot up under the hero: pull it from the hero base to the tight gap. */
+  .is-bind-top { margin-top: calc(var(--space-bind) - var(--space-hero)); }
 </style>
