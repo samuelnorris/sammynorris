@@ -1,0 +1,99 @@
+---
+// Site-wide footer: copyright, live ISS coordinates and the BMX link.
+// Used on the homepage (below the closing CTA), every case study and the
+// about page so the footer is identical across the site.
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="site-footer__bar">
+    <span class="b4">&copy; {year} Sammy Norris</span>
+    <p class="iss__coords b4">ISS&nbsp;&nbsp;<span id="iss-lat">—</span>&nbsp;&nbsp;<span id="iss-lng">—</span></p>
+    <div class="site-footer__links">
+      <a href="/bmx" class="site-footer__link">Can you ride a BMX?</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    max-width: 1818px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: var(--space-act) 24px var(--space-bind);
+  }
+
+  .site-footer__bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px 24px;
+    flex-wrap: wrap;
+    padding-top: 24px;
+    border-top: 1px solid color-mix(in srgb, var(--color-primary) 10%, transparent);
+  }
+
+  .iss__coords {
+    font-family: var(--font-sans);
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    opacity: 0.65;
+    color: var(--color-primary);
+  }
+
+  .site-footer__links {
+    display: flex;
+    gap: 24px;
+  }
+
+  .site-footer__link {
+    font-family: var(--font-sans);
+    font-size: var(--text-b4);
+    font-weight: 300;
+    color: var(--color-secondary);
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .site-footer__link:hover {
+    opacity: 0.6;
+  }
+
+  @media (max-width: 768px) {
+    .site-footer {
+      padding: var(--space-act) 20px var(--space-bind);
+    }
+  }
+</style>
+
+<script>
+  // Live ISS tracker — updates the footer coordinates while the tab is visible.
+  (function () {
+    var latEl = document.getElementById("iss-lat");
+    var lngEl = document.getElementById("iss-lng");
+    if (!latEl || !lngEl) return;
+
+    function fmt(n: number, pos: string, neg: string) {
+      return Math.abs(n).toFixed(2) + "° " + (n >= 0 ? pos : neg);
+    }
+
+    function update() {
+      fetch("https://api.wheretheiss.at/v1/satellites/25544")
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          latEl!.textContent = fmt(d.latitude, "N", "S");
+          lngEl!.textContent = fmt(d.longitude, "E", "W");
+        })
+        .catch(function () {});
+    }
+
+    // Poll only while the tab is visible; pause when it's backgrounded.
+    var timer: ReturnType<typeof setInterval> | null = null;
+    function start() { if (!timer) { update(); timer = setInterval(update, 5000); } }
+    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) stop(); else start();
+    });
+    start();
+  })();
+</script>

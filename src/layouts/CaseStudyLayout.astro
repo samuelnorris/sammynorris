@@ -1,6 +1,7 @@
 ---
 import Layout from "./Layout.astro";
 import BackButton from "../components/BackButton.astro";
+import Footer from "../components/Footer.astro";
 import "../styles/case-study.css";
 
 interface MetaItem {
@@ -86,10 +87,7 @@ const {
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="case-footer">
-    <span class="b4">&copy; {new Date().getFullYear()} Sammy Norris</span>
-  </footer>
+  <Footer />
 
 </Layout>
 
