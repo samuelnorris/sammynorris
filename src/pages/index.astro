@@ -227,7 +227,7 @@ const projects = [
   }
 
   .hero__content > :global(.bmx-bike) {
-    margin-bottom: 28px;
+    margin-bottom: 32px;
   }
 
   .hero__name {
@@ -282,7 +282,7 @@ const projects = [
 
   /* ===================== Work ===================== */
   .work {
-    padding: 120px 24px 80px;
+    padding: var(--space-act) 24px var(--space-rhythm);
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -366,7 +366,7 @@ const projects = [
 
   /* ===================== About ===================== */
   .about {
-    padding: 120px 24px;
+    padding: var(--space-act) 24px;
     max-width: 1818px;
     box-sizing: border-box;
     width: 100%;
@@ -446,10 +446,10 @@ const projects = [
 
   /* ===================== Footer ===================== */
   .footer {
-    padding: 120px 24px 48px;
+    padding: var(--space-act) 24px var(--space-bind);
     display: flex;
     flex-direction: column;
-    gap: 120px;
+    gap: var(--space-act);
     max-width: 1818px;
     box-sizing: border-box;
     width: 100%;
@@ -538,7 +538,7 @@ const projects = [
 
 
     .work {
-      padding: 80px 20px 60px;
+      padding: var(--space-act) 20px var(--space-rhythm);
     }
 
     .work__grid {
@@ -554,7 +554,7 @@ const projects = [
     }
 
     .about {
-      padding: 80px 20px;
+      padding: var(--space-act) 20px;
     }
 
     .about__inner {
@@ -563,8 +563,8 @@ const projects = [
     }
 
     .footer {
-      padding: 80px 20px 40px;
-      gap: 80px;
+      padding: var(--space-act) 20px var(--space-bind);
+      gap: var(--space-act);
     }
   }
 </style>
