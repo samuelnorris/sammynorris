@@ -206,7 +206,7 @@ import BackButton from "../components/BackButton.astro";
 
   /* ===== Hero ===== */
   .hero {
-    padding: 160px 10vw 32px;
+    padding: var(--space-act-max) 10vw 32px;
     display: flex;
     flex-direction: column;
   }
@@ -247,7 +247,7 @@ import BackButton from "../components/BackButton.astro";
   /* ===== Body ===== */
   .about-body {
     padding: 0 10vw;
-    margin: 0 0 96px;
+    margin: 0 0 var(--space-rhythm);
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -257,7 +257,7 @@ import BackButton from "../components/BackButton.astro";
   /* ===== Timeline ===== */
   .timeline {
     padding: 0 10vw;
-    margin: 0 0 96px;
+    margin: 0 0 var(--space-rhythm);
     display: flex;
     flex-direction: column;
     gap: 32px;
@@ -266,7 +266,7 @@ import BackButton from "../components/BackButton.astro";
 
   .timeline__pills {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     position: relative;
   }
 
@@ -322,8 +322,8 @@ import BackButton from "../components/BackButton.astro";
 
   /* ===== Contact ===== */
   .contact {
-    padding: 96px 10vw 0;
-    margin: 0 0 96px;
+    padding: var(--space-rhythm) 10vw 0;
+    margin: 0 0 var(--space-rhythm);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -395,11 +395,11 @@ import BackButton from "../components/BackButton.astro";
   /* ===== Mobile ===== */
   @media (max-width: 768px) {
     .case-nav { top: 20px; left: 20px; }
-    .hero { padding: 96px 20px 24px; }
+    .hero { padding: var(--space-act-max) 20px 24px; }
     .hero__title { font-size: clamp(2.5rem, 11vw, 3.5rem); margin-bottom: 20px; }
     .hero__lede { font-size: clamp(1.125rem, 4.5vw, 1.375rem); }
-    .about-body { padding: 0 20px; margin-bottom: 64px; gap: 20px; }
-    .timeline { padding: 0; margin-bottom: 64px; gap: 40px; }
+    .about-body { padding: 0 20px; gap: 20px; }
+    .timeline { padding: 0; gap: var(--space-bind); }
     .timeline__pills {
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
@@ -422,7 +422,7 @@ import BackButton from "../components/BackButton.astro";
       0%, 100% { transform: translateX(0); }
       50% { transform: translateX(4px); }
     }
-    .contact { padding: 64px 20px 0; margin-bottom: 64px; gap: 24px; }
+    .contact { padding: var(--space-rhythm) 20px 0; gap: 24px; }
     .contact__h2 { font-size: clamp(1.625rem, 7vw, 2rem); max-width: 100%; }
     .case-footer { padding: 40px 20px; }
   }
