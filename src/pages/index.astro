@@ -1,5 +1,6 @@
 ---
 import BmxBike from "../components/BmxBike.astro";
+import Footer from "../components/Footer.astro";
 import Layout from "../layouts/Layout.astro";
 
 const projects = [
@@ -83,20 +84,15 @@ const projects = [
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="footer">
+  <!-- Closing CTA -->
+  <section class="home-cta">
     <div class="footer__cta" data-reveal>
       <h2 class="footer__heading">Let&rsquo;s work together.</h2>
       <a href="mailto:hello@sammynorris.com" class="footer__email">hello@sammynorris.com</a>
     </div>
-    <div class="footer__bottom">
-      <span class="b4">&copy; 2026 Sammy Norris</span>
-      <p class="iss__coords b4">ISS&nbsp;&nbsp;<span id="iss-lat">—</span>&nbsp;&nbsp;<span id="iss-lng">—</span></p>
-      <div class="footer__links">
-        <a href="/bmx" class="footer__link footer__link--bmx">Can you ride a BMX?</a>
-      </div>
-    </div>
-  </footer>
+  </section>
+
+  <Footer />
 
 </Layout>
 
@@ -171,36 +167,6 @@ const projects = [
         }, pauseBeforeDelete);
       });
     }, startDelay);
-  })();
-
-  // ISS tracker
-  (function () {
-    var latEl = document.getElementById('iss-lat');
-    var lngEl = document.getElementById('iss-lng');
-    if (!latEl) return;
-
-    function fmt(n, pos, neg) {
-      return Math.abs(n).toFixed(2) + '° ' + (n >= 0 ? pos : neg);
-    }
-
-    function update() {
-      fetch('https://api.wheretheiss.at/v1/satellites/25544')
-        .then(function (r) { return r.json(); })
-        .then(function (d) {
-          latEl.textContent = fmt(d.latitude, 'N', 'S');
-          lngEl.textContent = fmt(d.longitude, 'E', 'W');
-        })
-        .catch(function () {});
-    }
-
-    // Poll only while the tab is visible; pause when it's backgrounded.
-    var timer = null;
-    function start() { if (!timer) { update(); timer = setInterval(update, 5000); } }
-    function stop() { if (timer) { clearInterval(timer); timer = null; } }
-    document.addEventListener('visibilitychange', function () {
-      if (document.hidden) stop(); else start();
-    });
-    start();
   })();
 
 </script>
@@ -435,21 +401,9 @@ const projects = [
     flex-shrink: 0;
   }
 
-  /* ===================== ISS ===================== */
-  .iss__coords {
-    font-family: var(--font-sans);
-    font-weight: 300;
-    letter-spacing: 0.04em;
-    opacity: 0.65;
-    color: var(--color-primary);
-  }
-
-  /* ===================== Footer ===================== */
-  .footer {
-    padding: var(--space-act) 24px var(--space-bind);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-act);
+  /* ===================== Closing CTA ===================== */
+  .home-cta {
+    padding: var(--space-act) 24px 0;
     max-width: 1818px;
     box-sizing: border-box;
     width: 100%;
@@ -483,38 +437,6 @@ const projects = [
 
   .footer__email:hover {
     opacity: 0.6;
-  }
-
-  .footer__bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 24px;
-    border-top: 1px solid color-mix(in srgb, var(--color-primary) 10%, transparent);
-  }
-
-  .footer__links {
-    display: flex;
-    gap: 24px;
-  }
-
-  .footer__link {
-    font-family: var(--font-sans);
-    font-size: var(--text-b4);
-    font-weight: 300;
-    color: var(--color-primary);
-    text-decoration: none;
-    opacity: 0.65;
-    transition: opacity 0.2s ease;
-  }
-
-  .footer__link:hover {
-    opacity: 1;
-  }
-
-  .footer__link--bmx {
-    color: var(--color-secondary);
-    opacity: 1;
   }
 
   /* ===================== Scroll reveal ===================== */
@@ -567,9 +489,8 @@ const projects = [
       gap: 40px;
     }
 
-    .footer {
-      padding: var(--space-act) 20px var(--space-bind);
-      gap: var(--space-act);
+    .home-cta {
+      padding: var(--space-act) 20px 0;
     }
   }
 </style>

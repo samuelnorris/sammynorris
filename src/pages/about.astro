@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import BackButton from "../components/BackButton.astro";
+import Footer from "../components/Footer.astro";
 ---
 
 <Layout title="About - Sammy Norris">
@@ -99,10 +100,7 @@ import BackButton from "../components/BackButton.astro";
     </a>
   </section>
 
-  <!-- Footer -->
-  <footer class="case-footer">
-    <span class="b4">&copy; 2026 Sammy Norris</span>
-  </footer>
+  <Footer />
 
 </Layout>
 
@@ -323,7 +321,6 @@ import BackButton from "../components/BackButton.astro";
   /* ===== Contact ===== */
   .contact {
     padding: var(--space-rhythm) 10vw 0;
-    margin: 0 0 var(--space-rhythm);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -373,15 +370,6 @@ import BackButton from "../components/BackButton.astro";
     flex-shrink: 0;
   }
 
-  /* ===== Footer ===== */
-  .case-footer {
-    padding: 64px 10vw;
-    display: flex;
-    justify-content: flex-start;
-    color: var(--color-primary);
-    opacity: 0.65;
-  }
-
   /* ===== Reveal ===== */
   [data-reveal] {
     opacity: 0;
@@ -424,6 +412,5 @@ import BackButton from "../components/BackButton.astro";
     }
     .contact { padding: var(--space-rhythm) 20px 0; gap: 24px; }
     .contact__h2 { font-size: clamp(1.625rem, 7vw, 2rem); max-width: 100%; }
-    .case-footer { padding: 40px 20px; }
   }
 </style>
