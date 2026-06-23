@@ -56,7 +56,7 @@ import BmxBike from "../components/BmxBike.astro";
             <li><span class="hint">Auto-land</span> the bike always drops back in the right way up</li>
           </ul>
           <ul class="controls controls--touch">
-            <li><span class="hint">Hold</span> the left / right side to pump up the walls</li>
+            <li><span class="hint">Hold</span> anywhere to pump up the walls &amp; build speed</li>
             <li><span class="hint">In the air</span> tap the left / right side to <strong>spin 180°</strong> (tap again for more)</li>
             <li><span class="hint">Flip</span> tap the <span class="ico">↻</span> button to backflip — even just before you launch</li>
             <li><span class="hint">Auto-land</span> the bike always drops back in the right way up</li>
@@ -637,6 +637,7 @@ import BmxBike from "../components/BmxBike.astro";
       flipQueued: false,      // touch: a backflip pre-loaded for the next launch
       face: 1,
       input: 0,
+      autoPump: false, pumpKick: 1,   // touch: hold anywhere to pump
       score: 0, combo: 1, final: 0,
       time: RUN_TIME,
       best: 0,
@@ -692,6 +693,7 @@ import BmxBike from "../components/BmxBike.astro";
       s.rot = 0.6; s.spin = 0; s.spinTarget = 0; s.flip = 0; s.flipTarget = 0;
       s.flipQueued = false;
       s.input = 0; s.face = 1;
+      s.autoPump = false; s.pumpKick = 1;
       if (full) { s.score = 0; s.combo = 1; s.time = RUN_TIME; }
     }
 
@@ -756,6 +758,12 @@ import BmxBike from "../components/BmxBike.astro";
       if (!s.airborne) {
         const aa = -(G / Rc) * Math.sin(s.phi);
         s.phiVel += aa * h;
+
+        // Touch "hold anywhere to pump": a held finger follows the current swing so
+        // it always pumps (kicking off toward the touched side from rest).
+        if (s.autoPump) {
+          s.input = Math.abs(s.phiVel) < 0.05 ? s.pumpKick : (s.phiVel > 0 ? 1 : -1);
+        }
 
         if (s.input !== 0) {
           if (Math.abs(s.phiVel) < 0.05) {
@@ -970,19 +978,39 @@ import BmxBike from "../components/BmxBike.astro";
       if (s.airborne) { addSpin(pointerDir(e.clientX)); return; }  // tap = one 180 in the air
       activePointer = e.pointerId;
       stage.setPointerCapture?.(e.pointerId);
-      s.input = pointerDir(e.clientX);
+      if (e.pointerType === "mouse") {
+        s.input = pointerDir(e.clientX);              // desktop: the side sets the direction
+      } else {
+        s.autoPump = true;                            // touch: hold anywhere to pump
+        s.pumpKick = pointerDir(e.clientX);           // ...kicking off toward the touched side
+      }
     });
     stage.addEventListener("pointermove", (e) => {
       if (s.mode !== "play" || e.pointerId !== activePointer) return;
-      s.input = pointerDir(e.clientX);
+      if (e.pointerType === "mouse") s.input = pointerDir(e.clientX);
     });
     const clearPointer = (e) => {
       if (e && e.pointerId !== activePointer) return;   // ignore other fingers lifting
       activePointer = null;
+      s.autoPump = false;
       if (s.mode === "play") s.input = 0;
     };
     stage.addEventListener("pointerup", clearPointer);
     stage.addEventListener("pointercancel", clearPointer);
+
+    // iOS Safari ignores touch-action for double-tap-zoom and pinch on the play
+    // surface, so block those gestures while a run is live (tapping/holding to
+    // pump no longer zooms the page). Overlays/score entry stay untouched.
+    let lastTouchEnd = 0;
+    stage.addEventListener("touchend", (e) => {
+      if (s.mode !== "play") return;
+      const now = performance.now();
+      if (now - lastTouchEnd < 350) e.preventDefault();   // kill double-tap zoom
+      lastTouchEnd = now;
+    }, { passive: false });
+    const blockGesture = (e) => e.preventDefault();         // kill pinch zoom
+    stage.addEventListener("gesturestart", blockGesture);
+    stage.addEventListener("gesturechange", blockGesture);
 
     // Touch backflip button (doesn't trigger a spin via the stage handler)
     const flipBtn = document.getElementById("flip-btn");
