@@ -32,42 +32,43 @@ const { delayed = false } = Astro.props;
        but stays rolling into the restart (10.5 total turns = seamless
        on a 36-spoke wheel) */
     @keyframes bmx-wheels {
-      0%   { transform: rotate(0turn);      animation-timing-function: linear; }
-      30%  { transform: rotate(1.875turn);  animation-timing-function: ease-in; }
-      55%  { transform: rotate(6.5turn);    animation-timing-function: ease-out; }
-      88%  { transform: rotate(9.85turn);   animation-timing-function: linear; }
+      0%   { transform: rotate(0turn);      animation-timing-function: ease-in; }
+      18%  { transform: rotate(0.5turn);    animation-timing-function: ease-in; }
+      38%  { transform: rotate(2.7turn);    animation-timing-function: linear; }
+      50%  { transform: rotate(5.0turn);    animation-timing-function: ease-out; }
+      62%  { transform: rotate(7.125turn);  animation-timing-function: ease-out; }
       100% { transform: rotate(10.5turn); }
     }
     /* cranks: steady, wind up, ease to a stop, hold, then re-engage
        before the wheels run down */
     @keyframes bmx-cranks {
       0%   { transform: rotate(0turn);     animation-timing-function: linear; }
-      30%  { transform: rotate(0.75turn);  animation-timing-function: ease-in; }
-      55%  { transform: rotate(2.6turn);   animation-timing-function: ease-out; }
-      64%  { transform: rotate(2.85turn); }
-      88%  { transform: rotate(2.85turn);  animation-timing-function: ease-in; }
+      22%  { transform: rotate(0.62turn);  animation-timing-function: ease-in; }
+      50%  { transform: rotate(2.05turn);  animation-timing-function: linear; }
+      62%  { transform: rotate(2.85turn);  animation-timing-function: linear; }
+      86%  { transform: rotate(2.85turn);  animation-timing-function: ease-in; }
       100% { transform: rotate(3turn); }
     }
     /* pedals: exact mirror of cranks so they stay level throughout */
     @keyframes bmx-pedals {
       0%   { transform: rotate(0turn);      animation-timing-function: linear; }
-      30%  { transform: rotate(-0.75turn);  animation-timing-function: ease-in; }
-      55%  { transform: rotate(-2.6turn);   animation-timing-function: ease-out; }
-      64%  { transform: rotate(-2.85turn); }
-      88%  { transform: rotate(-2.85turn);  animation-timing-function: ease-in; }
+      22%  { transform: rotate(-0.62turn);  animation-timing-function: ease-in; }
+      50%  { transform: rotate(-2.05turn);  animation-timing-function: linear; }
+      62%  { transform: rotate(-2.85turn);  animation-timing-function: linear; }
+      86%  { transform: rotate(-2.85turn);  animation-timing-function: ease-in; }
       100% { transform: rotate(-3turn); }
     }
     /* crossfade re-synced: spokes readable through the slow roll and
        restart, blur through the sprint and early coast */
     @keyframes bmx-spokesfade {
       0%, 20%   { opacity: 1; }
-      30%, 78%  { opacity: 0; }
-      90%, 100% { opacity: 1; }
+      32%, 80%  { opacity: 0; }
+      92%, 100% { opacity: 1; }
     }
     @keyframes bmx-blurfade {
       0%, 20%   { opacity: 0; }
-      30%, 78%  { opacity: 0.32; }
-      90%, 100% { opacity: 0; }
+      32%, 80%  { opacity: 0.32; }
+      92%, 100% { opacity: 0; }
     }
     @media (prefers-reduced-motion: reduce) {
       .bmx-spin, .bmx-crank, .bmx-pedal, .bmx-spokes, .bmx-blur { animation: none; }
