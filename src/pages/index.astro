@@ -253,14 +253,17 @@ const projects = [
         if (activeCard && activeCard !== card) activeCard.classList.remove("card--bubbling");
         activeCard = card;
         label = card.getAttribute("data-cursor-label") || "";
-        // Hide the native cursor (the bubble becomes the cursor) while animating.
-        card.classList.add("card--bubbling");
-        bubble.classList.add("cursor-bubble--visible");
         move(e);
-        textEl.textContent = "";
-        // Respect reduced motion: show the label statically, no type/delete cycle.
-        if (reduce) { textEl.textContent = label; return; }
-        typeOut(0);
+        timers.push(setTimeout(function () {
+          if (activeCard !== card) return;
+          // Hide the native cursor (the bubble becomes the cursor) while animating.
+          card.classList.add("card--bubbling");
+          bubble.classList.add("cursor-bubble--visible");
+          textEl.textContent = "";
+          // Respect reduced motion: show the label statically, no type/delete cycle.
+          if (reduce) { textEl.textContent = label; return; }
+          typeOut(0);
+        }, 400));
       });
       card.addEventListener("mousemove", move);
       card.addEventListener("mouseleave", function () {
