@@ -3,13 +3,14 @@ import BmxBike from "../components/BmxBike.astro";
 import Footer from "../components/Footer.astro";
 import Layout from "../layouts/Layout.astro";
 
+// Read times: word count ÷ 238 wpm (average adult reading speed), rounded up.
 const projects = [
-  { title: "Commission", year: "2025", slug: "commission" },
-  { title: "Ekeg+", year: "2023", slug: "ekeg" },
-  { title: "Gener8", year: "2021", slug: "gener8" },
-  { title: "Larkbury", year: "2022", slug: "larkbury" },
-  { title: "Porsche", year: "2021", slug: "porsche" },
-  { title: "Toyota", year: "2020", slug: "toyota" },
+  { title: "Commission", year: "2025", slug: "commission", read: "2 min read" },
+  { title: "Ekeg+", year: "2023", slug: "ekeg", read: "2 min read" },
+  { title: "Gener8", year: "2021", slug: "gener8", read: "1 min read" },
+  { title: "Larkbury", year: "2022", slug: "larkbury", read: "1 min read" },
+  { title: "Porsche", year: "2021", slug: "porsche", read: "1 min read" },
+  { title: "Toyota", year: "2020", slug: "toyota", read: "1 min read" },
 ];
 
 ---
@@ -34,6 +35,7 @@ const projects = [
           href={`/${project.slug}`}
           class="card"
           data-reveal
+          data-cursor-label={project.read}
           style={`--delay: ${i * 0.08}s`}
         >
           <div class="card__image">
@@ -91,6 +93,18 @@ const projects = [
       <a href="mailto:hello@sammynorris.com" class="footer__email">hello@sammynorris.com</a>
     </div>
   </section>
+
+  <!-- Custom cursor bubble: types a project's reading time on hover. The outer
+       element is positioned to the pointer; the inner element owns the
+       pop-in entrance animation. -->
+  <div class="cursor-bubble" aria-hidden="true">
+    <div class="cursor-bubble__inner">
+      <span class="cursor-bubble__text"></span>
+      <svg class="cursor-bubble__tail" viewBox="0 0 18 18" width="18" height="18" aria-hidden="true" focusable="false">
+        <path d="M18 1 C 18 11 13.5 17 6.5 17 C 4.8 17 4.2 15.8 5.2 14.3 C 7 11.5 10 12.8 12.5 11 C 14.6 9.4 16 5.6 18 6 Z" />
+      </svg>
+    </div>
+  </div>
 
   <Footer />
 
@@ -171,6 +185,91 @@ const projects = [
 
 </script>
 
+<script>
+  // Custom cursor bubble: on hover over a project card, types out that card's
+  // reading time as an iMessage-style bubble (brand colours), holds, deletes,
+  // then returns the native cursor. One shared bubble across all cards.
+  (function () {
+    const cards = document.querySelectorAll("[data-cursor-label]");
+    const bubble = document.querySelector(".cursor-bubble");
+    if (!cards.length || !bubble) return;
+
+    // Pointer-only affordance — skip on touch / coarse pointers.
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+    // <body> keeps an identity transform from its page-enter animation, which
+    // makes it (not the viewport) the containing block for any position:fixed
+    // descendant — offsetting this bubble by the scroll position. Re-parent it
+    // to <html> so it stays a true viewport-fixed element at any scroll depth.
+    document.documentElement.appendChild(bubble);
+
+    const textEl = bubble.querySelector(".cursor-bubble__text");
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const TYPE_MS = 60; // per character while typing out
+    const DELETE_MS = 35; // per character while deleting
+    const HOLD_MS = 2000; // pause once fully typed
+
+    let timers = [];
+    let activeCard = null;
+    let label = "";
+    function clearTimers() {
+      timers.forEach(clearTimeout);
+      timers = [];
+    }
+    function after(ms, fn) {
+      timers.push(setTimeout(fn, ms));
+    }
+
+    function move(e) {
+      bubble.style.transform =
+        "translate(" + e.clientX + "px, " + e.clientY + "px) translate(8px, -100%)";
+    }
+
+    function hide() {
+      // Cycle finished (or pointer left): clear the bubble and bring the native
+      // cursor back over the card.
+      clearTimers();
+      if (activeCard) activeCard.classList.remove("card--bubbling");
+      activeCard = null;
+      bubble.classList.remove("cursor-bubble--visible");
+      textEl.textContent = "";
+    }
+
+    function typeOut(i) {
+      if (i > label.length) { after(HOLD_MS, function () { deleteBack(label.length - 1); }); return; }
+      textEl.textContent = label.slice(0, i);
+      after(TYPE_MS, function () { typeOut(i + 1); });
+    }
+    function deleteBack(i) {
+      if (i < 0) { hide(); return; }
+      textEl.textContent = label.slice(0, i);
+      after(DELETE_MS, function () { deleteBack(i - 1); });
+    }
+
+    cards.forEach(function (card) {
+      card.addEventListener("mouseenter", function (e) {
+        clearTimers();
+        if (activeCard && activeCard !== card) activeCard.classList.remove("card--bubbling");
+        activeCard = card;
+        label = card.getAttribute("data-cursor-label") || "";
+        // Hide the native cursor (the bubble becomes the cursor) while animating.
+        card.classList.add("card--bubbling");
+        bubble.classList.add("cursor-bubble--visible");
+        move(e);
+        textEl.textContent = "";
+        // Respect reduced motion: show the label statically, no type/delete cycle.
+        if (reduce) { textEl.textContent = label; return; }
+        typeOut(0);
+      });
+      card.addEventListener("mousemove", move);
+      card.addEventListener("mouseleave", function () {
+        if (activeCard === card) hide();
+      });
+    });
+  })();
+</script>
+
 <style>
   /* ===================== Hero ===================== */
   .hero {
@@ -245,7 +344,6 @@ const projects = [
     }
   }
 
-
   /* ===================== Work ===================== */
   .work {
     padding: var(--space-act) 24px var(--space-rhythm);
@@ -274,9 +372,6 @@ const projects = [
 
   .card {
     grid-column: span 6;
-  }
-
-  .card {
     text-decoration: none;
     color: var(--color-primary);
     background: var(--color-card-bg);
@@ -328,6 +423,80 @@ const projects = [
 
   .card__year {
     color: var(--color-secondary);
+  }
+
+  /* ===================== Cursor reading-time bubble ===================== */
+  /* Hide the native cursor only while the bubble is animating, so the bubble
+     reads as the cursor. Once the type/delete cycle finishes the class is
+     removed and the native cursor returns. Gated to fine pointers (touch
+     unaffected). */
+  @media (hover: hover) and (pointer: fine) {
+    .card--bubbling {
+      cursor: none;
+    }
+  }
+
+  .cursor-bubble {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9998;
+    pointer-events: none;
+    transform: translate(-200px, -200px);
+    will-change: transform;
+  }
+
+  /* Appearance lives on the inner element so the outer stays free for the
+     pointer-following transform. Hidden by default; pops in once
+     .cursor-bubble--visible is added. */
+  .cursor-bubble__inner {
+    position: relative;
+    display: inline-block;
+    opacity: 0;
+    transform-origin: bottom left;
+  }
+
+  .cursor-bubble--visible .cursor-bubble__inner {
+    animation: snPopIn 0.3s ease-out forwards;
+  }
+
+  @keyframes snPopIn {
+    0%   { opacity: 0; transform: scale(0); }
+    70%  { opacity: 1; transform: scale(1.12); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  /* iMessage-style bubble in our colours (not Apple blue). Text uses the page
+     background colour so it stays legible on the accent in both themes. */
+  .cursor-bubble__text {
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+    background: var(--color-secondary);
+    color: var(--color-bg);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    white-space: nowrap;
+    padding: 9px 14px;
+    border-radius: 18px;
+    /* Square off the tail corner so the bubble body flows into the tail. */
+    border-bottom-left-radius: 7px;
+  }
+
+  /* The tail: an SVG so the concave iOS "hook" stays transparent and reads
+     correctly over the card image (a CSS mask-tail would need a solid bg).
+     Sits behind the bubble body so its top edge tucks under the rounded corner. */
+  .cursor-bubble__tail {
+    position: absolute;
+    bottom: 0;
+    left: -7px;
+    z-index: 0;
+    display: block;
+    fill: var(--color-secondary);
+    pointer-events: none;
   }
 
   /* ===================== About ===================== */
@@ -453,16 +622,12 @@ const projects = [
     transform: translateY(0);
   }
 
-  /* ===================== Keyframes ===================== */
-
-
   /* ===================== Mobile ===================== */
   @media (max-width: 768px) {
     .hero,
     .hero__content {
       align-items: flex-start;
     }
-
 
     .work {
       padding: var(--space-act) 20px var(--space-rhythm);
