@@ -28,6 +28,18 @@ const { delayed = false } = Astro.props;
     .bmx-spokes { animation: bmx-spokesfade 10s infinite; }
     .bmx-blur   { opacity: 0; animation: bmx-blurfade 10s infinite; }
 
+    /* On the homepage intro the bike is hidden until 5.3s, so hold every
+       motion at its start frame and begin the riding loop in sync with the
+       fade-in — otherwise it arrives mid-coast and looks like it isn't
+       pedalling. */
+    .bmx-bike--delayed .bmx-spin,
+    .bmx-bike--delayed .bmx-crank,
+    .bmx-bike--delayed .bmx-pedal,
+    .bmx-bike--delayed .bmx-spokes,
+    .bmx-bike--delayed .bmx-blur {
+      animation-delay: 5.3s;
+    }
+
     /* wheels: geared 2.5x to cranks while pedalling; coast decelerates
        but stays rolling into the restart (10.5 total turns = seamless
        on a 36-spoke wheel) */
