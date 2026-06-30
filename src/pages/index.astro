@@ -263,7 +263,7 @@ const projects = [
           // Respect reduced motion: show the label statically, no type/delete cycle.
           if (reduce) { textEl.textContent = label; return; }
           typeOut(0);
-        }, 400));
+        }, 300));
       });
       card.addEventListener("mousemove", move);
       card.addEventListener("mouseleave", function () {
