@@ -7,12 +7,12 @@ import BmxBike from "../components/BmxBike.astro";
 // portrait phone.
 ---
 
-<Layout title="Halfpipe — Sammy Norris" description="A little BMX halfpipe trick game.">
+<Layout title="Halfpipe - Sammy Norris" description="A little BMX halfpipe trick game.">
   <nav class="case-nav">
     <BackButton href="/" label="Back to home" />
   </nav>
 
-  <main class="game" id="main-content">
+  <div class="game">
     <h1 class="visually-hidden">BMX Halfpipe trick game</h1>
 
     <div class="play-area">
@@ -58,7 +58,7 @@ import BmxBike from "../components/BmxBike.astro";
           <ul class="controls controls--touch">
             <li><span class="hint">Hold</span> anywhere to pump up the walls &amp; build speed</li>
             <li><span class="hint">In the air</span> tap the left / right side to <strong>spin 180°</strong> (tap again for more)</li>
-            <li><span class="hint">Flip</span> tap the <span class="ico">↻</span> button to backflip — even just before you launch</li>
+            <li><span class="hint">Flip</span> tap the <span class="ico">↻</span> button to backflip - even just before you launch</li>
             <li><span class="hint">Auto-land</span> the bike always drops back in the right way up</li>
           </ul>
           <button class="overlay__btn" id="btn-start" type="button">Drop in</button>
@@ -92,10 +92,10 @@ import BmxBike from "../components/BmxBike.astro";
         <button class="board-modal__close" id="board-close" type="button" aria-label="Close scoreboard">&times;</button>
         <h2 class="board-modal__title">Scoreboard</h2>
         <ol class="board-list" id="board-list"></ol>
-        <p class="board-empty" id="board-empty" hidden>No scores yet — drop in and set one.</p>
+        <p class="board-empty" id="board-empty" hidden>No scores yet - drop in and set one.</p>
       </div>
     </div>
-  </main>
+  </div>
 </Layout>
 
 <style>
@@ -567,33 +567,36 @@ import BmxBike from "../components/BmxBike.astro";
 </style>
 
 <script>
-  const stage = document.getElementById("stage");
-  const world = document.getElementById("world");
-  const bike = document.getElementById("bike");
-  const pop = document.getElementById("pop");
-  const elScore = document.getElementById("hud-score");
-  const elTime = document.getElementById("hud-time");
-  const elCombo = document.getElementById("hud-combo");
-  const ovStart = document.getElementById("overlay-start");
-  const ovEnd = document.getElementById("overlay-end");
-  const endScore = document.getElementById("end-score");
-  const endBest = document.getElementById("end-best");
-  const btnStart = document.getElementById("btn-start");
-  const btnRestart = document.getElementById("btn-restart");
-  const nameInput = document.getElementById("name-input");
-  const scoreSaveForm = document.getElementById("score-save");
-  const btnSave = document.getElementById("btn-save");
-  const scoreSaved = document.getElementById("score-saved");
-  const boardBtn = document.getElementById("board-btn");
-  const boardModal = document.getElementById("board-modal");
-  const boardClose = document.getElementById("board-close");
-  const boardList = document.getElementById("board-list");
-  const boardEmpty = document.getElementById("board-empty");
-  const rampSvg = document.getElementById("ramp");
-  const rampFill = document.getElementById("ramp-fill");
-  const rampLine = document.getElementById("ramp-line");
-  const copeL = document.getElementById("cope-l");
-  const copeR = document.getElementById("cope-r");
+  // All these elements are static markup in this same component, so the
+  // assertion is safe; the big runtime guard below is kept as a belt-and-braces.
+  const $el = <T extends HTMLElement = HTMLElement>(id: string) =>
+    document.getElementById(id) as T;
+  const stage = $el("stage");
+  const world = $el("world");
+  const bike = $el("bike");
+  const pop = $el("pop");
+  const elScore = $el("hud-score");
+  const elTime = $el("hud-time");
+  const elCombo = $el("hud-combo");
+  const ovStart = $el("overlay-start");
+  const ovEnd = $el("overlay-end");
+  const endScore = $el("end-score");
+  const endBest = $el("end-best");
+  const btnStart = $el("btn-start");
+  const btnRestart = $el("btn-restart");
+  const nameInput = $el<HTMLInputElement>("name-input");
+  const scoreSaveForm = $el<HTMLFormElement>("score-save");
+  const scoreSaved = $el("score-saved");
+  const boardBtn = $el("board-btn");
+  const boardModal = $el("board-modal");
+  const boardClose = $el<HTMLButtonElement>("board-close");
+  const boardList = $el("board-list");
+  const boardEmpty = $el("board-empty");
+  const rampSvg = document.getElementById("ramp") as Element | null;
+  const rampFill = document.getElementById("ramp-fill") as Element | null;
+  const rampLine = document.getElementById("ramp-line") as Element | null;
+  const copeL = document.getElementById("cope-l") as Element | null;
+  const copeR = document.getElementById("cope-r") as Element | null;
 
   if (stage && world && bike && pop && elScore && elTime && elCombo &&
       ovStart && ovEnd && endScore && endBest && btnStart && btnRestart) {
@@ -603,8 +606,8 @@ import BmxBike from "../components/BmxBike.astro";
     const LIP = (85 * Math.PI) / 180;
     let WORLD_W = 900, WORLD_H = 560;    // logical world size, set per screen
     let CX = 450, CY = 250;              // bowl centre, set per screen
-    let BW, BH, ORIGIN_X, ORIGIN_Y, WHEEL_R, Rc;
-    function setBike(w) {
+    let BW = 0, BH = 0, ORIGIN_X = 0, ORIGIN_Y = 0, WHEEL_R = 0, Rc = 0;
+    function setBike(w: number) {
       BW = w;                            // bike width in logical px
       BH = BW * (268 / 380);             // height from the SVG aspect
       ORIGIN_X = BW / 2;
@@ -646,7 +649,7 @@ import BmxBike from "../components/BmxBike.astro";
 
     // ---- Responsive world layout ----
     function buildRamp() {
-      const pts = [];
+      const pts: [number, number][] = [];
       for (let a = -LIP; a <= LIP + 1e-6; a += 0.03) {
         pts.push([CX + RSURF * Math.sin(a), CY + RSURF * Math.cos(a)]);
       }
@@ -685,9 +688,9 @@ import BmxBike from "../components/BmxBike.astro";
     layout();
     new ResizeObserver(layout).observe(stage);
 
-    function ridePos(phi) { return { x: CX + Rc * Math.sin(phi), y: CY + Rc * Math.cos(phi) }; }
+    function ridePos(phi: number) { return { x: CX + Rc * Math.sin(phi), y: CY + Rc * Math.cos(phi) }; }
 
-    function reset(full) {
+    function reset(full: boolean) {
       s.phi = -0.6; s.phiVel = 0;
       s.airborne = false;
       s.rot = 0.6; s.spin = 0; s.spinTarget = 0; s.flip = 0; s.flipTarget = 0;
@@ -697,7 +700,7 @@ import BmxBike from "../components/BmxBike.astro";
       if (full) { s.score = 0; s.combo = 1; s.time = RUN_TIME; }
     }
 
-    function showPop(text) {
+    function showPop(text: string) {
       const p = s.airborne ? { x: s.x, y: s.y } : ridePos(s.phi);
       pop.textContent = text;
       pop.style.left = Math.max(50, Math.min(WORLD_W - 50, p.x)) + "px";
@@ -749,7 +752,7 @@ import BmxBike from "../components/BmxBike.astro";
       }
     }
 
-    function step(h) {
+    function step(h: number) {
       if (s.mode !== "play") return;
 
       s.time -= h;
@@ -829,7 +832,7 @@ import BmxBike from "../components/BmxBike.astro";
 
     let last = 0, acc = 0;
     const FIXED = 1 / 120;
-    function frame(now) {
+    function frame(now: number) {
       if (!last) last = now;
       let dt = (now - last) / 1000;
       last = now;
@@ -870,11 +873,12 @@ import BmxBike from "../components/BmxBike.astro";
     // ---- Scoreboard (saved in this browser) ----
     const SCORE_KEY = "bmx-scores";
     const NAME_KEY = "bmx-name";
-    function loadScores() {
+    type ScoreRow = { name: string; score: number };
+    function loadScores(): ScoreRow[] {
       try { return JSON.parse(localStorage.getItem(SCORE_KEY) || "[]") || []; }
       catch { return []; }
     }
-    function fmtName(v) { return (v || "").trim().slice(0, 14) || "Rider"; }
+    function fmtName(v: string) { return (v || "").trim().slice(0, 14) || "Rider"; }
     function resetSaveForm() {
       if (!scoreSaveForm) return;
       scoreSaveForm.hidden = false;
@@ -885,7 +889,7 @@ import BmxBike from "../components/BmxBike.astro";
     }
     function doSave() {
       if (!scoreSaveForm || scoreSaveForm.hidden) return;   // already saved this run
-      const name = fmtName(nameInput && nameInput.value);
+      const name = fmtName(nameInput ? nameInput.value : "");
       try { localStorage.setItem(NAME_KEY, name); } catch {}
       const list = loadScores();
       list.push({ name, score: s.final });
@@ -906,25 +910,47 @@ import BmxBike from "../components/BmxBike.astro";
         name.textContent = row.name;
         const score = document.createElement("span");
         score.className = "b-score";
-        score.textContent = row.score;
+        score.textContent = String(row.score);
         li.append(name, score);
         boardList.appendChild(li);
       });
     }
-    let resumeMode = null;
+    let resumeMode: "play" | null = null;
+    let boardReturnFocus: Element | null = null;
     function openBoard() {
       renderBoard();
       boardModal?.classList.remove("board-modal--hidden");
       if (s.mode === "play") { resumeMode = "play"; s.mode = "paused"; }  // pause a live run
+      // aria-modal hides the rest of the page from AT, so focus must move
+      // into the dialog (and back out again on close).
+      boardReturnFocus = document.activeElement;
+      boardClose?.focus();
     }
     function closeBoard() {
       boardModal?.classList.add("board-modal--hidden");
       if (resumeMode === "play") { s.mode = "play"; resumeMode = null; }
+      if (boardReturnFocus instanceof HTMLElement) boardReturnFocus.focus();
+      boardReturnFocus = null;
     }
     scoreSaveForm?.addEventListener("submit", (e) => { e.preventDefault(); doSave(); });
     boardBtn?.addEventListener("click", openBoard);
     boardClose?.addEventListener("click", closeBoard);
     boardModal?.addEventListener("click", (e) => { if (e.target === boardModal) closeBoard(); });
+    // Keep Tab cycling within the dialog while it's open.
+    boardModal?.addEventListener("keydown", (e) => {
+      if (e.key !== "Tab") return;
+      const focusables = boardModal.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focusables.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault(); last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault(); first.focus();
+      }
+    });
 
     // ---- Input ----
     const keyL = new Set(["ArrowLeft", "KeyA"]);
@@ -938,11 +964,11 @@ import BmxBike from "../components/BmxBike.astro";
       s.input = l && !r ? -1 : r && !l ? 1 : 0;
     }
     // Each tap adds 180° of trick spin (left = anticlockwise, right = clockwise).
-    function addSpin(dir) {
+    function addSpin(dir: number) {
       s.spinTarget = Math.max(-1080, Math.min(1080, s.spinTarget + dir * 180));
     }
     // Each tap adds a full flip (back = -1 tips backward, front = +1 tips forward).
-    function addFlip(dir) {
+    function addFlip(dir: number) {
       s.flipTarget = Math.max(-1080, Math.min(1080, s.flipTarget + dir * 360));
     }
     window.addEventListener("keydown", (e) => {
@@ -968,11 +994,11 @@ import BmxBike from "../components/BmxBike.astro";
       if (down.has(e.code)) { down.delete(e.code); applyKeys(); }
     });
 
-    function pointerDir(clientX) {
+    function pointerDir(clientX: number) {
       const r = stage.getBoundingClientRect();
       return clientX < r.left + r.width / 2 ? -1 : 1;
     }
-    let activePointer = null;
+    let activePointer: number | null = null;
     stage.addEventListener("pointerdown", (e) => {
       if (s.mode !== "play") return;
       if (s.airborne) { addSpin(pointerDir(e.clientX)); return; }  // tap = one 180 in the air
@@ -989,7 +1015,7 @@ import BmxBike from "../components/BmxBike.astro";
       if (s.mode !== "play" || e.pointerId !== activePointer) return;
       if (e.pointerType === "mouse") s.input = pointerDir(e.clientX);
     });
-    const clearPointer = (e) => {
+    const clearPointer = (e?: PointerEvent) => {
       if (e && e.pointerId !== activePointer) return;   // ignore other fingers lifting
       activePointer = null;
       s.autoPump = false;
@@ -1008,7 +1034,7 @@ import BmxBike from "../components/BmxBike.astro";
       if (now - lastTouchEnd < 350) e.preventDefault();   // kill double-tap zoom
       lastTouchEnd = now;
     }, { passive: false });
-    const blockGesture = (e) => e.preventDefault();         // kill pinch zoom
+    const blockGesture = (e: Event) => e.preventDefault();  // kill pinch zoom
     stage.addEventListener("gesturestart", blockGesture);
     stage.addEventListener("gesturechange", blockGesture);
 

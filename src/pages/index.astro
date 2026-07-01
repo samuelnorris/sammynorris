@@ -114,7 +114,9 @@ const projects = [
   import "../scripts/reveal.ts";
 
   (function () {
-    const el = document.getElementById("typewriter");
+    // The element is static markup on this page; assert so the narrowing
+    // survives into the nested typing callbacks.
+    const el = document.getElementById("typewriter")!;
     if (!el) return;
 
     // Skip animation if already played this session, arriving via anchor,
@@ -126,7 +128,7 @@ const projects = [
       el.classList.add("typewriter--done");
       document.getElementById("themeToggle")?.classList.remove("theme-toggle--delayed");
       document.querySelector(".bmx-bike")?.classList.remove("bmx-bike--delayed");
-      var tagline = document.querySelector('.hero__tagline');
+      var tagline = document.querySelector<HTMLElement>('.hero__tagline');
       if (tagline) {
         tagline.style.animation = 'none';
         tagline.style.opacity = '1';
@@ -148,7 +150,7 @@ const projects = [
 
     el.classList.add("typewriter--typing");
 
-    function typeText(text, i, cb) {
+    function typeText(text: string, i: number, cb?: () => void) {
       if (i < text.length) {
         el.textContent += text[i];
         setTimeout(function () { typeText(text, i + 1, cb); }, typeSpeed);
@@ -157,7 +159,7 @@ const projects = [
       }
     }
 
-    function deleteChars(count, cb) {
+    function deleteChars(count: number, cb?: () => void) {
       var current = el.textContent || "";
       if (count > 0 && current.length > 0) {
         el.textContent = current.slice(0, -1);
@@ -190,8 +192,8 @@ const projects = [
   // reading time as an iMessage-style bubble (brand colours), holds, deletes,
   // then returns the native cursor. One shared bubble across all cards.
   (function () {
-    const cards = document.querySelectorAll("[data-cursor-label]");
-    const bubble = document.querySelector(".cursor-bubble");
+    const cards = document.querySelectorAll<HTMLElement>("[data-cursor-label]");
+    const bubble = document.querySelector<HTMLElement>(".cursor-bubble")!;
     if (!cards.length || !bubble) return;
 
     // Pointer-only affordance — skip on touch / coarse pointers.
@@ -206,24 +208,24 @@ const projects = [
     // to <html> so it stays a true viewport-fixed element at any scroll depth.
     document.documentElement.appendChild(bubble);
 
-    const textEl = bubble.querySelector(".cursor-bubble__text");
+    const textEl = bubble.querySelector<HTMLElement>(".cursor-bubble__text")!;
 
     const TYPE_MS = 50; // per character while typing out
     const DELETE_MS = 45; // per character while deleting
     const HOLD_MS = 1750; // pause once fully typed
 
-    let timers = [];
-    let activeCard = null;
+    let timers: ReturnType<typeof setTimeout>[] = [];
+    let activeCard: HTMLElement | null = null;
     let label = "";
     function clearTimers() {
       timers.forEach(clearTimeout);
       timers = [];
     }
-    function after(ms, fn) {
+    function after(ms: number, fn: () => void) {
       timers.push(setTimeout(fn, ms));
     }
 
-    function move(e) {
+    function move(e: MouseEvent) {
       bubble.style.transform =
         "translate(" + e.clientX + "px, " + e.clientY + "px) translate(8px, -100%)";
     }
@@ -238,12 +240,12 @@ const projects = [
       textEl.textContent = "";
     }
 
-    function typeOut(i) {
+    function typeOut(i: number) {
       if (i > label.length) { after(HOLD_MS, function () { deleteBack(label.length - 1); }); return; }
       textEl.textContent = label.slice(0, i);
       after(TYPE_MS, function () { typeOut(i + 1); });
     }
-    function deleteBack(i) {
+    function deleteBack(i: number) {
       if (i < 0) { hide(); return; }
       textEl.textContent = label.slice(0, i);
       after(DELETE_MS, function () { deleteBack(i - 1); });

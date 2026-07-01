@@ -95,12 +95,12 @@ const personSchema = {
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@200;300;400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@200..500&display=swap" rel="stylesheet" />
 
     <title>{title}</title>
 
     {isHomepage && (
-      <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+      <script is:inline type="application/ld+json" set:html={JSON.stringify(personSchema)} />
     )}
   </head>
   <body class="page-enter">
@@ -128,6 +128,8 @@ const personSchema = {
     <script is:inline>
       // Page transition: intercept internal links and slide out before navigating
       document.addEventListener('click', function (e) {
+        // Leave modified clicks (new tab / window / download) to the browser.
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
         var link = e.target.closest('a[href]');
         if (!link || link.target === '_blank') return;
         var href = link.getAttribute('href');
@@ -146,7 +148,7 @@ const personSchema = {
         dot.setAttribute('aria-hidden', 'true');
         dot.style.cssText =
           'position:fixed;pointer-events:none;z-index:9999;width:8px;height:8px;' +
-          'border-radius:50%;border:0.75px solid #ffffff;background:transparent;' +
+          'border-radius:50%;border:0.75px solid var(--color-primary);background:transparent;' +
           'transform:translate(-50%,-50%);opacity:0;will-change:left,top;';
         document.body.appendChild(dot);
         var mx = 0, my = 0, dx = 0, dy = 0;
@@ -179,10 +181,8 @@ const personSchema = {
     <script is:inline>
       document.querySelector('.skip-link').addEventListener('click', function(e) {
         e.preventDefault();
-        // On homepage, skip past the hero to the work section
-        // On other pages, focus the main content landmark
-        // On homepage, focus the first project card
-        // On other pages, focus the main content landmark
+        // Homepage: focus the first project card (past the hero).
+        // Other pages: focus the main content landmark.
         var target = document.querySelector('#work .card') || document.getElementById('main-content');
         if (target) target.focus();
       });

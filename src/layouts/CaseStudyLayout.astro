@@ -106,9 +106,12 @@ const metaLabel = meta.map((m) => `${m.label}: ${m.value}`).join(". ");
   // mirroring the homepage name intro. Repeat views and reduced-motion
   // users get it instantly.
   (function () {
-    const meta = document.querySelector('.hero__meta');
-    const line = meta?.querySelector('.hero__meta-line');
-    if (!meta || !line) return;
+    const metaMaybe = document.querySelector<HTMLElement>('.hero__meta');
+    const lineMaybe = metaMaybe?.querySelector<HTMLElement>('.hero__meta-line');
+    if (!metaMaybe || !lineMaybe) return;
+    // Narrowed re-bindings so the types hold inside step() below.
+    const meta = metaMaybe;
+    const line = lineMaybe;
 
     const full = meta.getAttribute('data-meta') || line.textContent || '';
     const key = 'sn-meta-typed:' + window.location.pathname;
@@ -139,8 +142,8 @@ const metaLabel = meta.map((m) => `${m.label}: ${m.value}`).join(". ");
   })();
 
   // Hide the fixed top nav when the bottom CTA is visible
-  const nav = document.querySelector('.case-nav');
-  const bottomCta = document.querySelector('.closing__cta');
+  const nav = document.querySelector<HTMLElement>('.case-nav');
+  const bottomCta = document.querySelector<HTMLElement>('.closing__cta');
   if (nav && bottomCta) {
     const navObserver = new IntersectionObserver(
       (entries) => {
