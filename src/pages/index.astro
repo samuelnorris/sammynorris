@@ -197,6 +197,9 @@ const projects = [
     // Pointer-only affordance — skip on touch / coarse pointers.
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
 
+    // Disable entirely when the user prefers reduced motion — no bubble at all.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
     // <body> keeps an identity transform from its page-enter animation, which
     // makes it (not the viewport) the containing block for any position:fixed
     // descendant — offsetting this bubble by the scroll position. Re-parent it
@@ -204,11 +207,10 @@ const projects = [
     document.documentElement.appendChild(bubble);
 
     const textEl = bubble.querySelector(".cursor-bubble__text");
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const TYPE_MS = 60; // per character while typing out
-    const DELETE_MS = 35; // per character while deleting
-    const HOLD_MS = 2000; // pause once fully typed
+    const TYPE_MS = 50; // per character while typing out
+    const DELETE_MS = 45; // per character while deleting
+    const HOLD_MS = 1750; // pause once fully typed
 
     let timers = [];
     let activeCard = null;
@@ -260,10 +262,8 @@ const projects = [
           card.classList.add("card--bubbling");
           bubble.classList.add("cursor-bubble--visible");
           textEl.textContent = "";
-          // Respect reduced motion: show the label statically, no type/delete cycle.
-          if (reduce) { textEl.textContent = label; return; }
           typeOut(0);
-        }, 300));
+        }, 250));
       });
       card.addEventListener("mousemove", move);
       card.addEventListener("mouseleave", function () {
