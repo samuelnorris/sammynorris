@@ -211,8 +211,8 @@ const projects = [
     const textEl = bubble.querySelector<HTMLElement>(".cursor-bubble__text")!;
 
     const TYPE_MS = 50; // per character while typing out
-    const DELETE_MS = 45; // per character while deleting
-    const HOLD_MS = 1750; // pause once fully typed
+    const DELETE_MS = 35; // per character while deleting
+    const HOLD_MS = 1250; // pause once fully typed
 
     let timers: ReturnType<typeof setTimeout>[] = [];
     let activeCard: HTMLElement | null = null;
@@ -481,7 +481,7 @@ const projects = [
     color: var(--color-bg);
     font-family: var(--font-sans);
     font-size: 13px;
-    font-weight: 400;
+    font-weight: 250;
     letter-spacing: -0.01em;
     line-height: 1;
     white-space: nowrap;
