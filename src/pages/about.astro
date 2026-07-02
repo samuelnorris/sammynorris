@@ -50,11 +50,16 @@ import Footer from "../components/Footer.astro";
 
   <!-- Timeline -->
   <section class="timeline" data-reveal>
-    <div class="timeline__pills" role="tablist" aria-label="Career timeline">
-      <button class="timeline__pill active" type="button" role="tab" id="tl-tab-0" aria-controls="tl-panel-0" aria-selected="true" tabindex="0" data-tab="0">Present - 2021</button>
-      <button class="timeline__pill" type="button" role="tab" id="tl-tab-1" aria-controls="tl-panel-1" aria-selected="false" tabindex="-1" data-tab="1">2021 - 2020</button>
-      <button class="timeline__pill" type="button" role="tab" id="tl-tab-2" aria-controls="tl-panel-2" aria-selected="false" tabindex="-1" data-tab="2">2020 - 2018</button>
-      <button class="timeline__pill" type="button" role="tab" id="tl-tab-3" aria-controls="tl-panel-3" aria-selected="false" tabindex="-1" data-tab="3">2017 - 2015</button>
+    <div class="timeline__pills">
+      <!-- The tablist wrapper keeps only tabs inside the ARIA tablist; the
+           decorative scroll chevron lives beside it in the scroll row.
+           display:contents means it doesn't affect the flex layout. -->
+      <div class="timeline__tablist" role="tablist" aria-label="Career timeline">
+        <button class="timeline__pill active" type="button" role="tab" id="tl-tab-0" aria-controls="tl-panel-0" aria-selected="true" tabindex="0" data-tab="0">Present - 2021</button>
+        <button class="timeline__pill" type="button" role="tab" id="tl-tab-1" aria-controls="tl-panel-1" aria-selected="false" tabindex="-1" data-tab="1">2021 - 2020</button>
+        <button class="timeline__pill" type="button" role="tab" id="tl-tab-2" aria-controls="tl-panel-2" aria-selected="false" tabindex="-1" data-tab="2">2020 - 2018</button>
+        <button class="timeline__pill" type="button" role="tab" id="tl-tab-3" aria-controls="tl-panel-3" aria-selected="false" tabindex="-1" data-tab="3">2018 - 2015</button>
+      </div>
       <span class="timeline__chevron" aria-hidden="true">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 18l6-6-6-6" />
@@ -109,10 +114,12 @@ import Footer from "../components/Footer.astro";
 
   // Hero greeting: type a greeting, hold, delete, type the next language, loop
   (() => {
-    const el = document.getElementById('greeting');
+    // Static markup on this page; assert so narrowing survives the callbacks.
+    const el = document.getElementById('greeting')!;
     if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    const greetings = [
+    type Greeting = { t: string; lang: string; dir?: string };
+    const greetings: Greeting[] = [
       { t: 'Hello',     lang: 'en' },
       { t: 'Bonjour',   lang: 'fr' },
       { t: 'Hola',      lang: 'es' },
@@ -133,14 +140,14 @@ import Footer from "../components/Footer.astro";
     el.textContent = '';
     el.classList.add('hero__greeting--typing');
 
-    const typeWord = (g, i) => {
+    const typeWord = (g: Greeting, i: number) => {
       if (i === 0) { el.lang = g.lang; el.dir = g.dir || 'ltr'; }
       el.textContent = g.t.slice(0, i);
       if (i < g.t.length) setTimeout(() => typeWord(g, i + 1), typeSpeed);
       else if (Date.now() >= stopAt) el.classList.remove('hero__greeting--typing');
       else setTimeout(() => deleteWord(g, g.t.length), holdFull);
     };
-    const deleteWord = (g, i) => {
+    const deleteWord = (g: Greeting, i: number) => {
       el.textContent = g.t.slice(0, i);
       if (i > 0) setTimeout(() => deleteWord(g, i - 1), deleteSpeed);
       else {
@@ -266,6 +273,11 @@ import Footer from "../components/Footer.astro";
     display: flex;
     gap: 8px;
     position: relative;
+  }
+
+  /* Layout-transparent: the pills participate in the .timeline__pills flex row. */
+  .timeline__tablist {
+    display: contents;
   }
 
   .timeline__pill {

@@ -5,7 +5,7 @@ Built with [Astro](https://astro.build), hand-written CSS, and deployed on Verce
 
 ## Stack
 
-- **Astro 6** (`output: 'server'`); a password gate in `src/middleware.ts` protects the deployed site
+- **Astro 6**, fully static output (every page prerendered at build time)
 - **Vercel** adapter for deployment
 - Custom CSS with design tokens in `src/styles/global.css` (no UI framework)
 - Fonts: Instrument Serif + Geist (Google Fonts)
@@ -19,28 +19,20 @@ npm run dev            # http://localhost:4321
 
 ## Commands
 
-| Command           | Action                                |
-| ----------------- | ------------------------------------- |
-| `npm run dev`     | Start the local dev server            |
-| `npm run build`   | Build the production site to `./dist` |
-| `npm run preview` | Preview the production build locally  |
-
-## Environment variables
-
-| Variable        | Purpose                                                                          |
-| --------------- | -------------------------------------------------------------------------------- |
-| `SITE_PASSWORD` | Password for the gated site. If unset in production, the gate fails closed.       |
-
-Set it on Vercel under Project Settings → Environment Variables, and locally
-in `.env` (copy `.env.example`). Local `astro dev` skips the gate entirely.
+| Command           | Action                                       |
+| ----------------- | -------------------------------------------- |
+| `npm run dev`     | Start the local dev server                   |
+| `npm run build`   | Type-check, then build the production site   |
+| `npm run check`   | Run `astro check` (types) on its own         |
+| `npm run preview` | Preview the production build locally         |
 
 ## Structure
 
 ```text
 src/
-├── components/   # ThemeToggle, BackButton
+├── components/   # ThemeToggle, BackButton, Footer, BmxBike
 ├── layouts/      # Layout (base), CaseStudyLayout
-├── pages/        # index, about, + 6 case studies
-├── styles/       # global.css, case-study.css
-└── middleware.ts # password gate for /commission
+├── pages/        # index, about, 6 case studies, + /bmx easter egg
+├── scripts/      # reveal.ts (shared scroll-reveal)
+└── styles/       # global.css, case-study.css
 ```
