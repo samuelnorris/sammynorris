@@ -2,18 +2,18 @@
 import Layout from "../layouts/Layout.astro";
 import BackButton from "../components/BackButton.astro";
 import BmxBike from "../components/BmxBike.astro";
-// The park geometry is built at runtime (see the script below) so the world can
+// The ramp geometry is built at runtime (see the script below) so the world can
 // adapt to the screen shape — wide on desktop, tall and filling the width on a
 // portrait phone.
 ---
 
-<Layout title="Skatepark - Sammy Norris" description="A little BMX skatepark trick game.">
+<Layout title="Halfpipe - Sammy Norris" description="A little BMX halfpipe trick game.">
   <nav class="case-nav">
     <BackButton href="/" label="Back to home" />
   </nav>
 
   <div class="game">
-    <h1 class="visually-hidden">BMX skatepark trick game</h1>
+    <h1 class="visually-hidden">BMX Halfpipe trick game</h1>
 
     <div class="play-area">
     <div class="stage" id="stage">
@@ -21,9 +21,6 @@ import BmxBike from "../components/BmxBike.astro";
         <svg class="ramp" id="ramp" viewBox="0 0 900 560" aria-hidden="true">
           <path class="ramp__fill" id="ramp-fill" />
           <path class="ramp__line" id="ramp-line" />
-          <line class="ramp__rail-post" id="rail-post-l" />
-          <line class="ramp__rail-post" id="rail-post-r" />
-          <line class="ramp__rail" id="rail-line" />
           <circle class="ramp__cope" id="cope-l" r="4" />
           <circle class="ramp__cope" id="cope-r" r="4" />
         </svg>
@@ -51,19 +48,17 @@ import BmxBike from "../components/BmxBike.astro";
       <div class="overlay" id="overlay-start">
         <div class="overlay__card">
           <p class="overlay__eyebrow">BMX</p>
-          <h2 class="overlay__title">Skatepark</h2>
+          <h2 class="overlay__title">Halfpipe</h2>
           <ul class="controls controls--keys">
-            <li><span class="key">←</span><span class="key">→</span><span>or</span><span class="key">A</span><span class="key">D</span> &nbsp;pedal &amp; pump the transitions for speed</li>
+            <li><span class="key">←</span><span class="key">→</span><span>or</span><span class="key">A</span><span class="key">D</span> &nbsp;pump up the walls &amp; build speed</li>
             <li><span class="hint">In the air</span> tap <span class="key">←</span><span class="key">→</span> to <strong>spin 180°</strong> (tap again for more)</li>
             <li><span class="hint">Flip</span> tap <span class="key">↑</span><span class="key">↓</span> for back / front flips</li>
-            <li><span class="hint">Rail</span> drop onto it to <strong>grind</strong> - clear the whole gap for a bonus</li>
             <li><span class="hint">Auto-land</span> the bike always drops back in the right way up</li>
           </ul>
           <ul class="controls controls--touch">
-            <li><span class="hint">Hold</span> the left / right side to pedal &amp; pump that way</li>
+            <li><span class="hint">Hold</span> anywhere to pump up the walls &amp; build speed</li>
             <li><span class="hint">In the air</span> tap the left / right side to <strong>spin 180°</strong> (tap again for more)</li>
             <li><span class="hint">Flip</span> tap the <span class="ico">↻</span> button to backflip - even just before you launch</li>
-            <li><span class="hint">Rail</span> drop onto it to <strong>grind</strong> - clear the whole gap for a bonus</li>
             <li><span class="hint">Auto-land</span> the bike always drops back in the right way up</li>
           </ul>
           <button class="overlay__btn" id="btn-start" type="button">Drop in</button>
@@ -163,16 +158,6 @@ import BmxBike from "../components/BmxBike.astro";
     stroke-width: 2;
   }
   .ramp__cope { fill: var(--color-secondary); }
-  .ramp__rail {
-    stroke: var(--color-secondary);
-    stroke-width: 4;
-    stroke-linecap: round;
-  }
-  .ramp__rail-post {
-    stroke: var(--color-primary);
-    stroke-opacity: 0.22;
-    stroke-width: 3;
-  }
 
   .bike {
     position: absolute;
@@ -612,68 +597,50 @@ import BmxBike from "../components/BmxBike.astro";
   const rampLine = document.getElementById("ramp-line") as Element | null;
   const copeL = document.getElementById("cope-l") as Element | null;
   const copeR = document.getElementById("cope-r") as Element | null;
-  const railLine = document.getElementById("rail-line") as Element | null;
-  const railPostL = document.getElementById("rail-post-l") as Element | null;
-  const railPostR = document.getElementById("rail-post-r") as Element | null;
 
   if (stage && world && bike && pop && elScore && elTime && elCombo &&
       ovStart && ovEnd && endScore && endBest && btnStart && btnRestart) {
 
     // ---- Geometry (rebuilt by layout() to fit the screen shape) ----
-    const LIP = (85 * Math.PI) / 180;    // quarter-pipe lip angle from the floor tangent
+    const RSURF = 230;                   // ramp surface radius (logical px; fixes the feel)
+    const LIP = (85 * Math.PI) / 180;
     let WORLD_W = 900, WORLD_H = 560;    // logical world size, set per screen
-    let FLOOR = 480;                     // floor line, set per screen
-    let PARK = { R: 205, KR: 132, KA: (63 * Math.PI) / 180, F: 92, GAP: 140, M: 34 };
-    let BW = 0, BH = 0, ORIGIN_X = 0, ORIGIN_Y = 0, WHEEL_R = 0;
+    let CX = 450, CY = 250;              // bowl centre, set per screen
+    let BW = 0, BH = 0, ORIGIN_X = 0, ORIGIN_Y = 0, WHEEL_R = 0, Rc = 0;
     function setBike(w: number) {
       BW = w;                            // bike width in logical px
       BH = BW * (268 / 380);             // height from the SVG aspect
       ORIGIN_X = BW / 2;
       ORIGIN_Y = BH * 0.7201;            // wheel axle line
       WHEEL_R = (61.4 / 380) * BW;       // tyre radius in logical px
-      bike.style.width = BW + "px";      // keep the art the size the physics assumes
+      Rc = RSURF - WHEEL_R;              // pivot path radius (wheels touch the surface)
     }
     setBike(88);
 
-    // The park is one polyline from the left coping to the right coping:
-    // quarter pipe, flat, kicker, gap (with a grindable rail across it), kicker,
-    // flat, quarter pipe. The bike pivot rides an offset copy of the surface,
-    // one wheel radius above it, so the tyres sit on the drawn line.
-    let RX: number[] = [], RY: number[] = [], RS: number[] = [];        // ride path + cumulative length
-    let RTX: number[] = [], RTY: number[] = [], RTRANS: boolean[] = []; // per-segment tangent + transition flag
-    let S_TOTAL = 0, START_S = 0, X_MIN = 0, X_MAX = 0;
-    let corners: number[] = [];                    // kicker take-off edges (s along the path)
-    let railX1 = 0, railX2 = 0, railRideY = 0;     // grind span + pivot height on the rail
-
     // ---- Tunables ----
     const G = 2100;          // gravity (px/s^2)
-    const PEDAL = 640;       // pedal force along the ground (px/s^2)
-    const PUMP = 1.15;       // extra speed gain pumping through transitions (per s)
-    const FRICTION = 0.15;   // rolling drag (per s)
-    let UMAX = 1150;         // speed cap -> caps air height (keeps airs on-screen)
+    const PUMP = 1.9;        // energy gain when pumping with motion (per s)
+    const BRAKE = 2.6;       // energy loss when holding against motion
+    const PHIVEL_MAX = 4.6;  // swing-speed cap -> caps air height (keeps airs on-screen)
     const SPIN_RATE = 760;   // flat-spin speed (deg/s) the bike rotates toward its target
     const FLIP_RATE = 720;   // back / front flip speed (deg/s)
-    const TILT_EASE = 6;     // how fast the slope-lean levels out in the air
-    const GRIND_RATE = 360;  // grind score rate (degree-equivalents per s)
-    const GRIND_DRAG = 0.5;  // how quickly a grind scrubs speed (per s)
-    const GAP_DEG = 90;      // bonus (degree-equivalent) for clearing the gap jump
+    const TILT_EASE = 6;     // how fast the wall-lean levels out in the air
     const RUN_TIME = 30;
 
     const DEG = 180 / Math.PI;
 
     const s = {
-      mode: "ready",          // ready | play | paused | over
-      sPos: 0, u: 0,          // arc position + speed along the park surface
+      mode: "ready",          // ready | play | over
+      phi: -0.6, phiVel: 0,
       airborne: false,
-      grinding: false, grindPts: 0, grindT: 0,
       x: 0, y: 0, vx: 0, vy: 0,
-      rot: 0,                 // slope-lean tilt (radians)
+      rot: 0.6,               // wall-lean tilt (radians)
       spin: 0, spinTarget: 0, // flat spin about the vertical axis (degrees)
       flip: 0, flipTarget: 0, // back / front flip about the screen axis (degrees)
       flipQueued: false,      // touch: a backflip pre-loaded for the next launch
-      launchS: -1,            // where the last air started (for the gap bonus)
       face: 1,
       input: 0,
+      autoPump: false, pumpKick: 1,   // touch: hold anywhere to pump
       score: 0, combo: 1, final: 0,
       time: RUN_TIME,
       best: 0,
@@ -681,71 +648,14 @@ import BmxBike from "../components/BmxBike.astro";
     try { s.best = parseInt(localStorage.getItem("bmx-best") || "0", 10) || 0; } catch {}
 
     // ---- Responsive world layout ----
-    function buildPark() {
-      const { R, KR, KA, F, GAP, M } = PARK;
-      const KH = KR * (1 - Math.cos(KA));                    // kicker height
-      const BACK = KH;                                       // 45° faces into the gap (landable)
-      const vx: number[] = [], vy: number[] = [], vtr: boolean[] = [];
-      const cornerIdx: number[] = [];
-      const put = (x: number, y: number, tr: boolean) => { vx.push(x); vy.push(y); vtr.push(tr); };
-
-      const qpL = M + R * Math.sin(LIP);                     // left transition centre
-      for (let a = LIP; a > 0.0005; a -= 0.025) put(qpL - R * Math.sin(a), FLOOR - R + R * Math.cos(a), true);
-      put(qpL, FLOOR, true);
-      const leftArcEnd = vx.length;
-      const k0 = qpL + F;                                    // left kicker base
-      put(k0, FLOOR, false);
-      for (let a = 0.025; a < KA - 0.0005; a += 0.025) put(k0 + KR * Math.sin(a), FLOOR - KR + KR * Math.cos(a), true);
-      const eL = k0 + KR * Math.sin(KA);                     // left take-off edge
-      put(eL, FLOOR - KH, true);
-      cornerIdx.push(vx.length - 1);
-      put(eL + BACK, FLOOR, true);                           // down into the gap (pumpable pit)
-      put(eL + BACK + GAP, FLOOR, true);                     // gap floor under the rail
-      const eR = eL + BACK + GAP + BACK;                     // right take-off edge
-      put(eR, FLOOR - KH, true);
-      cornerIdx.push(vx.length - 1);
-      const k1 = eR + KR * Math.sin(KA);                     // right kicker base
-      for (let a = KA - 0.025; a > 0.0005; a -= 0.025) put(k1 - KR * Math.sin(a), FLOOR - KR + KR * Math.cos(a), true);
-      put(k1, FLOOR, true);
-      const qpR = k1 + F;                                    // right transition centre
-      put(qpR, FLOOR, false);                                // flat isn't pumpable
-      for (let a = 0.025; a < LIP - 0.0005; a += 0.025) put(qpR + R * Math.sin(a), FLOOR - R + R * Math.cos(a), true);
-      put(qpR + R * Math.sin(LIP), FLOOR - R + R * Math.cos(LIP), true);
-
-      // Offset every point one wheel radius along its surface normal to get
-      // the path the bike pivot actually rides.
-      const n = vx.length;
-      const tx: number[] = [], ty: number[] = [];
-      for (let i = 0; i < n - 1; i++) {
-        const dx = vx[i + 1] - vx[i], dy = vy[i + 1] - vy[i];
-        const l = Math.hypot(dx, dy) || 1e-6;
-        tx.push(dx / l); ty.push(dy / l);
+    function buildRamp() {
+      const pts: [number, number][] = [];
+      for (let a = -LIP; a <= LIP + 1e-6; a += 0.03) {
+        pts.push([CX + RSURF * Math.sin(a), CY + RSURF * Math.cos(a)]);
       }
-      RX = []; RY = []; RS = [0]; RTX = []; RTY = []; RTRANS = [];
-      for (let i = 0; i < n; i++) {
-        const a = i > 0 ? i - 1 : 0, b = i < n - 1 ? i : n - 2;
-        const nx = (ty[a] + ty[b]) / 2, ny = -(tx[a] + tx[b]) / 2;
-        const l = Math.hypot(nx, ny) || 1e-6;
-        RX.push(vx[i] + (nx / l) * WHEEL_R);
-        RY.push(vy[i] + (ny / l) * WHEEL_R);
-      }
-      for (let i = 0; i < n - 1; i++) {
-        const dx = RX[i + 1] - RX[i], dy = RY[i + 1] - RY[i];
-        const l = Math.hypot(dx, dy) || 1e-6;
-        RTX.push(dx / l); RTY.push(dy / l); RTRANS.push(vtr[i] && vtr[i + 1]);
-        RS.push(RS[i] + l);
-      }
-      S_TOTAL = RS[n - 1];
-      START_S = RS[Math.floor(leftArcEnd * 0.55)];           // drop-in spot on the left wall
-      X_MIN = RX[0]; X_MAX = RX[n - 1];
-      corners = cornerIdx.map((i) => RS[i]);
-      const railVisY = FLOOR - KH;
-      railX1 = eL + 6; railX2 = eR - 6;
-      railRideY = railVisY - WHEEL_R;
-
-      const line = vx.map((x, i) => (i ? "L" : "M") + x.toFixed(1) + " " + vy[i].toFixed(1)).join(" ");
+      const line = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
       const fill = "M0 " + WORLD_H + " " +
-        vx.map((x, i) => "L" + x.toFixed(1) + " " + vy[i].toFixed(1)).join(" ") +
+        pts.map((p) => "L" + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ") +
         " L" + WORLD_W + " " + WORLD_H + " Z";
       if (rampSvg) {
         rampSvg.setAttribute("viewBox", "0 0 " + WORLD_W + " " + WORLD_H);
@@ -754,84 +664,47 @@ import BmxBike from "../components/BmxBike.astro";
       }
       rampFill && rampFill.setAttribute("d", fill);
       rampLine && rampLine.setAttribute("d", line);
-      if (copeL) { copeL.setAttribute("cx", String(vx[0])); copeL.setAttribute("cy", String(vy[0])); }
-      if (copeR) { copeR.setAttribute("cx", String(vx[n - 1])); copeR.setAttribute("cy", String(vy[n - 1])); }
-      if (railLine) {
-        railLine.setAttribute("x1", String(eL)); railLine.setAttribute("y1", String(railVisY));
-        railLine.setAttribute("x2", String(eR)); railLine.setAttribute("y2", String(railVisY));
-      }
-      const post = (el: Element | null, px: number) => {
-        if (!el) return;
-        el.setAttribute("x1", String(px)); el.setAttribute("y1", String(railVisY));
-        el.setAttribute("x2", String(px)); el.setAttribute("y2", String(FLOOR));
-      };
-      post(railPostL, eL + BACK + GAP / 3);
-      post(railPostR, eL + BACK + (2 * GAP) / 3);
+      const a0 = pts[0], a1 = pts[pts.length - 1];
+      if (copeL) { copeL.setAttribute("cx", String(a0[0])); copeL.setAttribute("cy", String(a0[1])); }
+      if (copeR) { copeR.setAttribute("cx", String(a1[0])); copeR.setAttribute("cy", String(a1[1])); }
     }
-
     function layout() {
       const w = stage.clientWidth, hgt = stage.clientHeight;
       if (!w || !hgt) return;
       const aspect = hgt / w;                  // > 1 means portrait
       const portrait = aspect > 1.05;
-      PARK = portrait
-        ? { R: 140, KR: 112, KA: (62 * Math.PI) / 180, F: 34, GAP: 48, M: 22 }
-        : { R: 205, KR: 132, KA: (63 * Math.PI) / 180, F: 92, GAP: 96, M: 34 };
-      UMAX = portrait ? 1000 : 1150;
-      setBike(portrait ? 80 : 88);
-      const back = PARK.KR * (1 - Math.cos(PARK.KA));        // 45° gap faces
-      WORLD_W = Math.round(2 * (PARK.M + PARK.R * Math.sin(LIP) + PARK.F + PARK.KR * Math.sin(PARK.KA) + back) + PARK.GAP);
+      const bowlHalf = RSURF * Math.sin(LIP);
+      const side = portrait ? 48 : 226;        // deck width each side of the bowl
+      WORLD_W = Math.round(2 * (bowlHalf + side));
       WORLD_H = Math.round(WORLD_W * aspect);  // fills the stage height exactly
-      FLOOR = WORLD_H - (portrait ? 96 : 76);  // park near the bottom, sky above
-      buildPark();
+      CX = WORLD_W / 2;
+      CY = WORLD_H - (portrait ? 96 : 80) - RSURF;  // bowl near the bottom, sky above
+      setBike(portrait ? 104 : 88);
+      buildRamp();
       world.style.width = WORLD_W + "px";
       world.style.height = WORLD_H + "px";
       world.style.transform = "scale(" + w / WORLD_W + ")";
-      if (s.mode === "ready" || s.mode === "over") { reset(false); }
-      else {                                   // keep a live (or paused) run sane through a resize
-        s.sPos = Math.max(0, Math.min(S_TOTAL, s.sPos));
-        if (s.grinding) { s.y = railRideY; s.x = Math.max(railX1, Math.min(railX2, s.x)); }
-        else if (!s.airborne) { const p = posAt(s.sPos); s.x = p.x; s.y = p.y; }
-      }
     }
     layout();
     new ResizeObserver(layout).observe(stage);
 
-    function segAt(sv: number) {
-      let lo = 0, hi = RS.length - 2;
-      while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (RS[mid] <= sv) lo = mid; else hi = mid - 1; }
-      return lo;
-    }
-    function posAt(sv: number) {
-      const i = segAt(sv);
-      const f = Math.max(0, Math.min(1, (sv - RS[i]) / (RS[i + 1] - RS[i] || 1e-6)));
-      return { x: RX[i] + (RX[i + 1] - RX[i]) * f, y: RY[i] + (RY[i + 1] - RY[i]) * f, tx: RTX[i], ty: RTY[i], i };
-    }
-    function yAt(xv: number) {   // terrain under an airborne bike (x never decreases along the path)
-      let lo = 0, hi = RX.length - 2;
-      while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (RX[mid] <= xv) lo = mid; else hi = mid - 1; }
-      const dx = RX[lo + 1] - RX[lo];
-      const f = dx > 1e-6 ? Math.max(0, Math.min(1, (xv - RX[lo]) / dx)) : 0;
-      return { y: RY[lo] + (RY[lo + 1] - RY[lo]) * f, i: lo, s: RS[lo] + (RS[lo + 1] - RS[lo]) * f };
-    }
+    function ridePos(phi: number) { return { x: CX + Rc * Math.sin(phi), y: CY + Rc * Math.cos(phi) }; }
 
     function reset(full: boolean) {
-      s.airborne = false; s.grinding = false;
-      s.sPos = START_S; s.u = 0;
-      const p = posAt(START_S);
-      s.x = p.x; s.y = p.y; s.vx = 0; s.vy = 0;
-      s.rot = Math.atan2(p.ty, p.tx);
-      s.spin = 0; s.spinTarget = 0; s.flip = 0; s.flipTarget = 0;
+      s.phi = -0.6; s.phiVel = 0;
+      s.airborne = false;
+      s.rot = 0.6; s.spin = 0; s.spinTarget = 0; s.flip = 0; s.flipTarget = 0;
       s.flipQueued = false;
-      s.launchS = -1;
       s.input = 0; s.face = 1;
+      s.autoPump = false; s.pumpKick = 1;
       if (full) { s.score = 0; s.combo = 1; s.time = RUN_TIME; }
     }
 
     function showPop(text: string) {
+      const p = s.airborne ? { x: s.x, y: s.y } : ridePos(s.phi);
       pop.textContent = text;
-      pop.style.left = Math.max(50, Math.min(WORLD_W - 50, s.x)) + "px";
-      pop.style.top = Math.max(50, Math.min(WORLD_H - 50, s.y - 46)) + "px";
+      pop.style.left = Math.max(50, Math.min(WORLD_W - 50, p.x)) + "px";
+      pop.style.top = Math.max(50, Math.min(WORLD_H - 50, p.y - 46)) + "px";
       pop.classList.remove("go");
       void pop.offsetWidth;   // restart the animation
       pop.classList.add("go");
@@ -839,71 +712,44 @@ import BmxBike from "../components/BmxBike.astro";
 
     function launch() {
       s.airborne = true;
-      const p = posAt(s.sPos);
+      const cos = Math.cos(s.phi), sin = Math.sin(s.phi);
+      const p = ridePos(s.phi);
       s.x = p.x; s.y = p.y;
-      s.vx = s.u * p.tx;
-      s.vy = s.u * p.ty;
-      s.rot = Math.atan2(p.ty, p.tx);
+      s.vx = s.phiVel * Rc * cos;
+      s.vy = -s.phiVel * Rc * sin;
+      s.rot = -s.phi;
       s.spin = 0; s.spinTarget = 0;
       s.flip = 0;
       s.flipTarget = s.flipQueued ? -360 : 0;   // fire a pre-loaded backflip on launch
       s.flipQueued = false;
-      s.launchS = s.sPos;
     }
 
-    // Tricks auto-correct on touchdown, so the bike always comes down wheels-down.
-    function cashTricks(gap: boolean) {
+    function land() {
+      const dxC = s.x - CX, dyC = s.y - CY;
+      let phi = Math.atan2(dxC, dyC);
+      if (phi > LIP) phi = LIP; else if (phi < -LIP) phi = -LIP;
+      const cos = Math.cos(phi), sin = Math.sin(phi);
+
+      // Tricks auto-correct on landing, so the bike always comes down wheels-down.
       const halves = Math.round(s.spin / 180);    // completed 180 flat-spins
       const flips = Math.round(s.flip / 360);     // completed back / front flips
+      s.airborne = false;
+      s.phi = phi;
+      s.rot = -phi;                               // settle onto the wall
       s.spin = 0; s.spinTarget = 0;
       s.flip = 0; s.flipTarget = 0;
-      const trickDeg = Math.abs(halves) * 180 + Math.abs(flips) * 360;
-      const deg = trickDeg + (gap ? GAP_DEG : 0);
-      if (deg === 0) return;
-      const pts = deg * s.combo;
-      s.score += pts;
-      let label = trickDeg === 0 ? "" :
-        flips !== 0 && halves === 0
-          ? (Math.abs(flips) > 1 ? Math.abs(flips) + "× " : "") + (flips < 0 ? "Backflip" : "Frontflip")
-          : trickDeg + "°";
-      if (gap) label = label ? label + " + gap" : "Gap";
-      showPop(label + "  +" + pts);
-      s.combo = Math.min(s.combo + 1, 9);
-    }
+      s.phiVel = (s.vx * cos - s.vy * sin) / Rc;  // keep rolling
 
-    function land(hit: { y: number; i: number; s: number }) {
-      const clearedGap =
-        (s.launchS === corners[0] && hit.s > corners[1] + 1) ||
-        (s.launchS === corners[1] && hit.s < corners[0] - 1);
-      s.airborne = false;
-      s.sPos = hit.s;
-      s.u = s.vx * RTX[hit.i] + s.vy * RTY[hit.i];  // keep rolling; rot eases onto the slope
-      s.launchS = -1;
-      cashTricks(clearedGap);
-    }
-
-    function startGrind() {
-      cashTricks(false);              // cash any spins pulled on the way in
-      s.airborne = false;
-      s.grinding = true;
-      s.y = railRideY; s.vy = 0;
-      s.rot = 0;
-      s.grindPts = 0; s.grindT = 0;
-      s.launchS = -1;
-    }
-    function endGrind() {
-      const pts = Math.round(s.grindPts) * s.combo;
-      if (pts > 0) {
+      const deg = Math.abs(halves) * 180 + Math.abs(flips) * 360;
+      if (deg !== 0) {
+        const pts = deg * s.combo;
         s.score += pts;
-        showPop("Grind  +" + pts);
+        const label = flips !== 0 && halves === 0
+          ? (Math.abs(flips) > 1 ? Math.abs(flips) + "× " : "") + (flips < 0 ? "Backflip" : "Frontflip")
+          : deg + "°";
+        showPop(label + "  +" + pts);
         s.combo = Math.min(s.combo + 1, 9);
       }
-      s.grinding = false;
-      s.airborne = true;              // drop off the end of the rail
-      s.y = railRideY + 1;            // start just under the rail so a stall can't re-catch it
-      s.vy = 0;
-      s.flipTarget = s.flipQueued ? -360 : 0;   // a queued backflip fires off the rail too
-      s.flipQueued = false;
     }
 
     function step(h: number) {
@@ -912,80 +758,69 @@ import BmxBike from "../components/BmxBike.astro";
       s.time -= h;
       if (s.time <= 0) { s.time = 0; endRun(); return; }
 
-      if (s.grinding) {
-        s.grindT += h;
-        s.x += s.vx * h;
-        s.vx *= Math.max(0, 1 - GRIND_DRAG * h);
-        s.grindPts += GRIND_RATE * h;
-        s.rot = Math.sin(s.grindT * 16) * 0.05;   // balance wobble
-        if (s.x <= railX1 || s.x >= railX2 || Math.abs(s.vx) < 36) endGrind();
-      } else if (!s.airborne) {
-        const p = posAt(s.sPos);
-        s.u += G * p.ty * h;                      // gravity along the slope
-        if (s.input !== 0) {
-          s.u += s.input * PEDAL * p.tx * h;      // pedal
-          if (RTRANS[p.i] && s.input === Math.sign(s.u)) s.u *= 1 + PUMP * h;  // pump the transitions
-        }
-        s.u *= Math.max(0, 1 - FRICTION * h);
-        s.u = Math.max(-UMAX, Math.min(UMAX, s.u));
-        const prev = s.sPos;
-        s.sPos += s.u * h;
+      if (!s.airborne) {
+        const aa = -(G / Rc) * Math.sin(s.phi);
+        s.phiVel += aa * h;
 
-        let flew = false;
-        if (s.sPos <= 0) {                        // left coping
-          s.sPos = 0;
-          if (s.u < 0) { launch(); flew = true; }
-        } else if (s.sPos >= S_TOTAL) {           // right coping
-          s.sPos = S_TOTAL;
-          if (s.u > 0) { launch(); flew = true; }
-        } else {
-          for (const c of corners) {              // kicker take-off edges
-            if ((prev < c && s.sPos >= c && s.u > 0) || (prev > c && s.sPos <= c && s.u < 0)) {
-              s.sPos = c;
-              launch(); flew = true;
-              break;
-            }
+        // Touch "hold anywhere to pump": a held finger follows the current swing so
+        // it always pumps (kicking off toward the touched side from rest).
+        if (s.autoPump) {
+          s.input = Math.abs(s.phiVel) < 0.05 ? s.pumpKick : (s.phiVel > 0 ? 1 : -1);
+        }
+
+        if (s.input !== 0) {
+          if (Math.abs(s.phiVel) < 0.05) {
+            s.phiVel += s.input * 0.7;            // kick off from rest
+          } else if (Math.sign(s.phiVel) === s.input) {
+            s.phiVel *= 1 + PUMP * h;             // pump
+          } else {
+            s.phiVel *= 1 - BRAKE * h;            // brake
           }
         }
-        if (!flew) {
-          const q = posAt(s.sPos);
-          s.x = q.x; s.y = q.y;
-          // Ease onto the slope so touchdowns and sharp joints read as
-          // suspension, not a snap.
-          s.rot += (Math.atan2(q.ty, q.tx) - s.rot) * Math.min(1, 14 * h);
-          if (Math.abs(s.u) > 15) s.face = s.u > 0 ? 1 : -1;
+        s.phiVel = Math.max(-PHIVEL_MAX, Math.min(PHIVEL_MAX, s.phiVel));
+        s.phi += s.phiVel * h;
+        s.rot = -s.phi;
+        if (Math.abs(s.phiVel) > 0.1) s.face = s.phiVel > 0 ? 1 : -1;
+
+        if (Math.abs(s.phi) >= LIP && Math.sign(s.phi) === Math.sign(s.phiVel)) {
+          launch();
+        } else if (Math.abs(s.phi) > LIP) {
+          s.phi = Math.sign(s.phi) * LIP;
+          s.phiVel *= 0.3;
         }
       } else {
-        const py0 = s.y;
         s.vy += G * h;
         s.x += s.vx * h;
         s.y += s.vy * h;
-        // Keep the bike inside the park: outward drift rides the coping and drops back in.
-        if (s.x > X_MAX - 2) { s.x = X_MAX - 2; if (s.vx > 0) s.vx = 0; }
-        else if (s.x < X_MIN + 2) { s.x = X_MIN + 2; if (s.vx < 0) s.vx = 0; }
+        // Keep the bike within the pipe mouth: outward drift rides the lip and drops back in.
+        const lipX = Rc * Math.sin(LIP);
+        if (s.x > CX + lipX) { s.x = CX + lipX; if (s.vx > 0) s.vx = 0; }
+        else if (s.x < CX - lipX) { s.x = CX - lipX; if (s.vx < 0) s.vx = 0; }
         if (Math.abs(s.vx) > 12) s.face = s.vx > 0 ? 1 : -1;
 
-        // Auto-level the slope lean and ease the spin & flip toward their targets.
+        // Auto-level the wall lean and ease the spin & flip toward their targets.
         s.rot += (0 - s.rot) * Math.min(1, TILT_EASE * h);
         const dsp = s.spinTarget - s.spin, spinStep = SPIN_RATE * h;
         s.spin += Math.max(-spinStep, Math.min(spinStep, dsp));
         const dfl = s.flipTarget - s.flip, flipStep = FLIP_RATE * h;
         s.flip += Math.max(-flipStep, Math.min(flipStep, dfl));
 
-        // Falling onto the rail starts a grind; otherwise land on the terrain.
-        if (s.vy > 0 && py0 <= railRideY && s.y >= railRideY && s.x > railX1 && s.x < railX2) {
-          startGrind();
-        } else if (s.vy > 0) {
-          const hit = yAt(s.x);
-          if (s.y >= hit.y) land(hit);
+        // Land when the bike falls back onto the bowl surface while descending.
+        const dxs = s.x - CX;
+        if (s.vy > 0 && Math.abs(dxs) < Rc) {
+          const ySurf = CY + Math.sqrt(Rc * Rc - dxs * dxs);
+          if (s.y >= ySurf) land();
         }
         if (s.y > WORLD_H + 120) reset(false);
       }
     }
 
     function render() {
+      let px, py;
+      if (s.airborne) { px = s.x; py = s.y; }
+      else { const p = ridePos(s.phi); px = p.x; py = p.y; }
       bike.style.transform =
-        `translate(${s.x - ORIGIN_X}px, ${s.y - ORIGIN_Y}px) perspective(640px) ` +
+        `translate(${px - ORIGIN_X}px, ${py - ORIGIN_Y}px) perspective(640px) ` +
         `rotateY(${s.spin}deg) rotate(${s.rot * DEG + s.flip}deg) scaleX(${s.face})`;
       if (flipBtn) flipBtn.classList.toggle("flip-btn--armed", s.flipQueued);
 
@@ -1019,7 +854,6 @@ import BmxBike from "../components/BmxBike.astro";
       ovEnd.classList.add("overlay--hidden");
     }
     function endRun() {
-      if (s.grinding) endGrind();   // cash a grind cut short by the clock
       s.mode = "over";
       s.input = 0;
       stage.classList.remove("playing");
@@ -1170,15 +1004,21 @@ import BmxBike from "../components/BmxBike.astro";
       if (s.airborne) { addSpin(pointerDir(e.clientX)); return; }  // tap = one 180 in the air
       activePointer = e.pointerId;
       stage.setPointerCapture?.(e.pointerId);
-      s.input = pointerDir(e.clientX);              // hold a side to pedal that way
+      if (e.pointerType === "mouse") {
+        s.input = pointerDir(e.clientX);              // desktop: the side sets the direction
+      } else {
+        s.autoPump = true;                            // touch: hold anywhere to pump
+        s.pumpKick = pointerDir(e.clientX);           // ...kicking off toward the touched side
+      }
     });
     stage.addEventListener("pointermove", (e) => {
       if (s.mode !== "play" || e.pointerId !== activePointer) return;
-      s.input = pointerDir(e.clientX);
+      if (e.pointerType === "mouse") s.input = pointerDir(e.clientX);
     });
     const clearPointer = (e?: PointerEvent) => {
       if (e && e.pointerId !== activePointer) return;   // ignore other fingers lifting
       activePointer = null;
+      s.autoPump = false;
       if (s.mode === "play") s.input = 0;
     };
     stage.addEventListener("pointerup", clearPointer);
