@@ -684,7 +684,7 @@ import BmxBike from "../components/BmxBike.astro";
     function buildPark() {
       const { R, KR, KA, F, GAP, M } = PARK;
       const KH = KR * (1 - Math.cos(KA));                    // kicker height
-      const BACK = KH * Math.tan((10 * Math.PI) / 180);      // steep back-face run
+      const BACK = KH;                                       // 45° faces into the gap (landable)
       const vx: number[] = [], vy: number[] = [], vtr: boolean[] = [];
       const cornerIdx: number[] = [];
       const put = (x: number, y: number, tr: boolean) => { vx.push(x); vy.push(y); vtr.push(tr); };
@@ -699,10 +699,10 @@ import BmxBike from "../components/BmxBike.astro";
       const eL = k0 + KR * Math.sin(KA);                     // left take-off edge
       put(eL, FLOOR - KH, true);
       cornerIdx.push(vx.length - 1);
-      put(eL + BACK, FLOOR, false);                          // down the back face
-      put(eL + BACK + GAP, FLOOR, false);                    // gap floor under the rail
+      put(eL + BACK, FLOOR, true);                           // down into the gap (pumpable pit)
+      put(eL + BACK + GAP, FLOOR, true);                     // gap floor under the rail
       const eR = eL + BACK + GAP + BACK;                     // right take-off edge
-      put(eR, FLOOR - KH, false);
+      put(eR, FLOOR - KH, true);
       cornerIdx.push(vx.length - 1);
       const k1 = eR + KR * Math.sin(KA);                     // right kicker base
       for (let a = KA - 0.025; a > 0.0005; a -= 0.025) put(k1 - KR * Math.sin(a), FLOOR - KR + KR * Math.cos(a), true);
@@ -775,11 +775,11 @@ import BmxBike from "../components/BmxBike.astro";
       const aspect = hgt / w;                  // > 1 means portrait
       const portrait = aspect > 1.05;
       PARK = portrait
-        ? { R: 140, KR: 112, KA: (62 * Math.PI) / 180, F: 34, GAP: 96, M: 22 }
-        : { R: 205, KR: 132, KA: (63 * Math.PI) / 180, F: 92, GAP: 140, M: 34 };
+        ? { R: 140, KR: 112, KA: (62 * Math.PI) / 180, F: 34, GAP: 48, M: 22 }
+        : { R: 205, KR: 132, KA: (63 * Math.PI) / 180, F: 92, GAP: 96, M: 34 };
       UMAX = portrait ? 1000 : 1150;
       setBike(portrait ? 80 : 88);
-      const back = PARK.KR * (1 - Math.cos(PARK.KA)) * Math.tan((10 * Math.PI) / 180);
+      const back = PARK.KR * (1 - Math.cos(PARK.KA));        // 45° gap faces
       WORLD_W = Math.round(2 * (PARK.M + PARK.R * Math.sin(LIP) + PARK.F + PARK.KR * Math.sin(PARK.KA) + back) + PARK.GAP);
       WORLD_H = Math.round(WORLD_W * aspect);  // fills the stage height exactly
       FLOOR = WORLD_H - (portrait ? 96 : 76);  // park near the bottom, sky above
@@ -877,8 +877,7 @@ import BmxBike from "../components/BmxBike.astro";
         (s.launchS === corners[1] && hit.s < corners[0] - 1);
       s.airborne = false;
       s.sPos = hit.s;
-      s.u = s.vx * RTX[hit.i] + s.vy * RTY[hit.i];  // keep rolling
-      s.rot = Math.atan2(RTY[hit.i], RTX[hit.i]);   // settle onto the slope
+      s.u = s.vx * RTX[hit.i] + s.vy * RTY[hit.i];  // keep rolling; rot eases onto the slope
       s.launchS = -1;
       cashTricks(clearedGap);
     }
@@ -951,7 +950,9 @@ import BmxBike from "../components/BmxBike.astro";
         if (!flew) {
           const q = posAt(s.sPos);
           s.x = q.x; s.y = q.y;
-          s.rot = Math.atan2(q.ty, q.tx);
+          // Ease onto the slope so touchdowns and sharp joints read as
+          // suspension, not a snap.
+          s.rot += (Math.atan2(q.ty, q.tx) - s.rot) * Math.min(1, 14 * h);
           if (Math.abs(s.u) > 15) s.face = s.u > 0 ? 1 : -1;
         }
       } else {
