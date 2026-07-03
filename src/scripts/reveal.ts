@@ -25,3 +25,32 @@ document.addEventListener("focusin", (event) => {
     observer.unobserve(el);
   }
 });
+
+// Chapter dividers: scale the .chapter__head::after rule from 0 to full width
+// as the head travels from the bottom edge of the viewport through 80% of its
+// height (full width once its top reaches 20% from the top). Scroll-linked
+// (reverses on scroll back), driven via the --line custom property. Under
+// prefers-reduced-motion the CSS shows the line at full width and this never
+// runs.
+const heads = document.querySelectorAll<HTMLElement>(".chapter__head");
+if (heads.length && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  let ticking = false;
+  const update = () => {
+    ticking = false;
+    const vh = window.innerHeight;
+    heads.forEach((head) => {
+      const top = head.getBoundingClientRect().top;
+      const progress = Math.min(1, Math.max(0, (vh - top) / (vh * 0.8)));
+      head.style.setProperty("--line", progress.toFixed(4));
+    });
+  };
+  const queueUpdate = () => {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+  };
+  window.addEventListener("scroll", queueUpdate, { passive: true });
+  window.addEventListener("resize", queueUpdate, { passive: true });
+  update();
+}
