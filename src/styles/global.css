@@ -177,7 +177,7 @@ body.page-enter {
 /* Desktop b1 runs at 18px, where 300 reads heavier than the 16px mobile cut —
    ease the variable-font weight off a touch. Mobile keeps 300. */
 @media (min-width: 769px) {
-  .b1 { font-weight: 270; }
+  .b1 { font-weight: 250; }
 }
 
 @media (max-width: 768px) {
