@@ -387,8 +387,8 @@ import Footer from "../components/Footer.astro";
     opacity: 0;
     transform: translateY(24px);
     transition:
-      opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s),
-      transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s);
+      opacity 0.9s var(--ease-spring-soft) var(--delay, 0s),
+      transform 0.9s var(--ease-spring-soft) var(--delay, 0s);
   }
   [data-reveal].revealed { opacity: 1; transform: translateY(0); }
 

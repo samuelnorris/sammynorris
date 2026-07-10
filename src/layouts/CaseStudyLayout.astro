@@ -153,8 +153,9 @@ const metaLabel = meta.map((m) => `${m.label}: ${m.value}`).join(". ");
           }
         }
 
-        // The site-wide deceleration curve — every phase of the intro shares it.
-        var CURVE = "cubic-bezier(0.16, 1, 0.3, 1)";
+        // The site-wide spring curve — every phase of the intro shares it.
+        // Resolved from the CSS token so it stays in step with global.css.
+        var CURVE = "var(--ease-spring)";
 
         function slideUp() {
           // FLIP the title from centred to the top of the still-full-height hero.

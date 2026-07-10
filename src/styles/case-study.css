@@ -80,7 +80,7 @@
 .closing__cta-label { font-family: var(--font-sans); font-size: var(--text-b3); font-weight: 300; letter-spacing: -0.01em; line-height: 1.4; }
 .closing__cta-icon { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 100px; background-color: var(--color-card-image-bg); flex-shrink: 0; }
 
-[data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s); }
+[data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.9s var(--ease-spring-soft) var(--delay, 0s), transform 0.9s var(--ease-spring-soft) var(--delay, 0s); }
 [data-reveal].revealed { opacity: 1; transform: translateY(0); }
 
 /* Editorial rhythm modifiers — opt a block into a tighter or looser gap.

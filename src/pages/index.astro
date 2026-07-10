@@ -382,7 +382,7 @@ const projects = [
     background: var(--color-card-bg);
     border-radius: 12px;
     padding: 8px;
-    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.5s var(--ease-spring);
   }
 
   .card:hover {
@@ -412,7 +412,7 @@ const projects = [
     height: unset;
     aspect-ratio: 4 / 3;
     object-fit: cover;
-    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.7s var(--ease-spring);
   }
 
   .card:hover .card__image img {
@@ -618,8 +618,8 @@ const projects = [
     opacity: 0;
     transform: translateY(24px);
     transition:
-      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s),
-      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s);
+      opacity 0.7s var(--ease-spring-soft) var(--delay, 0s),
+      transform 0.7s var(--ease-spring-soft) var(--delay, 0s);
   }
 
   [data-reveal].revealed {
