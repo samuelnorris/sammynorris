@@ -202,10 +202,10 @@ const projects = [
     // Disable entirely when the user prefers reduced motion — no bubble at all.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    // <body> keeps an identity transform from its page-enter animation, which
+    // <body> carries a transform while its page-enter animation plays, which
     // makes it (not the viewport) the containing block for any position:fixed
-    // descendant — offsetting this bubble by the scroll position. Re-parent it
-    // to <html> so it stays a true viewport-fixed element at any scroll depth.
+    // descendant during that window. Re-parent the bubble to <html> so it is
+    // always a true viewport-fixed element at any scroll depth.
     document.documentElement.appendChild(bubble);
 
     const textEl = bubble.querySelector<HTMLElement>(".cursor-bubble__text")!;

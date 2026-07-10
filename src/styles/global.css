@@ -93,12 +93,25 @@ html, body {
 }
 
 body.page-enter {
-  animation: pageEnter 0.35s ease both;
+  animation: pageEnter 0.4s var(--ease-spring) backwards;
 }
 
+/* Back navigation mirrors the path: the old page exits downward and this one
+   enters from above (.nav-back is set on <html> pre-paint by the head script). */
+.nav-back body.page-enter {
+  animation-name: pageEnterBack;
+}
+
+/* From-only keyframes, no forwards fill: once the entrance ends the body's
+   transform returns to none, so position:fixed descendants (theme toggle,
+   case nav) use the viewport as their containing block again instead of
+   scrolling away with the page. */
 @keyframes pageEnter {
   from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pageEnterBack {
+  from { opacity: 0; transform: translateY(-6px); }
 }
 
 /* ---------- Skip link ---------- */
