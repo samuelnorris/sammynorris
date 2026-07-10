@@ -382,7 +382,14 @@ const projects = [
     background: var(--color-card-bg);
     border-radius: 12px;
     padding: 8px;
-    transition: transform 0.5s var(--ease-spring);
+  }
+
+  /* Respond on pointer-down: compress instantly, spring back on release.
+     The release inherits the card's spring transition below. */
+  .card:active {
+    transform: translateY(-2px) scale(0.99);
+    transition-duration: 0.12s;
+    transition-delay: 0s;
   }
 
   .card:hover {
@@ -548,12 +555,27 @@ const projects = [
     text-decoration: none;
     color: var(--color-primary);
     cursor: pointer;
-    transition: border-color 0.2s ease, background-color 0.3s ease;
+    transition: border-color 0.2s ease, background-color 0.3s ease, transform 0.45s var(--ease-spring);
     width: fit-content;
   }
 
   .about__cta:hover {
     border-color: var(--color-primary);
+  }
+
+  .about__cta:active {
+    transform: scale(0.96);
+    transition-duration: 0.1s;
+  }
+
+  /* Hint in the direction of travel: the arrow leans toward where the
+     link is going. */
+  .about__cta-icon svg {
+    transition: transform 0.45s var(--ease-spring);
+  }
+
+  .about__cta:hover .about__cta-icon svg {
+    transform: translateX(2px);
   }
 
   .about__cta-label {
@@ -613,6 +635,11 @@ const projects = [
     opacity: 0.6;
   }
 
+  .footer__email:active {
+    opacity: 0.4;
+    transition-duration: 0.05s;
+  }
+
   /* ===================== Scroll reveal ===================== */
   [data-reveal] {
     opacity: 0;
@@ -625,6 +652,17 @@ const projects = [
   [data-reveal].revealed {
     opacity: 1;
     transform: translateY(0);
+  }
+
+  /* Cards are also [data-reveal], so the rule above wins their transition in
+     the cascade. Re-own it at higher specificity: the reveal keeps its soft
+     stagger, while transform gets the snappier spring that hover and press
+     need. reveal.ts zeroes --delay once revealed, so pointer response is
+     never queued behind the stagger. */
+  .card[data-reveal] {
+    transition:
+      opacity 0.7s var(--ease-spring-soft) var(--delay, 0s),
+      transform 0.55s var(--ease-spring) var(--delay, 0s);
   }
 
   /* ===================== Mobile ===================== */

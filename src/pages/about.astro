@@ -295,12 +295,13 @@ import Footer from "../components/Footer.astro";
     letter-spacing: -0.01em;
     color: var(--color-primary);
     cursor: pointer;
-    transition: border-color 0.2s ease;
+    transition: border-color 0.2s ease, transform 0.35s var(--ease-spring);
   }
 
   .timeline__chevron { display: none; }
 
   .timeline__pill:hover { border-color: var(--color-primary); }
+  .timeline__pill:active { transform: scale(0.96); transition-duration: 0.1s; }
   .timeline__pill.active { border-color: var(--color-secondary); color: var(--color-secondary); }
 
   .timeline__panel {
@@ -361,9 +362,12 @@ import Footer from "../components/Footer.astro";
     text-decoration: none;
     color: var(--color-primary);
     cursor: pointer;
-    transition: border-color 0.2s ease, background-color 0.3s ease;
+    transition: border-color 0.2s ease, background-color 0.3s ease, transform 0.45s var(--ease-spring);
   }
   .contact__cta:hover { border-color: var(--color-primary); }
+  .contact__cta:active { transform: scale(0.96); transition-duration: 0.1s; }
+  .contact__cta-icon svg { transition: transform 0.45s var(--ease-spring); }
+  .contact__cta:hover .contact__cta-icon svg { transform: translateX(2px); }
   .contact__cta-label {
     font-family: var(--font-sans);
     font-size: var(--text-b3);
