@@ -310,7 +310,12 @@ import Footer from "../components/Footer.astro";
     gap: 8px;
   }
 
-  .timeline__panel.active { display: flex; }
+  /* Panel content rises in gently on tab switch; display:none/flex resets the
+     animation each activation. */
+  .timeline__panel.active { display: flex; animation: panelIn 0.45s var(--ease-spring) backwards; }
+  @keyframes panelIn {
+    from { opacity: 0; transform: translateY(8px); }
+  }
 
   .timeline__company {
     font-family: var(--font-serif);

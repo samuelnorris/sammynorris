@@ -267,4 +267,12 @@ body.page-enter {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+
+  /* Reduced motion still deserves feedback, just not travel: reveals become
+     a short cross-fade instead of an instant snap. Higher specificity than
+     the * rule above, so the 0.25s duration wins. */
+  [data-reveal] {
+    transform: none !important;
+    transition: opacity 0.25s ease !important;
+  }
 }
