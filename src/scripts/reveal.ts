@@ -4,8 +4,17 @@ const observer = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
-        entry.target.classList.add("revealed");
-        observer.unobserve(entry.target);
+        const el = entry.target as HTMLElement;
+        el.classList.add("revealed");
+        observer.unobserve(el);
+        // The stagger belongs to the reveal alone: once it has played, zero
+        // the delay so hover/press transitions on the same element respond
+        // immediately instead of queueing behind --delay.
+        el.addEventListener(
+          "transitionend",
+          () => el.style.setProperty("--delay", "0s"),
+          { once: true }
+        );
       }
     });
   },

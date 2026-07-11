@@ -54,6 +54,16 @@ const personSchema = {
         if ('scrollRestoration' in history) {
           history.scrollRestoration = 'manual';
         }
+
+        // Direction-aware page entrance: if the previous page exited via a
+        // back link, mirror the motion and enter from above. Must run before
+        // first paint, hence up here.
+        try {
+          if (sessionStorage.getItem('sn-nav-dir') === 'back') {
+            sessionStorage.removeItem('sn-nav-dir');
+            document.documentElement.classList.add('nav-back');
+          }
+        } catch (e) {}
       })();
 
       // Strip the URL hash after the initial anchor jump so a refresh
@@ -126,7 +136,12 @@ const personSchema = {
       })();
     </script>
     <script is:inline>
-      // Page transition: intercept internal links and slide out before navigating
+      // Page transition: intercept internal links and slide out before
+      // navigating. Forward links exit upward; back links (data-nav-back)
+      // exit downward and the destination enters from above, so pages leave
+      // the way they arrived. Exit accelerates (ease-in) to mirror the
+      // decelerating entrance, and is kept short: it is latency on every
+      // navigation.
       document.addEventListener('click', function (e) {
         // Leave modified clicks (new tab / window / download) to the browser.
         if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -135,30 +150,45 @@ const personSchema = {
         var href = link.getAttribute('href');
         if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('http')) return;
         e.preventDefault();
-        document.body.style.transition = 'opacity 0.15s ease, transform 0.15s ease';
+        var back = link.hasAttribute('data-nav-back');
+        if (back) {
+          try { sessionStorage.setItem('sn-nav-dir', 'back'); } catch (err) {}
+        }
+        document.body.style.transition = 'opacity 0.12s cubic-bezier(0.4, 0, 1, 1), transform 0.12s cubic-bezier(0.4, 0, 1, 1)';
         document.body.style.opacity = '0';
-        document.body.style.transform = 'translateY(-6px)';
-        setTimeout(function () { window.location.href = href; }, 160);
+        document.body.style.transform = back ? 'translateY(6px)' : 'translateY(-6px)';
+        setTimeout(function () { window.location.href = href; }, 130);
       });
     </script>
     <script is:inline>
       (function () {
         if ('ontouchstart' in window) return;
+        // The trailing dot is decoration on top of the pointer's own motion —
+        // drop it entirely under reduced motion.
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         var dot = document.createElement('div');
         dot.setAttribute('aria-hidden', 'true');
         dot.style.cssText =
-          'position:fixed;pointer-events:none;z-index:9999;width:8px;height:8px;' +
+          'position:fixed;top:0;left:0;pointer-events:none;z-index:9999;width:8px;height:8px;' +
           'border-radius:50%;border:0.75px solid var(--color-primary);background:transparent;' +
-          'transform:translate(-50%,-50%);opacity:0;will-change:left,top;';
-        document.body.appendChild(dot);
+          'transform:translate(-50%,-50%);opacity:0;transition:opacity 0.25s ease;will-change:transform;';
+        // <html>, not <body>: body is a transformed containing block while the
+        // page-enter animation plays, which would offset a fixed element.
+        document.documentElement.appendChild(dot);
         var mx = 0, my = 0, dx = 0, dy = 0;
         var visible = false;
         var raf;
-        function tick() {
-          dx += (mx - dx) * 0.08;
-          dy += (my - dy) * 0.08;
-          dot.style.left = dx + 'px';
-          dot.style.top = dy + 'px';
+        var last = 0;
+        function tick(now) {
+          // Time-based smoothing (120ms time constant) so the trail feels the
+          // same at 60Hz and 120Hz; positioned via transform so the dot never
+          // touches the layout path.
+          var dt = last ? Math.min(now - last, 64) : 16.7;
+          last = now;
+          var k = 1 - Math.exp(-dt / 120);
+          dx += (mx - dx) * k;
+          dy += (my - dy) * k;
+          dot.style.transform = 'translate3d(' + dx + 'px,' + dy + 'px,0) translate(-50%,-50%)';
           raf = requestAnimationFrame(tick);
         }
         document.addEventListener('mousemove', function (e) {
@@ -167,6 +197,7 @@ const personSchema = {
           if (!visible) {
             visible = true;
             dx = mx; dy = my;
+            last = 0;
             dot.style.opacity = '1';
             raf = requestAnimationFrame(tick);
           }

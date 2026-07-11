@@ -295,12 +295,13 @@ import Footer from "../components/Footer.astro";
     letter-spacing: -0.01em;
     color: var(--color-primary);
     cursor: pointer;
-    transition: border-color 0.2s ease;
+    transition: border-color 0.2s ease, transform 0.35s var(--ease-spring);
   }
 
   .timeline__chevron { display: none; }
 
   .timeline__pill:hover { border-color: var(--color-primary); }
+  .timeline__pill:active { transform: scale(0.96); transition-duration: 0.1s; }
   .timeline__pill.active { border-color: var(--color-secondary); color: var(--color-secondary); }
 
   .timeline__panel {
@@ -309,7 +310,12 @@ import Footer from "../components/Footer.astro";
     gap: 8px;
   }
 
-  .timeline__panel.active { display: flex; }
+  /* Panel content rises in gently on tab switch; display:none/flex resets the
+     animation each activation. */
+  .timeline__panel.active { display: flex; animation: panelIn 0.45s var(--ease-spring) backwards; }
+  @keyframes panelIn {
+    from { opacity: 0; transform: translateY(8px); }
+  }
 
   .timeline__company {
     font-family: var(--font-serif);
@@ -361,9 +367,12 @@ import Footer from "../components/Footer.astro";
     text-decoration: none;
     color: var(--color-primary);
     cursor: pointer;
-    transition: border-color 0.2s ease, background-color 0.3s ease;
+    transition: border-color 0.2s ease, background-color 0.3s ease, transform 0.45s var(--ease-spring);
   }
   .contact__cta:hover { border-color: var(--color-primary); }
+  .contact__cta:active { transform: scale(0.96); transition-duration: 0.1s; }
+  .contact__cta-icon svg { transition: transform 0.45s var(--ease-spring); }
+  .contact__cta:hover .contact__cta-icon svg { transform: translateX(2px); }
   .contact__cta-label {
     font-family: var(--font-sans);
     font-size: var(--text-b3);
@@ -387,8 +396,8 @@ import Footer from "../components/Footer.astro";
     opacity: 0;
     transform: translateY(24px);
     transition:
-      opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s),
-      transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s);
+      opacity 0.9s var(--ease-spring-soft) var(--delay, 0s),
+      transform 0.9s var(--ease-spring-soft) var(--delay, 0s);
   }
   [data-reveal].revealed { opacity: 1; transform: translateY(0); }
 

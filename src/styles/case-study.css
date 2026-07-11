@@ -8,7 +8,9 @@
      Tier 5, Element:        16 to 24px
 */
 
-.case-nav { position: fixed; top: 24px; left: 24px; z-index: 100; }
+/* Opacity is toggled by CaseStudyLayout when the closing CTA is in view;
+   fade rather than hard-cut. */
+.case-nav { position: fixed; top: 24px; left: 24px; z-index: 100; transition: opacity 0.25s ease; }
 
 .hero { padding: 160px 10vw var(--space-hero); display: flex; flex-direction: column; }
 .hero__eyebrow { color: var(--color-secondary); font-weight: 300; margin-bottom: 16px; }
@@ -74,13 +76,18 @@
 .closing__signoff { font-family: var(--font-serif); font-size: clamp(1.25rem, 2vw, 1.5rem); line-height: 1.4; font-weight: 400; color: var(--color-primary); opacity: 0.6; margin: 0; }
 .closing__signoff em { font-style: italic; }
 .closing__actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.closing__cta { display: inline-flex; align-items: center; gap: 8px; padding: 4px 16px 4px 4px; background-color: var(--color-card-bg); border: 1px solid var(--color-tertiary); border-radius: 99px; text-decoration: none; color: var(--color-primary); cursor: pointer; transition: border-color 0.2s ease, background-color 0.3s ease; }
+.closing__cta { display: inline-flex; align-items: center; gap: 8px; padding: 4px 16px 4px 4px; background-color: var(--color-card-bg); border: 1px solid var(--color-tertiary); border-radius: 99px; text-decoration: none; color: var(--color-primary); cursor: pointer; transition: border-color 0.2s ease, background-color 0.3s ease, transform 0.45s var(--ease-spring); }
 .closing__cta--next { padding: 4px 4px 4px 16px; }
 .closing__cta:hover { border-color: var(--color-primary); }
+.closing__cta:active { transform: scale(0.96); transition-duration: 0.1s; }
+/* Hint in the direction of travel: back leans left, next leans right. */
+.closing__cta-icon svg { transition: transform 0.45s var(--ease-spring); }
+.closing__cta:hover .closing__cta-icon svg { transform: translateX(-2px); }
+.closing__cta--next:hover .closing__cta-icon svg { transform: translateX(2px); }
 .closing__cta-label { font-family: var(--font-sans); font-size: var(--text-b3); font-weight: 300; letter-spacing: -0.01em; line-height: 1.4; }
 .closing__cta-icon { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 100px; background-color: var(--color-card-image-bg); flex-shrink: 0; }
 
-[data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s); }
+[data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 0.9s var(--ease-spring-soft) var(--delay, 0s), transform 0.9s var(--ease-spring-soft) var(--delay, 0s); }
 [data-reveal].revealed { opacity: 1; transform: translateY(0); }
 
 /* Editorial rhythm modifiers — opt a block into a tighter or looser gap.

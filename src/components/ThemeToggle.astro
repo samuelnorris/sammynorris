@@ -36,11 +36,16 @@ const { delayed = false } = Astro.props;
     border-radius: 99px;
     color: var(--color-primary);
     cursor: pointer;
-    transition: border-color 0.2s ease, background-color 0.3s ease;
+    transition: border-color 0.2s ease, background-color 0.3s ease, transform 0.45s var(--ease-spring);
   }
 
   .theme-toggle:hover {
     border-color: var(--color-primary);
+  }
+
+  .theme-toggle:active {
+    transform: scale(0.96);
+    transition-duration: 0.1s;
   }
 
   .theme-toggle--delayed {

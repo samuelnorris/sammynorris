@@ -202,10 +202,10 @@ const projects = [
     // Disable entirely when the user prefers reduced motion — no bubble at all.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    // <body> keeps an identity transform from its page-enter animation, which
+    // <body> carries a transform while its page-enter animation plays, which
     // makes it (not the viewport) the containing block for any position:fixed
-    // descendant — offsetting this bubble by the scroll position. Re-parent it
-    // to <html> so it stays a true viewport-fixed element at any scroll depth.
+    // descendant during that window. Re-parent the bubble to <html> so it is
+    // always a true viewport-fixed element at any scroll depth.
     document.documentElement.appendChild(bubble);
 
     const textEl = bubble.querySelector<HTMLElement>(".cursor-bubble__text")!;
@@ -231,13 +231,14 @@ const projects = [
     }
 
     function hide() {
-      // Cycle finished (or pointer left): clear the bubble and bring the native
-      // cursor back over the card.
+      // Cycle finished (or pointer left): shrink the bubble away and bring the
+      // native cursor back over the card. The text clears only after the exit
+      // transition, so the bubble doesn't blink empty while it shrinks.
       clearTimers();
       if (activeCard) activeCard.classList.remove("card--bubbling");
       activeCard = null;
       bubble.classList.remove("cursor-bubble--visible");
-      textEl.textContent = "";
+      after(200, function () { textEl.textContent = ""; });
     }
 
     function typeOut(i: number) {
@@ -382,7 +383,14 @@ const projects = [
     background: var(--color-card-bg);
     border-radius: 12px;
     padding: 8px;
-    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Respond on pointer-down: compress instantly, spring back on release.
+     The release inherits the card's spring transition below. */
+  .card:active {
+    transform: translateY(-2px) scale(0.99);
+    transition-duration: 0.12s;
+    transition-delay: 0s;
   }
 
   .card:hover {
@@ -412,7 +420,7 @@ const projects = [
     height: unset;
     aspect-ratio: 4 / 3;
     object-fit: cover;
-    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.7s var(--ease-spring);
   }
 
   .card:hover .card__image img {
@@ -453,22 +461,24 @@ const projects = [
 
   /* Appearance lives on the inner element so the outer stays free for the
      pointer-following transform. Hidden by default; pops in once
-     .cursor-bubble--visible is added. */
+     .cursor-bubble--visible is added. Transitions rather than keyframes so
+     the pop can be interrupted mid-flight: leave early and it shrinks back
+     along the same path from wherever it had got to, no hard cut. */
   .cursor-bubble__inner {
     position: relative;
     display: inline-block;
     opacity: 0;
+    transform: scale(0.2);
     transform-origin: bottom left;
+    /* Exit mirrors the entrance: shrink back toward the tail. */
+    transition: opacity 0.14s ease, transform 0.18s ease;
   }
 
   .cursor-bubble--visible .cursor-bubble__inner {
-    animation: snPopIn 0.3s ease-out forwards;
-  }
-
-  @keyframes snPopIn {
-    0%   { opacity: 0; transform: scale(0); }
-    70%  { opacity: 1; transform: scale(1.12); }
-    100% { opacity: 1; transform: scale(1); }
+    opacity: 1;
+    transform: scale(1);
+    /* Enter: the overshoot comes from the spring curve itself. */
+    transition: opacity 0.1s ease, transform 0.5s var(--ease-pop);
   }
 
   /* iMessage-style bubble in our colours (not Apple blue). Text uses the page
@@ -548,12 +558,27 @@ const projects = [
     text-decoration: none;
     color: var(--color-primary);
     cursor: pointer;
-    transition: border-color 0.2s ease, background-color 0.3s ease;
+    transition: border-color 0.2s ease, background-color 0.3s ease, transform 0.45s var(--ease-spring);
     width: fit-content;
   }
 
   .about__cta:hover {
     border-color: var(--color-primary);
+  }
+
+  .about__cta:active {
+    transform: scale(0.96);
+    transition-duration: 0.1s;
+  }
+
+  /* Hint in the direction of travel: the arrow leans toward where the
+     link is going. */
+  .about__cta-icon svg {
+    transition: transform 0.45s var(--ease-spring);
+  }
+
+  .about__cta:hover .about__cta-icon svg {
+    transform: translateX(2px);
   }
 
   .about__cta-label {
@@ -613,18 +638,34 @@ const projects = [
     opacity: 0.6;
   }
 
+  .footer__email:active {
+    opacity: 0.4;
+    transition-duration: 0.05s;
+  }
+
   /* ===================== Scroll reveal ===================== */
   [data-reveal] {
     opacity: 0;
     transform: translateY(24px);
     transition:
-      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s),
-      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s);
+      opacity 0.7s var(--ease-spring-soft) var(--delay, 0s),
+      transform 0.7s var(--ease-spring-soft) var(--delay, 0s);
   }
 
   [data-reveal].revealed {
     opacity: 1;
     transform: translateY(0);
+  }
+
+  /* Cards are also [data-reveal], so the rule above wins their transition in
+     the cascade. Re-own it at higher specificity: the reveal keeps its soft
+     stagger, while transform gets the snappier spring that hover and press
+     need. reveal.ts zeroes --delay once revealed, so pointer response is
+     never queued behind the stagger. */
+  .card[data-reveal] {
+    transition:
+      opacity 0.7s var(--ease-spring-soft) var(--delay, 0s),
+      transform 0.55s var(--ease-spring) var(--delay, 0s);
   }
 
   /* ===================== Mobile ===================== */
