@@ -50,6 +50,13 @@ const personSchema = {
           document.documentElement.classList.add('dark');
         }
 
+        // Restore the serif weight chosen via the homepage slider before
+        // first paint, so headings never flash regular.
+        var serifWeight = parseInt(localStorage.getItem('sn-serif-weight') || '', 10);
+        if (serifWeight > 400 && serifWeight <= 600) {
+          document.documentElement.style.setProperty('--serif-weight', String(serifWeight));
+        }
+
         // Refresh should always start at the top of the page.
         if ('scrollRestoration' in history) {
           history.scrollRestoration = 'manual';
@@ -207,6 +214,19 @@ const personSchema = {
           dot.style.opacity = '0';
           if (raf) cancelAnimationFrame(raf);
         });
+      })();
+    </script>
+    <script is:inline>
+      // Tag every element set in the serif so the weight slider's stroke rule
+      // ([data-serif] in global.css) reaches all of them without a hand-kept
+      // selector list. One pass at load; the pages are static.
+      (function () {
+        var els = document.body.querySelectorAll('*');
+        for (var i = 0; i < els.length; i++) {
+          if (getComputedStyle(els[i]).fontFamily.indexOf('Instrument Serif') !== -1) {
+            els[i].setAttribute('data-serif', '');
+          }
+        }
       })();
     </script>
     <script is:inline>

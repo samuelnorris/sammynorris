@@ -60,6 +60,21 @@
   --color-card-image-bg: #292929;
 }
 
+/* Serif weight play: the homepage slider sets --serif-weight (400-600, 400
+   default), persisted in localStorage as 'sn-serif-weight' and applied
+   pre-paint from Layout's head script. Instrument Serif ships a single drawn
+   weight, so heavier settings are synthesised with a centred text stroke in
+   the text's own colour — paint-only, so dragging never reflows the page.
+   Elements are tagged data-serif by a Layout script that checks each
+   element's computed font-family, so no selector list to maintain. */
+:root {
+  --serif-weight: 400;
+}
+
+[data-serif] {
+  -webkit-text-stroke: calc((var(--serif-weight) - 400) * 0.000075em) currentColor;
+}
+
 /* Tighten the section rhythm on mobile. */
 @media (max-width: 768px) {
   :root {
@@ -256,6 +271,14 @@ body.page-enter {
   .quote {
     font-size: var(--text-quote-mob);
   }
+}
+
+/* ---------- Scroll reveal performance ---------- */
+/* Promote not-yet-revealed elements to their own compositor layer ahead of
+   time, so the reveal transition starts without a layer-creation hitch on
+   its first frames. The hint drops automatically once revealed. */
+[data-reveal]:not(.revealed) {
+  will-change: opacity, transform;
 }
 
 /* Reduced motion */
