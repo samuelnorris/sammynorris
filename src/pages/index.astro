@@ -23,7 +23,7 @@ const projects = [
     <div class="hero__content">
       <BmxBike delayed />
       <h1 class="hero__name h1" id="typewriter" aria-label="Sammy Norris">Sammy Norris</h1>
-      <p class="hero__tagline">Product designer currently living in a regulated world.</p>
+      <p class="hero__tagline">Product <span style="color: var(--color-secondary);">designer</span> currently living in a regulated world.</p>
     </div>
   </header>
 
@@ -137,6 +137,8 @@ const projects = [
       if (tagline) {
         tagline.style.animation = 'none';
         tagline.style.opacity = '1';
+        tagline.style.maxHeight = '4em';
+        tagline.style.marginTop = '24px';
       }
       return;
     }
@@ -333,26 +335,24 @@ const projects = [
     to { opacity: 0; }
   }
 
-  /* Anchored to the bottom edge of the opening screen, out of the name's
-     centred lockup. Absolutely positioned against .hero, so nothing reflows:
-     the entrance is a plain fade at the same 5.3s beat. */
   .hero__tagline {
-    position: absolute;
-    bottom: 32px;
-    left: 0;
-    right: 0;
-    padding: 0 24px;
-    text-align: center;
     font-family: var(--font-sans);
     font-size: var(--text-b2);
     font-weight: 300;
     letter-spacing: -0.01em;
     opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    margin-top: 0;
     animation: taglineIn 1.2s ease 5.3s forwards;
   }
 
   @keyframes taglineIn {
-    to { opacity: 1; }
+    to {
+      opacity: 1;
+      max-height: 4em;
+      margin-top: 24px;
+    }
   }
 
   /* ===================== Work ===================== */
@@ -678,12 +678,6 @@ const projects = [
     .hero,
     .hero__content {
       align-items: flex-start;
-    }
-
-    .hero__tagline {
-      bottom: 24px;
-      padding: 0 20px;
-      text-align: left;
     }
 
     .work {
