@@ -14,8 +14,8 @@ const { delayed = false } = Astro.props;
     class="weight-slider__range"
     type="range"
     id="serifWeight"
-    min="200"
-    max="700"
+    min="400"
+    max="600"
     step="5"
     value="400"
     aria-label="Serif font weight"
@@ -135,19 +135,13 @@ const { delayed = false } = Astro.props;
 
   if (input) {
     const stored = parseInt(localStorage.getItem("sn-serif-weight") || "", 10);
-    if (stored >= 200 && stored <= 700) {
+    if (stored >= 400 && stored <= 600) {
       input.value = String(stored);
     }
 
     const apply = () => {
       const w = input.value;
       document.documentElement.style.setProperty("--serif-weight", w);
-      // Below 400 the stroke thins by painting the page background into the
-      // glyph edges; above it thickens in the text's own colour.
-      document.documentElement.style.setProperty(
-        "--serif-stroke-color",
-        parseInt(w, 10) < 400 ? "var(--color-bg)" : "currentColor"
-      );
       if (readout) readout.textContent = w;
       localStorage.setItem("sn-serif-weight", w);
     };
