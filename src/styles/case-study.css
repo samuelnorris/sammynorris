@@ -32,8 +32,8 @@
    unchanged; only .hero--intro turns it into a real, transformable box. */
 .hero__lead { display: contents; }
 .hero--intro .hero__lead { display: flex; flex-direction: column; will-change: transform; }
-/* Commission intro title: full orange, upright (drop the italic on the emphasised word). */
-.hero--intro .hero__title { color: var(--color-secondary); }
+/* Commission intro title: uniform primary colour, upright (drop the italic
+   and accent on the emphasised word). */
 .hero--intro .hero__title em { font-style: normal; color: inherit; }
 /* Full height keeps the body (images, chapters) below the fold until the intro
    finishes; centring is a separate toggle so the title can slide to the top
