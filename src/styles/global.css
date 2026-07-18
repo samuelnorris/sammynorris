@@ -273,6 +273,14 @@ body.page-enter {
   }
 }
 
+/* ---------- Scroll reveal performance ---------- */
+/* Promote not-yet-revealed elements to their own compositor layer ahead of
+   time, so the reveal transition starts without a layer-creation hitch on
+   its first frames. The hint drops automatically once revealed. */
+[data-reveal]:not(.revealed) {
+  will-change: opacity, transform;
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
