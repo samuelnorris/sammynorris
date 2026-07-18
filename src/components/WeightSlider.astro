@@ -1,0 +1,153 @@
+---
+interface Props {
+  delayed?: boolean;
+}
+const { delayed = false } = Astro.props;
+---
+
+<!-- Serif weight slider: drags Instrument Serif from 400 up to a synthesised
+     800 across the whole site (see [data-serif] in global.css). The "Aa"
+     label is set in the serif itself, so it previews the weight live. -->
+<div class:list={["weight-slider", { "weight-slider--delayed": delayed }]}>
+  <label class="weight-slider__label" for="serifWeight" aria-hidden="true">Aa</label>
+  <input
+    class="weight-slider__range"
+    type="range"
+    id="serifWeight"
+    min="400"
+    max="800"
+    step="5"
+    value="400"
+    aria-label="Serif font weight"
+  />
+  <output class="weight-slider__value" for="serifWeight" aria-hidden="true">400</output>
+</div>
+
+<style>
+  /* Same chrome as the theme toggle: card pill, tertiary border, spring press. */
+  .weight-slider {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-tertiary);
+    border-radius: 99px;
+    color: var(--color-primary);
+    transition: border-color 0.2s ease, background-color 0.3s ease;
+  }
+
+  .weight-slider:hover {
+    border-color: var(--color-primary);
+  }
+
+  .weight-slider--delayed {
+    opacity: 0;
+    animation: weightFadeIn 1.2s ease 5.3s forwards;
+  }
+
+  @keyframes weightFadeIn {
+    to { opacity: 1; }
+  }
+
+  .weight-slider__label {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    line-height: 1;
+    cursor: default;
+  }
+
+  .weight-slider__value {
+    font-family: var(--font-sans);
+    font-size: var(--text-b4);
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+    min-width: 3ch;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.75;
+  }
+
+  .weight-slider__range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 110px;
+    height: 16px;
+    margin: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .weight-slider__range::-webkit-slider-runnable-track {
+    height: 1px;
+    background: var(--color-tertiary);
+  }
+
+  .weight-slider__range::-moz-range-track {
+    height: 1px;
+    background: var(--color-tertiary);
+  }
+
+  .weight-slider__range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border: none;
+    border-radius: 50%;
+    background: var(--color-primary);
+    margin-top: -5.5px;
+    transition: transform 0.45s var(--ease-spring);
+  }
+
+  .weight-slider__range:active::-webkit-slider-thumb {
+    transform: scale(1.25);
+    transition-duration: 0.1s;
+  }
+
+  .weight-slider__range::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border: none;
+    border-radius: 50%;
+    background: var(--color-primary);
+  }
+
+  @media (max-width: 768px) {
+    .weight-slider {
+      bottom: 20px;
+      right: 20px;
+    }
+
+    .weight-slider__range {
+      width: 88px;
+    }
+  }
+</style>
+
+<script>
+  const input = document.getElementById("serifWeight") as HTMLInputElement | null;
+  const readout = document.querySelector<HTMLElement>(".weight-slider__value");
+
+  if (input) {
+    const stored = parseInt(localStorage.getItem("sn-serif-weight") || "", 10);
+    if (stored >= 400 && stored <= 800) {
+      input.value = String(stored);
+    }
+
+    const apply = () => {
+      const w = input.value;
+      document.documentElement.style.setProperty("--serif-weight", w);
+      if (readout) readout.textContent = w;
+      localStorage.setItem("sn-serif-weight", w);
+    };
+
+    // Sync the readout and property with whatever was restored.
+    apply();
+    input.addEventListener("input", apply);
+  }
+</script>
