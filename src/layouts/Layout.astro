@@ -51,10 +51,13 @@ const personSchema = {
         }
 
         // Restore the serif weight chosen via the homepage slider before
-        // first paint, so headings never flash regular.
+        // first paint, so headings never flash regular. Below 400 the stroke
+        // colour flips to the page background to thin instead of thicken
+        // (see [data-serif] in global.css).
         var serifWeight = parseInt(localStorage.getItem('sn-serif-weight') || '', 10);
-        if (serifWeight > 400 && serifWeight <= 800) {
+        if (serifWeight >= 200 && serifWeight <= 700 && serifWeight !== 400) {
           document.documentElement.style.setProperty('--serif-weight', String(serifWeight));
+          document.documentElement.style.setProperty('--serif-stroke-color', serifWeight < 400 ? 'var(--color-bg)' : 'currentColor');
         }
 
         // Refresh should always start at the top of the page.

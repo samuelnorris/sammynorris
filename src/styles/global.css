@@ -60,19 +60,23 @@
   --color-card-image-bg: #292929;
 }
 
-/* Serif weight play: the homepage slider sets --serif-weight (400-800),
-   persisted in localStorage as 'sn-serif-weight' and applied pre-paint from
-   Layout's head script. Instrument Serif ships a single drawn weight, so
-   heavier settings are synthesised with a centred text stroke in the text's
-   own colour — paint-only, so dragging never reflows the page. Elements are
-   tagged data-serif by a Layout script that checks each element's computed
-   font-family, so no selector list to maintain. */
+/* Serif weight play: the homepage slider sets --serif-weight (200-700, 400
+   default), persisted in localStorage as 'sn-serif-weight' and applied
+   pre-paint from Layout's head script. Instrument Serif ships a single drawn
+   weight, so other weights are synthesised with a centred text stroke whose
+   width is the distance from 400: above 400 it strokes in the text's own
+   colour (thickens); below 400 the script flips --serif-stroke-color to the
+   page background, which eats into the glyph edges (thins — relies on serif
+   text always sitting on the plain page background). Paint-only either way,
+   so dragging never reflows the page. Elements are tagged data-serif by a
+   Layout script that checks each element's computed font-family, so no
+   selector list to maintain. */
 :root {
   --serif-weight: 400;
 }
 
 [data-serif] {
-  -webkit-text-stroke: calc((var(--serif-weight) - 400) * 0.000075em) currentColor;
+  -webkit-text-stroke: calc(max(var(--serif-weight) - 400, 400 - var(--serif-weight)) * 0.000075em) var(--serif-stroke-color, currentColor);
 }
 
 /* Tighten the section rhythm on mobile. */
