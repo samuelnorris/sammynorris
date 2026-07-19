@@ -69,7 +69,7 @@
 .stat__label { color: var(--color-primary); opacity: 0.65; font-weight: 400; }
 
 .closing { padding: var(--space-rhythm) 10vw 0; display: flex; flex-direction: column; align-items: flex-start; gap: 40px; }
-.closing__signoff { font-family: var(--font-serif); font-size: clamp(1.25rem, 2vw, 1.5rem); line-height: 1.4; font-weight: 400; color: var(--color-primary); opacity: 0.6; margin: 0; }
+.closing__signoff { font-family: var(--font-serif); font-size: clamp(1.25rem, 2vw, 1.5rem); line-height: 1.4; font-weight: 400; color: var(--color-primary); opacity: 0.65; /* 0.6 fell to 4.10:1 on the light bg at mobile sizes; 0.65 clears WCAG AA at 4.82:1 */ margin: 0; }
 .closing__signoff em { font-style: italic; }
 .closing__actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .closing__cta { display: inline-flex; align-items: center; gap: 8px; padding: 4px 16px 4px 4px; background-color: var(--color-card-bg); border: 1px solid var(--color-tertiary); border-radius: 99px; text-decoration: none; color: var(--color-primary); cursor: pointer; transition: border-color 0.2s ease, background-color 0.3s ease, transform 0.45s var(--ease-spring); }

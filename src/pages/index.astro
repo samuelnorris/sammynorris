@@ -40,11 +40,9 @@ const projects = [
         >
           <div class="card__image">
             <picture>
-              <source media="(max-width: 768px)" type="image/webp" srcset={`/images/projects/${project.slug}-mobile.webp`} width="1125" height="1500" />
-              <source media="(max-width: 768px)" srcset={`/images/projects/${project.slug}-mobile.png`} width="1125" height="1500" />
-              <source type="image/webp" srcset={`/images/projects/${project.slug}-desktop.webp`} width="2000" height="1500" />
+              <source media="(max-width: 768px)" srcset={`/images/projects/${project.slug}-mobile.webp`} width="1125" height="1500" />
               <img
-                src={`/images/projects/${project.slug}-desktop.png`}
+                src={`/images/projects/${project.slug}-desktop.webp`}
                 alt=""
                 loading="lazy"
                 decoding="async"
@@ -674,6 +672,13 @@ const projects = [
     .hero,
     .hero__content {
       align-items: flex-start;
+    }
+
+    /* The name is nowrap, so the fixed 72px cut clips inside the hero's
+       overflow:hidden on screens under ~424px (348px of glyphs + caret must
+       fit inside 24px side padding). Scale with the viewport until 72px fits. */
+    .hero__name {
+      font-size: min(var(--text-h1-mob), 17vw);
     }
 
     .work {
