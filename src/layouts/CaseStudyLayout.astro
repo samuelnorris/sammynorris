@@ -247,7 +247,7 @@ const metaLabel = meta.map((m) => `${m.label}: ${m.value}`).join(". ");
         <span class="closing__cta-label">Return to all work</span>
       </a>
       {nextProject && (
-        <a href={`/${nextProject.slug}`} class="closing__cta closing__cta--next" aria-label={`Next project: ${nextProject.title}`}>
+        <a href={`/${nextProject.slug}`} class="closing__cta closing__cta--next" aria-label={`Next project: ${nextProject.title}`} data-cuelume-hover="release" data-nav-cue="press">
           <span class="closing__cta-label">Next: {nextProject.title}</span>
           <span class="closing__cta-icon">
             <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
