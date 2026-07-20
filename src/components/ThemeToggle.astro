@@ -9,6 +9,7 @@ const { delayed = false } = Astro.props;
   class:list={["theme-toggle", { "theme-toggle--delayed": delayed }]}
   id="themeToggle"
   aria-label="Toggle dark mode"
+  data-cuelume-toggle="toggle"
 >
   <span class="theme-toggle__label theme-toggle__label--light">Light</span>
   <span class="theme-toggle__label theme-toggle__label--dark">Dark</span>
@@ -22,11 +23,9 @@ const { delayed = false } = Astro.props;
 </button>
 
 <style>
+  /* Positioning lives on the .site-controls wrapper in Layout.astro, which
+     sits this button alongside the sound toggle. */
   .theme-toggle {
-    position: fixed;
-    top: 24px;
-    right: 24px;
-    z-index: 100;
     display: flex;
     align-items: center;
     justify-content: center;

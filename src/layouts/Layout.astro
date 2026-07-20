@@ -1,6 +1,7 @@
 ---
 import Analytics from "@vercel/analytics/astro";
 import ThemeToggle from "../components/ThemeToggle.astro";
+import SoundToggle from "../components/SoundToggle.astro";
 // Self-hosted fonts (Fontsource): served same-origin from /_astro with
 // immutable caching — no Google round-trip, no visitor IPs to Google.
 import "@fontsource-variable/geist";
@@ -112,10 +113,26 @@ const personSchema = {
     {isHomepage && (
       <script is:inline type="application/ld+json" set:html={JSON.stringify(personSchema)} />
     )}
+
+    <style is:global>
+      /* Holds the sound and theme toggles as one fixed cluster, top right. */
+      .site-controls {
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+    </style>
   </head>
   <body class="page-enter">
     <a href="#main-content" class="skip-link">Skip to main content</a>
-    <ThemeToggle delayed={isHomepage} />
+    <div class="site-controls">
+      <SoundToggle delayed={isHomepage} />
+      <ThemeToggle delayed={isHomepage} />
+    </div>
     <main id="main-content" tabindex="-1">
       <slot />
     </main>

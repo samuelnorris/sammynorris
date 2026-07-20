@@ -1,0 +1,131 @@
+---
+// Sound on/off control, sat next to the theme toggle. Sound is on by
+// default; the preference persists in localStorage under 'sound'.
+// Nothing can actually play until the visitor's first interaction anyway —
+// browsers keep the AudioContext suspended until then.
+interface Props {
+  delayed?: boolean;
+}
+const { delayed = false } = Astro.props;
+---
+
+<button
+  class:list={["sound-toggle", { "sound-toggle--delayed": delayed }]}
+  id="soundToggle"
+  aria-label="Turn sound off"
+  aria-pressed="true"
+>
+  <svg class="sound-toggle__icon sound-toggle__icon--on" aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M11 5 6 9H3v6h3l5 4V5z" />
+    <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+    <path d="M18.5 5.5a9 9 0 0 1 0 13" />
+  </svg>
+  <svg class="sound-toggle__icon sound-toggle__icon--off" aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M11 5 6 9H3v6h3l5 4V5z" />
+    <path d="M16 9.5 21 15M21 9.5 16 15" />
+  </svg>
+</button>
+
+<style>
+  .sound-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-tertiary);
+    border-radius: 99px;
+    color: var(--color-primary);
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.3s ease, transform 0.45s var(--ease-spring);
+  }
+
+  .sound-toggle:hover {
+    border-color: var(--color-primary);
+  }
+
+  .sound-toggle:active {
+    transform: scale(0.96);
+    transition-duration: 0.1s;
+  }
+
+  .sound-toggle--delayed {
+    opacity: 0;
+    animation: soundToggleFadeIn 1.2s ease 5.3s forwards;
+  }
+
+  .sound-toggle__icon {
+    display: block;
+  }
+
+  /* Sound on (the default) shows the speaker; muted shows the crossed-out one. */
+  .sound-toggle__icon--off {
+    display: none;
+  }
+  .sound-toggle[aria-pressed="false"] .sound-toggle__icon--on {
+    display: none;
+  }
+  .sound-toggle[aria-pressed="false"] .sound-toggle__icon--off {
+    display: block;
+  }
+
+  @keyframes soundToggleFadeIn {
+    to { opacity: 1; }
+  }
+</style>
+
+<script>
+  import { bind, play, setEnabled, type SoundName } from "cuelume";
+
+  const STORAGE_KEY = "sound";
+  const toggle = document.getElementById("soundToggle");
+
+  // On by default: only an explicit 'off' opts out.
+  let enabled = localStorage.getItem(STORAGE_KEY) !== "off";
+
+  function apply() {
+    setEnabled(enabled);
+    toggle?.setAttribute("aria-pressed", String(enabled));
+    toggle?.setAttribute("aria-label", enabled ? "Turn sound off" : "Turn sound on");
+  }
+
+  apply();
+  // Wires up every data-cuelume-* attribute on the page in one pass.
+  bind();
+
+  toggle?.addEventListener("click", () => {
+    enabled = !enabled;
+    localStorage.setItem(STORAGE_KEY, enabled ? "on" : "off");
+    apply();
+    // Confirm the switch audibly, but only when turning sound back on.
+    if (enabled) play("ready");
+  });
+
+  // Page transition cue. Mirrors the internal-link test in Layout.astro.
+  //
+  // Fires on pointerdown, not click, and deliberately so: on a cold page the
+  // AudioContext is created suspended and resumes asynchronously, while the
+  // transition script navigates 130ms after the click. Starting at
+  // pointerdown gives the resume the press-to-release gap as head start,
+  // which is the difference between hearing the cue and not on a first
+  // click. The cost is a cue on a press the visitor drags away from.
+  //
+  // Capture phase is also required: the transition script calls
+  // preventDefault() on these same links, so a bubble-phase listener would
+  // see an already-defaulted event and could never tell a handled click
+  // from a stray one. Modified clicks stay silent — they open a new tab
+  // rather than navigating this one.
+  document.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const link = (e.target as Element | null)?.closest?.("a[href]") as HTMLAnchorElement | null;
+    if (!link || link.target === "_blank") return;
+    const href = link.getAttribute("href");
+    if (!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("http")) return;
+    // Links can name their own navigation cue; everything else gets 'page'.
+    // Whatever is chosen has to finish inside the ~130ms before the document
+    // unloads, so only the short cues are viable here — anything longer is
+    // cut off mid-sound. Project cards use 'press'.
+    const cue = link.getAttribute("data-nav-cue") as SoundName | null;
+    play(cue ?? "page");
+  }, true);
+</script>
