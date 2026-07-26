@@ -36,8 +36,6 @@ const projects = [
           class="card"
           data-reveal
           data-cursor-label={project.read}
-          data-cuelume-hover="whisper"
-          data-nav-cue="press"
           style={`--delay: ${i * 0.08}s`}
         >
           <div class="card__image">
@@ -75,7 +73,7 @@ const projects = [
           product lifecycle - from discovery and service design through to
           delivery - collaborating with engineering, legal, and compliance teams.
         </p>
-        <a href="/about" class="about__cta" aria-label="More about me" data-cuelume-hover="release">
+        <a href="/about" class="about__cta" aria-label="More about me">
           <span class="about__cta-label">More about me</span>
           <span class="about__cta-icon">
             <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -91,7 +89,7 @@ const projects = [
   <section class="home-cta">
     <div class="footer__cta" data-reveal>
       <h2 class="footer__heading">Let&rsquo;s work together.</h2>
-      <a href="mailto:hello@sammynorris.com" class="footer__email" data-cuelume-hover="release" data-cuelume-toggle="chime">hello@sammynorris.com</a>
+      <a href="mailto:hello@sammynorris.com" class="footer__email">hello@sammynorris.com</a>
     </div>
   </section>
 
@@ -287,7 +285,7 @@ const projects = [
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 0 24px;
+    padding: 0 72px;
     overflow: hidden;
   }
 
@@ -353,7 +351,7 @@ const projects = [
 
   /* ===================== Work ===================== */
   .work {
-    padding: var(--space-act) 24px var(--space-rhythm);
+    padding: var(--space-act) 72px var(--space-rhythm);
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -517,7 +515,7 @@ const projects = [
 
   /* ===================== About ===================== */
   .about {
-    padding: var(--space-act) 24px;
+    padding: var(--space-act) 72px;
     max-width: 1818px;
     box-sizing: border-box;
     width: 100%;
@@ -603,7 +601,7 @@ const projects = [
 
   /* ===================== Closing CTA ===================== */
   .home-cta {
-    padding: var(--space-act) 24px 0;
+    padding: var(--space-act) 72px 0;
     max-width: 1818px;
     box-sizing: border-box;
     width: 100%;
@@ -676,9 +674,15 @@ const projects = [
       align-items: flex-start;
     }
 
+    /* Mobile gutter, matching every other container. The desktop 72px would
+       leave the nowrap name no room to fit. */
+    .hero {
+      padding: 0 20px;
+    }
+
     /* The name is nowrap, so the fixed 72px cut clips inside the hero's
        overflow:hidden on screens under ~424px (348px of glyphs + caret must
-       fit inside 24px side padding). Scale with the viewport until 72px fits. */
+       fit inside 20px side padding). Scale with the viewport until 72px fits. */
     .hero__name {
       font-size: min(var(--text-h1-mob), 17vw);
     }
