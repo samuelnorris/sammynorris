@@ -1,0 +1,381 @@
+---
+import Layout from "../layouts/Layout.astro";
+import BackButton from "../components/BackButton.astro";
+import IssMap from "../components/IssMap.astro";
+---
+
+<Layout
+  title="Where is the ISS? - Sammy Norris"
+  description="A live tracker showing where the International Space Station is right now, plotted on a world map with its altitude, speed and orbital ground track."
+>
+  <nav class="case-nav">
+    <BackButton href="/" label="Back to home" />
+  </nav>
+
+  <section class="iss-page">
+    <header class="iss-page__head">
+      <p class="iss-page__eyebrow">Live &middot; low earth orbit</p>
+      <h1 class="iss-page__title">Where is the <em>ISS</em>?</h1>
+    </header>
+
+    <figure class="iss-page__map" id="iss-map">
+      <IssMap />
+      <div class="iss-loader" id="iss-loader">
+        <span class="iss-loader__spinner" aria-hidden="true"></span>
+        <span class="iss-loader__text">Locating the ISS&hellip;</span>
+      </div>
+    </figure>
+
+    <dl class="iss-stats" aria-live="polite">
+      <div class="iss-stats__item">
+        <dt>Latitude</dt>
+        <dd id="s-lat">&mdash;</dd>
+      </div>
+      <div class="iss-stats__item">
+        <dt>Longitude</dt>
+        <dd id="s-lng">&mdash;</dd>
+      </div>
+      <div class="iss-stats__item">
+        <dt>Altitude</dt>
+        <dd id="s-alt">&mdash;</dd>
+      </div>
+      <div class="iss-stats__item">
+        <dt>Speed</dt>
+        <dd id="s-spd">&mdash;</dd>
+      </div>
+      <div class="iss-stats__item">
+        <dt>Sunlight</dt>
+        <dd id="s-sun">&mdash;</dd>
+      </div>
+    </dl>
+
+    <p class="iss-page__note" id="iss-note">
+      Position data from the public <span class="iss-page__nowrap">WhereTheISS.at</span> API,
+      refreshed every few seconds while this tab is open.
+    </p>
+  </section>
+</Layout>
+
+<style>
+  .case-nav { position: fixed; top: 24px; left: 24px; z-index: 100; }
+
+  /* Site grid: 1818px measure with 72px gutters, matching the homepage. */
+  .iss-page {
+    max-width: 1818px;
+    width: 100%;
+    padding: 128px 72px var(--space-act);
+    box-sizing: border-box;
+  }
+
+  .iss-page__head {
+    margin-bottom: var(--space-bind);
+  }
+
+  .iss-page__eyebrow {
+    font-family: var(--font-sans);
+    font-size: var(--text-b4);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--color-secondary);
+    margin: 0 0 16px;
+  }
+
+  /* Matches .hero__title (about + case studies) so page titles are consistent. */
+  .iss-page__title {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(3rem, 7vw, 7rem);
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    margin: 0 0 24px;
+  }
+  .iss-page__title em {
+    font-style: italic;
+    color: var(--color-secondary);
+  }
+
+  .iss-page__map {
+    position: relative;
+    margin: 0 0 var(--space-bind);
+    border-radius: 18px;
+    overflow: hidden;
+    background:
+      linear-gradient(to bottom,
+        var(--color-card-image-bg) 0%,
+        var(--color-card-bg) 100%);
+    outline: 1px solid color-mix(in srgb, var(--color-primary) 10%, transparent);
+    outline-offset: -1px;
+    box-shadow: 0 10px 40px -16px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Shown until the first position fix arrives. The map draws underneath it, so
+     the API's occasional slow response reads as "locating", not "broken". */
+  .iss-loader {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: color-mix(in srgb, var(--color-bg) 35%, transparent);
+    transition: opacity 0.45s ease;
+  }
+  .iss-page__map.is-loaded .iss-loader {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .iss-loader__spinner {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid color-mix(in srgb, var(--color-secondary) 28%, transparent);
+    border-top-color: var(--color-secondary);
+    animation: iss-spin 0.8s linear infinite;
+  }
+  .iss-loader__text {
+    font-family: var(--font-sans);
+    font-size: var(--text-b3);
+    font-weight: 300;
+    letter-spacing: 0.04em;
+    opacity: 0.75;
+  }
+  @keyframes iss-spin {
+    to { transform: rotate(360deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .iss-loader__spinner { animation: none; }
+  }
+
+  .iss-stats {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 24px;
+    margin: 0 0 var(--space-bind);
+    padding-top: 24px;
+    border-top: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+  }
+
+  .iss-stats__item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .iss-stats dt {
+    font-family: var(--font-sans);
+    font-size: var(--text-b4);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.55;
+    font-weight: 400;
+  }
+
+  .iss-stats dd {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(1.4rem, 3.4vw, 2rem);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .iss-page__note {
+    font-family: var(--font-sans);
+    font-size: var(--text-b3);
+    font-weight: 300;
+    opacity: 0.55;
+    margin: 0;
+    max-width: 640px;
+  }
+  .iss-page__nowrap { white-space: nowrap; }
+
+  @media (max-width: 768px) {
+    .case-nav { top: 16px; left: 16px; }
+    .iss-page { padding: 96px 20px var(--space-act); }
+    .iss-stats {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px 24px;
+    }
+    /* Sunlight spans the full width on the last row of the 2-col grid. */
+    .iss-stats__item:last-child { grid-column: 1 / -1; }
+  }
+</style>
+
+<script>
+  // Live ISS tracker. Positions come from the public WhereTheISS.at API; nothing
+  // is stored and no third-party scripts are loaded. The world map + marker live
+  // in <IssMap />; we find them by id and drive them here.
+  (function () {
+    const W = 1000, H = 500;
+    const SAT = "https://api.wheretheiss.at/v1/satellites/25544";
+
+    const marker = document.getElementById("iss-marker");
+    const track = document.getElementById("iss-track");
+    const mapFigure = document.getElementById("iss-map");
+    const elLat = document.getElementById("s-lat");
+    const elLng = document.getElementById("s-lng");
+    const elAlt = document.getElementById("s-alt");
+    const elSpd = document.getElementById("s-spd");
+    const elSun = document.getElementById("s-sun");
+    const note = document.getElementById("iss-note");
+    if (!marker || !track) return;
+
+    // Equirectangular projection matching the map's 1000x500 viewBox.
+    const projX = (lon: number) => ((lon + 180) / 360) * W;
+    const projY = (lat: number) => ((90 - lat) / 180) * H;
+
+    function fmtCoord(n: number, pos: string, neg: string) {
+      return Math.abs(n).toFixed(2) + "° " + (n >= 0 ? pos : neg);
+    }
+
+    let noteFailShown = false;
+    function showError() {
+      if (noteFailShown || !note) return;
+      noteFailShown = true;
+      note.textContent = "Couldn't reach the tracking service just now — retrying.";
+    }
+
+    // ---- Live marker + stats -------------------------------------------------
+    // The API can be slow (several seconds); guard against a backlog of
+    // overlapping requests building up while one is still in flight.
+    let nowInFlight = false;
+    let lastLon: number | null = null;   // seeds the ground track's start point
+    function updateNow() {
+      if (nowInFlight) return Promise.resolve();
+      nowInFlight = true;
+      return fetch(SAT)
+        .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+        .then((d) => {
+          const x = projX(d.longitude);
+          const y = projY(d.latitude);
+          marker!.setAttribute("transform", "translate(" + x.toFixed(1) + " " + y.toFixed(1) + ")");
+          marker!.style.opacity = "1";
+          if (mapFigure) mapFigure.classList.add("is-loaded");   // hide the loader on the first fix
+          if (elLat) elLat.textContent = fmtCoord(d.latitude, "N", "S");
+          if (elLng) elLng.textContent = fmtCoord(d.longitude, "E", "W");
+          if (elAlt) elAlt.textContent = Math.round(d.altitude) + " km";
+          if (elSpd) elSpd.textContent = Math.round(d.velocity).toLocaleString("en-GB") + " km/h";
+          if (elSun) elSun.textContent = d.visibility === "daylight" ? "Sunlit" : "Eclipsed";
+          const firstFix = lastLon === null;
+          lastLon = d.longitude;
+          if (firstFix) updateTrack();   // the track needs a position to start from
+          if (noteFailShown && note) {
+            note.textContent = "Position data from the public WhereTheISS.at API, refreshed every few seconds while this tab is open.";
+            noteFailShown = false;
+          }
+        })
+        .catch(showError)
+        .finally(() => { nowInFlight = false; });
+    }
+
+    // ---- Orbital ground track ------------------------------------------------
+    // Drawn as exactly one map width of longitude, starting where the track
+    // crosses the left edge (-180). Because that range maps left-to-right with
+    // no wrap, the result is always a single unbroken stroke running edge to
+    // edge through the marker: no antimeridian splits, no loose ends mid-ocean.
+    const LON_RATE = 3.634;   // deg/min the ground track advances eastward
+    const TRACK_MINUTES = 120;
+    const TRACK_SAMPLES = 25;
+
+    // Catmull-Rom -> cubic Bezier for a smooth curve through the sampled points.
+    function buildTrackPath(pts: { x: number; y: number }[]) {
+      if (pts.length < 2) return "";
+      let d = "M" + pts[0].x.toFixed(1) + " " + pts[0].y.toFixed(1);
+      for (let i = 0; i < pts.length - 1; i++) {
+        const p0 = pts[i - 1] || pts[i];
+        const p1 = pts[i];
+        const p2 = pts[i + 1];
+        const p3 = pts[i + 2] || p2;
+        const c1x = p1.x + (p2.x - p0.x) / 6;
+        const c1y = p1.y + (p2.y - p0.y) / 6;
+        const c2x = p2.x - (p3.x - p1.x) / 6;
+        const c2y = p2.y - (p3.y - p1.y) / 6;
+        d += "C" + c1x.toFixed(1) + " " + c1y.toFixed(1) + " " +
+             c2x.toFixed(1) + " " + c2y.toFixed(1) + " " +
+             p2.x.toFixed(1) + " " + p2.y.toFixed(1);
+      }
+      return d;
+    }
+
+    // Samples come back wrapped to -180..180; the ground track only ever moves
+    // east, so unwrapping them into a rising series makes the path monotonic.
+    function unwrap(arr: any[]) {
+      const out: { lon: number; lat: number }[] = [];
+      let offset = 0;
+      for (let i = 0; i < arr.length; i++) {
+        let lon = arr[i].longitude + offset;
+        if (i > 0) {
+          while (lon < out[i - 1].lon) { offset += 360; lon = arr[i].longitude + offset; }
+        }
+        out.push({ lon, lat: arr[i].latitude });
+      }
+      return out;
+    }
+
+    // Clip the unwrapped series to [from, from + 360], interpolating latitude at
+    // the two boundaries so the line lands exactly on the map edges.
+    function clipToWidth(pts: { lon: number; lat: number }[], from: number) {
+      const to = from + 360;
+      const latAt = (lon: number) => {
+        for (let i = 1; i < pts.length; i++) {
+          if (pts[i].lon >= lon) {
+            const a = pts[i - 1], b = pts[i];
+            const t = (lon - a.lon) / (b.lon - a.lon);
+            return a.lat + (b.lat - a.lat) * t;
+          }
+        }
+        return pts[pts.length - 1].lat;
+      };
+      const inner = pts.filter((p) => p.lon > from && p.lon < to);
+      const clipped = [{ lon: from, lat: latAt(from) }, ...inner];
+      if (pts[pts.length - 1].lon >= to) clipped.push({ lon: to, lat: latAt(to) });
+      return clipped.map((p) => ({ x: ((p.lon - from) / 360) * W, y: projY(p.lat) }));
+    }
+
+    let trackInFlight = false;
+    function updateTrack() {
+      if (trackInFlight || lastLon === null) return Promise.resolve();
+      trackInFlight = true;
+      // Wind back to the track's most recent crossing of the left edge, with a
+      // margin so the samples bracket it (the rate is an average, so the
+      // estimate drifts a little); clipping below fixes the exact endpoints.
+      const now = Math.floor(Date.now() / 1000);
+      const degSinceEdge = ((((lastLon as number) + 180) % 360) + 360) % 360;
+      const tStart = now - Math.round((degSinceEdge / LON_RATE + 8) * 60);
+      const stamps: number[] = [];
+      for (let i = 0; i < TRACK_SAMPLES; i++) {
+        stamps.push(tStart + Math.round((TRACK_MINUTES * 60 * i) / (TRACK_SAMPLES - 1)));
+      }
+      return fetch(SAT + "/positions?timestamps=" + stamps.join(",") + "&units=kilometers")
+        .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+        .then((arr) => {
+          if (!Array.isArray(arr) || arr.length < 2) return;
+          const pts = unwrap(arr);
+          // First multiple of 360 off -180 at or after the first sample: the
+          // longitude that sits exactly on the map's left edge.
+          const from = pts[0].lon + ((((-180 - pts[0].lon) % 360) + 360) % 360);
+          track!.setAttribute("d", buildTrackPath(clipToWidth(pts, from)));
+        })
+        .catch(() => {})
+        .finally(() => { trackInFlight = false; });
+    }
+
+    // ---- Polling (paused while the tab is hidden) ----------------------------
+    let nowTimer: ReturnType<typeof setInterval> | null = null;
+    let trackTimer: ReturnType<typeof setInterval> | null = null;
+    function start() {
+      if (nowTimer) return;
+      updateNow();   // kicks off the first track draw once it has a position
+      updateTrack();
+      nowTimer = setInterval(updateNow, 5000);
+      trackTimer = setInterval(updateTrack, 60000);
+    }
+    function stop() {
+      if (nowTimer) { clearInterval(nowTimer); nowTimer = null; }
+      if (trackTimer) { clearInterval(trackTimer); trackTimer = null; }
+    }
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) stop(); else start();
+    });
+    start();
+  })();
+</script>

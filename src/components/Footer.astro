@@ -8,9 +8,9 @@ const year = new Date().getFullYear();
 <footer class="site-footer">
   <div class="site-footer__bar">
     <span class="b4">&copy; {year} Sammy Norris</span>
-    <p class="iss__coords b4">ISS&nbsp;&nbsp;<span id="iss-lat">—</span>&nbsp;&nbsp;<span id="iss-lng">—</span></p>
+    <a href="/iss" class="iss__coords b4" aria-label="Track the International Space Station">ISS&nbsp;&nbsp;<span id="iss-lat">—</span>&nbsp;&nbsp;<span id="iss-lng">—</span><span class="iss__arrow" aria-hidden="true">&nbsp;&rarr;</span></a>
     <div class="site-footer__links">
-      <a href="/bmx" class="site-footer__link" data-cuelume-hover="release">Can you ride a BMX?</a>
+      <a href="/bmx" class="site-footer__link">Can you ride a BMX?</a>
     </div>
   </div>
 </footer>
@@ -20,7 +20,7 @@ const year = new Date().getFullYear();
     max-width: 1818px;
     width: 100%;
     box-sizing: border-box;
-    padding: var(--space-act) 24px var(--space-bind);
+    padding: var(--space-act) 72px var(--space-bind);
   }
 
   .site-footer__bar {
@@ -39,6 +39,23 @@ const year = new Date().getFullYear();
     letter-spacing: 0.04em;
     opacity: 0.65;
     color: var(--color-primary);
+    text-decoration: none;
+    transition: opacity 0.2s ease, color 0.2s ease;
+  }
+
+  .iss__coords:hover {
+    opacity: 1;
+    color: var(--color-secondary);
+  }
+
+  /* The arrow only appears on hover / keyboard focus, hinting it's a link. */
+  .iss__arrow {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .iss__coords:hover .iss__arrow,
+  .iss__coords:focus-visible .iss__arrow {
+    opacity: 1;
   }
 
   .site-footer__links {

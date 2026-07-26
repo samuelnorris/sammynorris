@@ -210,8 +210,12 @@ import Footer from "../components/Footer.astro";
   .case-nav { position: fixed; top: 24px; left: 24px; z-index: 100; }
 
   /* ===== Hero ===== */
+  /* Site grid: 1818px measure with 72px gutters, matching the homepage. */
   .hero {
-    padding: var(--space-act-max) 10vw 32px;
+    padding: var(--space-act-max) 72px 32px;
+    max-width: 1818px;
+    width: 100%;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
   }
@@ -250,23 +254,28 @@ import Footer from "../components/Footer.astro";
   }
 
   /* ===== Body ===== */
+  /* Gutter matches the site grid; the cap keeps the reading measure at ~72ch. */
   .about-body {
-    padding: 0 10vw;
+    padding: 0 72px;
     margin: 0 0 var(--space-rhythm);
     display: flex;
     flex-direction: column;
     gap: 24px;
-    max-width: calc(72ch + 160px + 10vw);
+    /* Both gutters are added back so the reading measure stays 72ch + 160px
+       regardless of what the gutter is set to. */
+    max-width: calc(72ch + 160px + 2 * 72px);
   }
 
   /* ===== Timeline ===== */
   .timeline {
-    padding: 0 10vw;
+    padding: 0 72px;
     margin: 0 0 var(--space-rhythm);
     display: flex;
     flex-direction: column;
     gap: 32px;
-    max-width: calc(72ch + 160px + 10vw);
+    /* Both gutters are added back so the reading measure stays 72ch + 160px
+       regardless of what the gutter is set to. */
+    max-width: calc(72ch + 160px + 2 * 72px);
   }
 
   .timeline__pills {
@@ -338,7 +347,10 @@ import Footer from "../components/Footer.astro";
 
   /* ===== Contact ===== */
   .contact {
-    padding: var(--space-rhythm) 10vw 0;
+    padding: var(--space-rhythm) 72px 0;
+    max-width: 1818px;
+    width: 100%;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
