@@ -417,14 +417,19 @@ import { SATELLITES } from "../components/satellites";
 
     function stateAt(sat: Tracked, date: Date) {
       const pv = propagate(sat.satrec, date);
-      if (!pv || !pv.position || !pv.velocity) return null;
-      const gd = eciToGeodetic(pv.position, gstime(date));
+      if (!pv) return null;
+      // On a propagation error satellite.js hands back `true` in place of the
+      // vectors, so check the shape rather than just truthiness.
+      const { position, velocity } = pv;
+      if (typeof position === "boolean" || typeof velocity === "boolean") return null;
+
+      const gd = eciToGeodetic(position, gstime(date));
       return {
         lat: degreesLat(gd.latitude),
         lon: degreesLong(gd.longitude),
         alt: gd.height,
-        vel: Math.hypot(pv.velocity.x, pv.velocity.y, pv.velocity.z) * 3600,
-        eclipsed: isEclipsed(pv.position, date),
+        vel: Math.hypot(velocity.x, velocity.y, velocity.z) * 3600,
+        eclipsed: isEclipsed(position, date),
       };
     }
 
