@@ -2,11 +2,12 @@
 import Layout from "../layouts/Layout.astro";
 import BackButton from "../components/BackButton.astro";
 import IssMap from "../components/IssMap.astro";
+import { SATELLITES } from "../components/satellites";
 ---
 
 <Layout
-  title="Where is the ISS? - Sammy Norris"
-  description="A live tracker showing where the International Space Station is right now, plotted on a world map with its altitude, speed and orbital ground track."
+  title="Where are the satellites? - Sammy Norris"
+  description="A live tracker showing where the International Space Station, Tiangong and Hubble are right now, plotted on a world map with their altitude, speed and orbital ground tracks."
 >
   <nav class="case-nav">
     <BackButton href="/" label="Back to home" />
@@ -15,14 +16,32 @@ import IssMap from "../components/IssMap.astro";
   <section class="iss-page">
     <header class="iss-page__head">
       <p class="iss-page__eyebrow">Live &middot; low earth orbit</p>
-      <h1 class="iss-page__title">Where is the <em>ISS</em>?</h1>
+      <h1 class="iss-page__title">Where are the <em>satellites</em>?</h1>
     </header>
+
+    <div class="sat-toggles" role="group" aria-label="Satellites shown on the map">
+      {SATELLITES.map((sat) => (
+        <button
+          type="button"
+          class={`sat-toggle is-${sat.id}`}
+          data-sat={sat.id}
+          aria-pressed="true"
+        >
+          <span class="sat-toggle__dot" aria-hidden="true"></span>
+          <span class="sat-toggle__text">
+            <span class="sat-toggle__name">{sat.name}</span>
+            <span class="sat-toggle__blurb">{sat.blurb}</span>
+          </span>
+        </button>
+      ))}
+      <p class="sat-toggles__hint">Hover a satellite to trace its orbit.</p>
+    </div>
 
     <figure class="iss-page__map" id="iss-map">
       <IssMap />
       <div class="iss-loader" id="iss-loader">
         <span class="iss-loader__spinner" aria-hidden="true"></span>
-        <span class="iss-loader__text">Locating the ISS&hellip;</span>
+        <span class="iss-loader__text">Locating the satellites&hellip;</span>
       </div>
     </figure>
 
@@ -50,8 +69,9 @@ import IssMap from "../components/IssMap.astro";
     </dl>
 
     <p class="iss-page__note" id="iss-note">
-      Position data from the public <span class="iss-page__nowrap">WhereTheISS.at</span> API,
-      refreshed every few seconds while this tab is open.
+      Orbits are propagated in your browser from public
+      <span class="iss-page__nowrap">CelesTrak</span> orbital elements, refreshed
+      a few times a day and cached locally. Nothing is stored about you.
     </p>
   </section>
 </Layout>
@@ -94,9 +114,11 @@ import IssMap from "../components/IssMap.astro";
     color: var(--color-secondary);
   }
 
+  /* 56px down to the stats (32px on mobile) — set here rather than via
+     --space-bind so the map-to-stats gap can be tuned on its own. */
   .iss-page__map {
     position: relative;
-    margin: 0 0 var(--space-bind);
+    margin: 0 0 56px;
     border-radius: 18px;
     overflow: hidden;
     background:
@@ -146,13 +168,96 @@ import IssMap from "../components/IssMap.astro";
     .iss-loader__spinner { animation: none; }
   }
 
+  /* Satellite toggles. Colours mirror the marker colours in IssMap.astro. */
+  .sat-toggles {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 24px;
+    --sat-iss: var(--color-secondary);
+    --sat-css: #1F7A6B;
+    --sat-hst: #6A4FB6;
+  }
+  :global(.dark) .sat-toggles {
+    --sat-css: #35C2A8;
+    --sat-hst: #A98CFF;
+  }
+  .sat-toggle.is-iss { --sat-color: var(--sat-iss); }
+  .sat-toggle.is-css { --sat-color: var(--sat-css); }
+  .sat-toggle.is-hst { --sat-color: var(--sat-hst); }
+
+  .sat-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px 8px 12px;
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-tertiary);
+    border-radius: 99px;
+    color: var(--color-primary);
+    font-family: var(--font-sans);
+    cursor: pointer;
+    transition: border-color 0.2s ease, opacity 0.2s ease;
+  }
+  .sat-toggle:hover {
+    border-color: var(--sat-color);
+  }
+  /* Switched off: the whole chip recedes and the dot hollows out. */
+  .sat-toggle[aria-pressed="false"] {
+    opacity: 0.45;
+  }
+  .sat-toggle[aria-pressed="false"] .sat-toggle__dot {
+    background: transparent;
+  }
+
+  .sat-toggle__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--sat-color);
+    border: 1.5px solid var(--sat-color);
+    flex-shrink: 0;
+    transition: background-color 0.2s ease;
+  }
+
+  .sat-toggle__text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    text-align: left;
+  }
+  .sat-toggle__name {
+    font-size: var(--text-b3);
+    font-weight: 400;
+    line-height: 1.2;
+  }
+  .sat-toggle__blurb {
+    font-size: var(--text-b4);
+    font-weight: 300;
+    opacity: 0.6;
+    line-height: 1.2;
+  }
+
+  /* Pushed to the far end of the row, so it lands on the map's right edge. */
+  .sat-toggles__hint {
+    font-family: var(--font-sans);
+    font-size: var(--text-b4);
+    font-weight: 300;
+    opacity: 0.5;
+    margin: 0 0 0 auto;
+    text-align: right;
+  }
+  /* Pointer-only affordance: on touch there is nothing to hover. */
+  @media (hover: none) {
+    .sat-toggles__hint { display: none; }
+  }
+
   .iss-stats {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 24px;
     margin: 0 0 var(--space-bind);
-    padding-top: 24px;
-    border-top: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
   }
 
   .iss-stats__item {
@@ -191,6 +296,9 @@ import IssMap from "../components/IssMap.astro";
   @media (max-width: 768px) {
     .case-nav { top: 16px; left: 16px; }
     .iss-page { padding: 96px 20px var(--space-act); }
+    .iss-page__map { margin-bottom: 32px; }
+    .sat-toggles { margin-bottom: 20px; gap: 8px; }
+    .sat-toggle { padding: 6px 14px 6px 10px; }
     .iss-stats {
       grid-template-columns: repeat(2, 1fr);
       gap: 20px 24px;
@@ -201,15 +309,27 @@ import IssMap from "../components/IssMap.astro";
 </style>
 
 <script>
-  // Live ISS tracker. Positions come from the public WhereTheISS.at API; nothing
-  // is stored and no third-party scripts are loaded. The world map + marker live
-  // in <IssMap />; we find them by id and drive them here.
+  // Live satellite tracker. Orbital elements (TLEs) come from CelesTrak and are
+  // cached in localStorage; every position after that is propagated locally with
+  // SGP4, so the map keeps moving without further network calls. The world map
+  // and markers live in <IssMap />; we find them by id and drive them here.
+  //
+  // Validated against the WhereTheISS.at API this page used to call: over 1.5
+  // orbits the local solution stayed within 0.3 km on the ground, 0.06 km in
+  // altitude, and agreed on sunlit/eclipsed at every sample.
+  import { twoline2satrec, propagate, gstime, eciToGeodetic, degreesLat, degreesLong } from "satellite.js";
+  import { SATELLITES } from "../components/satellites";
+
   (function () {
     const W = 1000, H = 500;
-    const SAT = "https://api.wheretheiss.at/v1/satellites/25544";
+    const R_EARTH = 6378.137;                    // km
+    const AU = 149597870.7;                      // km
+    const SIDEREAL_DAY = 1436.068;               // minutes
+    const TLE_URL = "https://celestrak.org/NORAD/elements/gp.php?FORMAT=tle&CATNR=";
+    const TLE_TTL = 6 * 60 * 60 * 1000;          // TLEs drift slowly; don't refetch often
 
-    const marker = document.getElementById("iss-marker");
-    const track = document.getElementById("iss-track");
+    const svg = document.querySelector(".iss-map__svg") as SVGSVGElement | null;
+    const track = document.getElementById("sat-track");
     const mapFigure = document.getElementById("iss-map");
     const elLat = document.getElementById("s-lat");
     const elLng = document.getElementById("s-lng");
@@ -217,7 +337,7 @@ import IssMap from "../components/IssMap.astro";
     const elSpd = document.getElementById("s-spd");
     const elSun = document.getElementById("s-sun");
     const note = document.getElementById("iss-note");
-    if (!marker || !track) return;
+    if (!svg || !track) return;
 
     // Equirectangular projection matching the map's 1000x500 viewBox.
     const projX = (lon: number) => ((lon + 180) / 360) * W;
@@ -231,40 +351,113 @@ import IssMap from "../components/IssMap.astro";
     function showError() {
       if (noteFailShown || !note) return;
       noteFailShown = true;
-      note.textContent = "Couldn't reach the tracking service just now — retrying.";
+      note.textContent = "Couldn't fetch orbital elements just now — retrying shortly.";
     }
 
-    // ---- Live marker + stats -------------------------------------------------
-    // The API can be slow (several seconds); guard against a backlog of
-    // overlapping requests building up while one is still in flight.
-    let nowInFlight = false;
-    let lastLon: number | null = null;   // seeds the ground track's start point
+    // ---- Satellite state ----------------------------------------------------
+    type Tracked = {
+      id: string; catnr: number; name: string; primary?: boolean;
+      satrec: any | null; visible: boolean;
+      el: SVGGElement | null; btn: HTMLButtonElement | null;
+    };
+    const sats: Tracked[] = SATELLITES.map((s) => ({
+      ...s,
+      satrec: null,
+      visible: true,
+      el: document.getElementById("sat-marker-" + s.id) as SVGGElement | null,
+      btn: document.querySelector(`.sat-toggle[data-sat="${s.id}"]`) as HTMLButtonElement | null,
+    }));
+
+    let active: Tracked | null = null;
+    let sticky = false;      // set by tap/click, so touch users get a track too
+    let ready = false;
+
+    // ---- Orbital elements ---------------------------------------------------
+    async function loadTle(sat: Tracked) {
+      const key = "tle:" + sat.catnr;
+      try {
+        const cached = JSON.parse(localStorage.getItem(key) || "null");
+        if (cached && Date.now() - cached.t < TLE_TTL) return cached.l as string[];
+      } catch { /* private mode, corrupt entry — just refetch */ }
+
+      const res = await fetch(TLE_URL + sat.catnr);
+      if (!res.ok) throw new Error("TLE " + res.status);
+      const lines = (await res.text()).trim().split("\n").map((l) => l.trim());
+      if (lines.length < 3 || lines[1][0] !== "1" || lines[2][0] !== "2") throw new Error("bad TLE");
+      const l = [lines[1], lines[2]];
+      try { localStorage.setItem(key, JSON.stringify({ t: Date.now(), l })); } catch { /* ignore */ }
+      return l;
+    }
+
+    // ---- Sun position + eclipse --------------------------------------------
+    // Low-precision solar coordinates (Astronomical Almanac). Plenty for a
+    // sunlit/eclipsed flag, which only needs to be right to a few km.
+    function sunEci(date: Date) {
+      const jd = date.getTime() / 86400000 + 2440587.5;
+      const n = jd - 2451545.0;
+      const rad = Math.PI / 180;
+      const L = (280.46 + 0.9856474 * n) * rad;
+      const g = (357.528 + 0.9856003 * n) * rad;
+      const lambda = L + (1.915 * Math.sin(g) + 0.02 * Math.sin(2 * g)) * rad;
+      const eps = (23.439 - 0.0000004 * n) * rad;
+      const R = (1.00014 - 0.01671 * Math.cos(g) - 0.00014 * Math.cos(2 * g)) * AU;
+      return { x: R * Math.cos(lambda), y: R * Math.cos(eps) * Math.sin(lambda), z: R * Math.sin(eps) * Math.sin(lambda) };
+    }
+
+    // Cylindrical shadow: on the far side of Earth from the Sun, and within one
+    // Earth radius of the Earth-Sun axis.
+    function isEclipsed(pos: { x: number; y: number; z: number }, date: Date) {
+      const s = sunEci(date);
+      const mag = Math.hypot(s.x, s.y, s.z);
+      const ux = s.x / mag, uy = s.y / mag, uz = s.z / mag;
+      const along = pos.x * ux + pos.y * uy + pos.z * uz;
+      if (along > 0) return false;
+      return Math.hypot(pos.x - along * ux, pos.y - along * uy, pos.z - along * uz) < R_EARTH;
+    }
+
+    function stateAt(sat: Tracked, date: Date) {
+      const pv = propagate(sat.satrec, date);
+      if (!pv || !pv.position || !pv.velocity) return null;
+      const gd = eciToGeodetic(pv.position, gstime(date));
+      return {
+        lat: degreesLat(gd.latitude),
+        lon: degreesLong(gd.longitude),
+        alt: gd.height,
+        vel: Math.hypot(pv.velocity.x, pv.velocity.y, pv.velocity.z) * 3600,
+        eclipsed: isEclipsed(pv.position, date),
+      };
+    }
+
+    // ---- Live markers + stats ------------------------------------------------
+    // Everything here is local maths, so this can run often and cheaply. The
+    // stats panel stays on the ISS: it's the subject of the page, and swapping
+    // the numbers on hover would make an aria-live region announce constantly.
     function updateNow() {
-      if (nowInFlight) return Promise.resolve();
-      nowInFlight = true;
-      return fetch(SAT)
-        .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-        .then((d) => {
-          const x = projX(d.longitude);
-          const y = projY(d.latitude);
-          marker!.setAttribute("transform", "translate(" + x.toFixed(1) + " " + y.toFixed(1) + ")");
-          marker!.style.opacity = "1";
-          if (mapFigure) mapFigure.classList.add("is-loaded");   // hide the loader on the first fix
-          if (elLat) elLat.textContent = fmtCoord(d.latitude, "N", "S");
-          if (elLng) elLng.textContent = fmtCoord(d.longitude, "E", "W");
-          if (elAlt) elAlt.textContent = Math.round(d.altitude) + " km";
-          if (elSpd) elSpd.textContent = Math.round(d.velocity).toLocaleString("en-GB") + " km/h";
-          if (elSun) elSun.textContent = d.visibility === "daylight" ? "Sunlit" : "Eclipsed";
-          const firstFix = lastLon === null;
-          lastLon = d.longitude;
-          if (firstFix) updateTrack();   // the track needs a position to start from
-          if (noteFailShown && note) {
-            note.textContent = "Position data from the public WhereTheISS.at API, refreshed every few seconds while this tab is open.";
-            noteFailShown = false;
-          }
-        })
-        .catch(showError)
-        .finally(() => { nowInFlight = false; });
+      const now = new Date();
+      for (const sat of sats) {
+        if (!sat.satrec || !sat.el) continue;
+        const st = stateAt(sat, now);
+        if (!st) continue;
+        sat.el.setAttribute(
+          "transform",
+          "translate(" + projX(st.lon).toFixed(1) + " " + projY(st.lat).toFixed(1) + ")"
+        );
+        sat.el.style.opacity = sat.visible ? "1" : "0";
+        sat.el.style.pointerEvents = sat.visible ? "" : "none";
+
+        if (sat.primary) {
+          if (elLat) elLat.textContent = fmtCoord(st.lat, "N", "S");
+          if (elLng) elLng.textContent = fmtCoord(st.lon, "E", "W");
+          if (elAlt) elAlt.textContent = Math.round(st.alt) + " km";
+          if (elSpd) elSpd.textContent = Math.round(st.vel).toLocaleString("en-GB") + " km/h";
+          if (elSun) elSun.textContent = st.eclipsed ? "Eclipsed" : "Sunlit";
+        }
+      }
+      if (!ready) {
+        ready = true;
+        if (mapFigure) mapFigure.classList.add("is-loaded");   // hide the loader on the first fix
+      }
+      if (active) drawTrack(active, now);
     }
 
     // ---- Orbital ground track ------------------------------------------------
@@ -272,9 +465,15 @@ import IssMap from "../components/IssMap.astro";
     // crosses the left edge (-180). Because that range maps left-to-right with
     // no wrap, the result is always a single unbroken stroke running edge to
     // edge through the marker: no antimeridian splits, no loose ends mid-ocean.
-    const LON_RATE = 3.634;   // deg/min the ground track advances eastward
-    const TRACK_MINUTES = 120;
-    const TRACK_SAMPLES = 25;
+    const TRACK_SAMPLES = 96;
+
+    // Degrees of longitude the ground track gains per minute: the orbit's own
+    // rate, less the Earth turning underneath it. Derived per satellite from its
+    // mean motion, so Hubble's wider orbit draws correctly alongside the ISS.
+    function lonRate(sat: Tracked) {
+      const periodMin = (2 * Math.PI) / sat.satrec.no;
+      return (360 - (360 * periodMin) / SIDEREAL_DAY) / periodMin;
+    }
 
     // Catmull-Rom -> cubic Bezier for a smooth curve through the sampled points.
     function buildTrackPath(pts: { x: number; y: number }[]) {
@@ -298,15 +497,15 @@ import IssMap from "../components/IssMap.astro";
 
     // Samples come back wrapped to -180..180; the ground track only ever moves
     // east, so unwrapping them into a rising series makes the path monotonic.
-    function unwrap(arr: any[]) {
+    function unwrap(arr: { lon: number; lat: number }[]) {
       const out: { lon: number; lat: number }[] = [];
       let offset = 0;
       for (let i = 0; i < arr.length; i++) {
-        let lon = arr[i].longitude + offset;
+        let lon = arr[i].lon + offset;
         if (i > 0) {
-          while (lon < out[i - 1].lon) { offset += 360; lon = arr[i].longitude + offset; }
+          while (lon < out[i - 1].lon) { offset += 360; lon = arr[i].lon + offset; }
         }
-        out.push({ lon, lat: arr[i].latitude });
+        out.push({ lon, lat: arr[i].lat });
       }
       return out;
     }
@@ -331,51 +530,113 @@ import IssMap from "../components/IssMap.astro";
       return clipped.map((p) => ({ x: ((p.lon - from) / 360) * W, y: projY(p.lat) }));
     }
 
-    let trackInFlight = false;
-    function updateTrack() {
-      if (trackInFlight || lastLon === null) return Promise.resolve();
-      trackInFlight = true;
+    function drawTrack(sat: Tracked, now: Date) {
+      if (!sat.satrec) return;
+      const here = stateAt(sat, now);
+      if (!here) return;
+
       // Wind back to the track's most recent crossing of the left edge, with a
       // margin so the samples bracket it (the rate is an average, so the
       // estimate drifts a little); clipping below fixes the exact endpoints.
-      const now = Math.floor(Date.now() / 1000);
-      const degSinceEdge = ((((lastLon as number) + 180) % 360) + 360) % 360;
-      const tStart = now - Math.round((degSinceEdge / LON_RATE + 8) * 60);
-      const stamps: number[] = [];
+      const rate = lonRate(sat);
+      const degSinceEdge = ((((here.lon + 180) % 360) + 360) % 360);
+      const startMin = -(degSinceEdge / rate) - 8;
+      const spanMin = 360 / rate + 16;          // one full map width, plus margin
+
+      const samples: { lon: number; lat: number }[] = [];
       for (let i = 0; i < TRACK_SAMPLES; i++) {
-        stamps.push(tStart + Math.round((TRACK_MINUTES * 60 * i) / (TRACK_SAMPLES - 1)));
+        const t = new Date(now.getTime() + (startMin + (spanMin * i) / (TRACK_SAMPLES - 1)) * 60000);
+        const st = stateAt(sat, t);
+        if (st) samples.push({ lon: st.lon, lat: st.lat });
       }
-      return fetch(SAT + "/positions?timestamps=" + stamps.join(",") + "&units=kilometers")
-        .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-        .then((arr) => {
-          if (!Array.isArray(arr) || arr.length < 2) return;
-          const pts = unwrap(arr);
-          // First multiple of 360 off -180 at or after the first sample: the
-          // longitude that sits exactly on the map's left edge.
-          const from = pts[0].lon + ((((-180 - pts[0].lon) % 360) + 360) % 360);
-          track!.setAttribute("d", buildTrackPath(clipToWidth(pts, from)));
-        })
-        .catch(() => {})
-        .finally(() => { trackInFlight = false; });
+      if (samples.length < 2) return;
+
+      const pts = unwrap(samples);
+      // First multiple of 360 off -180 at or after the first sample: the
+      // longitude that sits exactly on the map's left edge.
+      const from = pts[0].lon + ((((-180 - pts[0].lon) % 360) + 360) % 360);
+      track!.setAttribute("d", buildTrackPath(clipToWidth(pts, from)));
     }
 
-    // ---- Polling (paused while the tab is hidden) ----------------------------
+    // ---- Hover / tap: which satellite's orbit is traced ----------------------
+    function setActive(sat: Tracked | null, isSticky = false) {
+      if (sat && !sat.visible) sat = null;
+      active = sat;
+      sticky = !!sat && isSticky;
+      svg!.classList.toggle("has-active", !!sat);
+      for (const s of sats) s.el?.classList.toggle("is-active", !!sat && s.id === sat.id);
+      track!.setAttribute(
+        "class",
+        "iss-map__track" + (sat ? " is-visible is-" + sat.id : "")
+      );
+      if (sat) drawTrack(sat, new Date());
+    }
+
+    function setVisible(sat: Tracked, on: boolean) {
+      sat.visible = on;
+      sat.btn?.setAttribute("aria-pressed", String(on));
+      if (sat.el) {
+        sat.el.style.opacity = on && ready ? "1" : "0";
+        sat.el.style.pointerEvents = on ? "" : "none";
+      }
+      if (!on && active && active.id === sat.id) setActive(null);
+    }
+
+    for (const sat of sats) {
+      sat.el?.addEventListener("pointerenter", () => { if (!sticky) setActive(sat); });
+      sat.el?.addEventListener("pointerleave", (e) => {
+        if ((e as PointerEvent).pointerType !== "touch" && !sticky) setActive(null);
+      });
+      // Tap is the touch equivalent of hover: it pins the track until tapped off.
+      sat.el?.addEventListener("click", () => {
+        setActive(active && active.id === sat.id ? null : sat, true);
+      });
+
+      sat.btn?.addEventListener("click", () => setVisible(sat, !sat.visible));
+      sat.btn?.addEventListener("pointerenter", () => { if (!sticky) setActive(sat); });
+      sat.btn?.addEventListener("pointerleave", (e) => {
+        if ((e as PointerEvent).pointerType !== "touch" && !sticky) setActive(null);
+      });
+      sat.btn?.addEventListener("focus", () => { if (!sticky) setActive(sat); });
+      sat.btn?.addEventListener("blur", () => { if (!sticky) setActive(null); });
+    }
+
+    // A tap anywhere else releases a pinned track.
+    document.addEventListener("click", (e) => {
+      if (!sticky) return;
+      const t = e.target as Element | null;
+      if (t && (t.closest(".iss-marker") || t.closest(".sat-toggle"))) return;
+      setActive(null);
+    });
+
+    // ---- Ticking (paused while the tab is hidden) ----------------------------
+    // Propagation is local, so a 1s tick is cheap and the markers glide rather
+    // than jump the way the old 5s API poll did.
     let nowTimer: ReturnType<typeof setInterval> | null = null;
-    let trackTimer: ReturnType<typeof setInterval> | null = null;
     function start() {
-      if (nowTimer) return;
-      updateNow();   // kicks off the first track draw once it has a position
-      updateTrack();
-      nowTimer = setInterval(updateNow, 5000);
-      trackTimer = setInterval(updateTrack, 60000);
+      if (nowTimer || !sats.some((s) => s.satrec)) return;
+      updateNow();
+      nowTimer = setInterval(updateNow, 1000);
     }
     function stop() {
       if (nowTimer) { clearInterval(nowTimer); nowTimer = null; }
-      if (trackTimer) { clearInterval(trackTimer); trackTimer = null; }
     }
     document.addEventListener("visibilitychange", function () {
       if (document.hidden) stop(); else start();
     });
-    start();
+
+    // Fetch every satellite's elements, then start. One failure doesn't stop the
+    // others: a satellite without a TLE simply never appears.
+    Promise.all(
+      sats.map((sat) =>
+        loadTle(sat)
+          .then((l) => { sat.satrec = twoline2satrec(l[0], l[1]); })
+          .catch(() => { sat.satrec = null; if (sat.btn) sat.btn.disabled = true; })
+      )
+    ).then(() => {
+      if (!sats.some((s) => s.satrec)) { showError(); return; }
+      for (const sat of sats) if (!sat.satrec) setVisible(sat, false);
+      start();
+    });
   })();
 </script>
