@@ -28,7 +28,7 @@ const { delayed = false } = Astro.props;
     .bmx-spokes { animation: bmx-spokesfade 10s infinite; }
     .bmx-blur   { opacity: 0; animation: bmx-blurfade 10s infinite; }
 
-    /* On the homepage intro the bike is hidden until 5.3s, so hold every
+    /* On the homepage intro the bike is hidden until 3.9s, so hold every
        motion at its start frame and begin the riding loop in sync with the
        fade-in — otherwise it arrives mid-coast and looks like it isn't
        pedalling. */
@@ -37,7 +37,7 @@ const { delayed = false } = Astro.props;
     .bmx-bike--delayed .bmx-pedal,
     .bmx-bike--delayed .bmx-spokes,
     .bmx-bike--delayed .bmx-blur {
-      animation-delay: 5.3s;
+      animation-delay: 3.9s;
     }
 
     /* wheels: geared 2.5x to cranks while pedalling; coast decelerates
@@ -159,7 +159,7 @@ const { delayed = false } = Astro.props;
 
   .bmx-bike--delayed {
     opacity: 0;
-    animation: bmxFadeIn 1.2s ease 5.3s forwards;
+    animation: bmxFadeIn 1.2s ease 3.9s forwards;
   }
 
   @keyframes bmxFadeIn {
