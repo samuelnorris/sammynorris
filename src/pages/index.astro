@@ -141,10 +141,13 @@ const projects = [
     // Clear the server-rendered name so the typewriter builds it from empty.
     el.textContent = "";
 
-    const typeSpeed = 200;
+    // Total sequence runs 3.7s; the tagline, theme toggle and BMX bike are
+    // hard-coded to fade in at 3.9s (index.astro, ThemeToggle.astro,
+    // BmxBike.astro) — retime those together with anything changed here.
+    const typeSpeed = 120;
     const deleteSpeed = 100;
     const startDelay = 600;
-    const pauseBeforeDelete = 800;
+    const pauseBeforeDelete = 600;
     const pauseBeforeRetype = 400;
 
     el.classList.add("typewriter--typing");
@@ -338,7 +341,7 @@ const projects = [
     max-height: 0;
     overflow: hidden;
     margin-top: 0;
-    animation: taglineIn 1.2s ease 5.3s forwards;
+    animation: taglineIn 1.2s ease 3.9s forwards;
   }
 
   @keyframes taglineIn {
