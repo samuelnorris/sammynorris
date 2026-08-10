@@ -23,14 +23,13 @@
   --space-act-max: 160px; /* biggest break — the pause before the payoff */
   --space-hero: 128px;    /* hero's bottom padding — used to bind the first figure up under it */
 
-  /* Colour tokens: light mode */
-  /* NOTE: these match current Framer values, not your earlier palette notes */
-  --color-bg: #F0F0F0;
-  --color-primary: #212121;
-  --color-secondary: #994C30; /* darkened from #B85C3A to meet WCAG AA 4.5:1 on light surfaces */
-  --color-tertiary: #5A3F5D;
-  --color-card-bg: rgba(222, 222, 222, 0.98);
-  --color-card-image-bg: #F5F5F5;
+  /* Colour tokens: light mode — warm paper set */
+  --color-bg: #F7F3EC;
+  --color-primary: #1C1815;
+  --color-secondary: #A8452A;
+  --color-tertiary: #8A8175;
+  --color-card-bg: rgba(239, 233, 223, 0.98);
+  --color-card-image-bg: #FBF8F3;
 
   /* Motion: spring easings (Apple's damping/response model). The beziers here
      are fallbacks; browsers with linear() get true spring curves from the
