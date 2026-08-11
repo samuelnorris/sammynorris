@@ -12,9 +12,9 @@
    fade rather than hard-cut. */
 .case-nav { position: fixed; top: 24px; left: 24px; z-index: 100; transition: opacity 0.25s ease; }
 
-/* Site grid: 1818px measure with 72px gutters, matching the homepage sections
+/* Site grid: 1818px measure with --gutter gutters, matching the homepage sections
    and the footer, so every page shares one left edge. */
-.hero { padding: 160px 72px var(--space-hero); max-width: 1818px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; }
+.hero { padding: 160px var(--gutter) var(--space-hero); max-width: 1818px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; }
 .hero__eyebrow { color: var(--color-secondary); font-weight: 300; margin-bottom: 16px; }
 .hero__title { font-family: var(--font-serif); font-size: clamp(3rem, 7vw, 7rem); line-height: 0.95; letter-spacing: -0.025em; font-weight: 400; margin: 0 0 24px; }
 .hero__title em { font-style: italic; color: var(--color-secondary); }
@@ -50,12 +50,12 @@
 .hero--intro .hero__title.is-typing::after { animation: metaBlink 1s ease-in-out infinite; }
 .hero--intro .hero__title.is-done::after { animation: metaFadeOut 1.2s ease forwards; }
 
-.figure { margin: 0 0 var(--space-rhythm); padding: 0 72px; max-width: 1818px; width: 100%; box-sizing: border-box; }
+.figure { margin: 0 0 var(--space-rhythm); padding: 0 var(--gutter); max-width: 1818px; width: 100%; box-sizing: border-box; }
 .figure > picture { display: block; background: var(--color-card-bg); border-radius: 24px; padding: 8px; }
 .figure + .figure { margin-top: -64px; }
 .figure picture > img, .figure > img { display: block; width: 100%; height: auto; border-radius: 18px; }
 
-.chapter { margin: 0 0 var(--space-rhythm); padding: 0 72px; max-width: 1818px; width: 100%; box-sizing: border-box; }
+.chapter { margin: 0 0 var(--space-rhythm); padding: 0 var(--gutter); max-width: 1818px; width: 100%; box-sizing: border-box; }
 .chapter__head { position: relative; display: flex; align-items: baseline; gap: 24px; margin-bottom: 32px; }
 .chapter__num { font-family: var(--font-serif); font-size: clamp(2rem, 3vw, 2.5rem); line-height: 1; font-weight: 400; color: var(--color-secondary); }
 .chapter__label { color: var(--color-primary); font-weight: 300; font-size: var(--text-b1); }
@@ -70,7 +70,7 @@
 .stat__value { font-family: var(--font-serif); font-size: clamp(2rem, 4vw, 3.25rem); line-height: 1; font-weight: 400; letter-spacing: -0.02em; color: var(--color-primary); }
 .stat__label { color: var(--color-primary); opacity: 0.65; font-weight: 400; }
 
-.closing { padding: var(--space-rhythm) 72px 0; max-width: 1818px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; align-items: flex-start; gap: 40px; }
+.closing { padding: var(--space-rhythm) var(--gutter) 0; max-width: 1818px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; align-items: flex-start; gap: 40px; }
 .closing__signoff { font-family: var(--font-serif); font-size: clamp(1.25rem, 2vw, 1.5rem); line-height: 1.4; font-weight: 400; color: var(--color-primary); opacity: 0.65; /* 0.6 fell below AA on the light bg at mobile sizes; 0.65 clears WCAG AA at 5.25:1 */ margin: 0; }
 .closing__signoff em { font-style: italic; }
 .closing__actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
