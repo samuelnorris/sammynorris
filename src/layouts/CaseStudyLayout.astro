@@ -4,14 +4,8 @@ import BackButton from "../components/BackButton.astro";
 import Footer from "../components/Footer.astro";
 import "../styles/case-study.css";
 
-interface MetaItem {
-  label: string;
-  value: string;
-}
-
 interface Props {
   pageTitle: string;
-  meta: MetaItem[];
   description: string;
   signoff: string;          // e.g. "Designed at Close Brothers"
   signoffYear: string;      // e.g. "2025"
@@ -22,7 +16,6 @@ interface Props {
 
 const {
   pageTitle,
-  meta,
   description,
   signoff,
   signoffYear,
@@ -30,18 +23,6 @@ const {
   nextProject,
   heroIntro = false,
 } = Astro.props;
-
-// The meta types out as a single line — client(s) first, year last,
-// e.g. "Close Brothers  ·  2025". Matches the homepage typewriter intro.
-const metaYear = meta.find((m) => m.label === "Year")?.value;
-const metaText = [
-  ...meta.filter((m) => m.label !== "Year").map((m) => m.value),
-  metaYear,
-]
-  .filter(Boolean)
-  .join("  ·  ");
-// Screen readers get the labelled version, not the char-by-char build.
-const metaLabel = meta.map((m) => `${m.label}: ${m.value}`).join(". ");
 ---
 
 <Layout title={pageTitle} ogImage={ogImage}>
@@ -57,11 +38,6 @@ const metaLabel = meta.map((m) => `${m.label}: ${m.value}`).join(". ");
       <h1 class="hero__title" data-reveal={heroIntro ? undefined : ""} style={heroIntro ? undefined : "--delay: 0.06s"}>
         <slot name="title" />
       </h1>
-
-      <p class="hero__meta" data-reveal={heroIntro ? undefined : ""} style={heroIntro ? undefined : "--delay: 0.22s"} data-meta={metaText}>
-        <span class="hero__meta-line b1" aria-hidden="true">{metaText}</span>
-        <span class="hero__meta-sr">{metaLabel}</span>
-      </p>
     </div>
 
     <p class="hero__desc b1" data-reveal={heroIntro ? undefined : ""} style={heroIntro ? undefined : "--delay: 0.3s"}>
@@ -70,9 +46,9 @@ const metaLabel = meta.map((m) => `${m.label}: ${m.value}`).join(". ");
   </header>
 
   {heroIntro && (
-    <!-- Hero intro (commission): centred title+meta typewriter, then slide up.
-         Inline so it runs during parse and sets the centred state before first
-         paint. Plain JS (no TS) as it ships to the browser verbatim. -->
+    <!-- Hero intro: centred title typewriter, then slide up. Inline so it runs
+         during parse and sets the centred state before first paint. Plain JS
+         (no TS) as it ships to the browser verbatim. -->
     <script is:inline>
       (function () {
         var hero = document.querySelector(".hero--intro");
@@ -80,10 +56,8 @@ const metaLabel = meta.map((m) => `${m.label}: ${m.value}`).join(". ");
 
         var lead = hero.querySelector(".hero__lead");
         var titleEl = hero.querySelector(".hero__title");
-        var metaEl = hero.querySelector(".hero__meta");
-        var metaLine = metaEl && metaEl.querySelector(".hero__meta-line");
         var descEl = hero.querySelector(".hero__desc");
-        if (!lead || !titleEl || !metaEl || !metaLine || !descEl) return;
+        if (!lead || !titleEl || !descEl) return;
 
         var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         var key = "sn-hero-intro:" + window.location.pathname;
@@ -123,8 +97,8 @@ const metaLabel = meta.map((m) => `${m.label}: ${m.value}`).join(". ");
           }
         }
         while (chars.length && chars[chars.length - 1].ch === " ") chars.pop();
-        // Only the title types out. The meta line stays hidden and fades in
-        // with the description once the slide finishes.
+        // Only the title types out. The description stays hidden and fades in
+        // once the slide finishes.
         titleEl.textContent = "";
 
         var TITLE_SPEED = 85;
@@ -168,11 +142,8 @@ const metaLabel = meta.map((m) => `${m.label}: ${m.value}`).join(". ");
           lead.style.transition = "none";
           lead.style.transform = "translateY(" + delta + "px)";
 
-          // Prime the meta and description to drift in with a small rise while
-          // the slide is still decelerating — overlapped and staggered, not
-          // queued behind it.
-          metaEl.style.opacity = "0";
-          metaEl.style.transform = "translateY(12px)";
+          // Prime the description to drift in with a small rise while the slide
+          // is still decelerating — overlapped, not queued behind it.
           descEl.style.opacity = "0";
           descEl.style.transform = "translateY(12px)";
 
@@ -182,10 +153,7 @@ const metaLabel = meta.map((m) => `${m.label}: ${m.value}`).join(". ");
           lead.style.transition = "transform 0.9s " + CURVE;
           lead.style.transform = "translateY(0)";
 
-          metaEl.style.transition = "opacity 0.8s ease 0.45s, transform 0.8s " + CURVE + " 0.45s";
-          metaEl.style.opacity = "1";
-          metaEl.style.transform = "translateY(0)";
-          descEl.style.transition = "opacity 0.8s ease 0.6s, transform 0.8s " + CURVE + " 0.6s";
+          descEl.style.transition = "opacity 0.8s ease 0.45s, transform 0.8s " + CURVE + " 0.45s";
           descEl.style.opacity = "1";
           descEl.style.transform = "translateY(0)";
 
@@ -265,48 +233,6 @@ const metaLabel = meta.map((m) => `${m.label}: ${m.value}`).join(". ");
 
 <script>
   import "../scripts/reveal.ts";
-
-  // Type the hero meta line in — plays once per case study per session,
-  // mirroring the homepage name intro. Repeat views and reduced-motion
-  // users get it instantly.
-  (function () {
-    // The intro-enabled case study (commission) types its meta as part of the
-    // centred title→meta→slide sequence, so skip the standalone typewriter there.
-    if (document.querySelector('.hero--intro')) return;
-    const metaMaybe = document.querySelector<HTMLElement>('.hero__meta');
-    const lineMaybe = metaMaybe?.querySelector<HTMLElement>('.hero__meta-line');
-    if (!metaMaybe || !lineMaybe) return;
-    // Narrowed re-bindings so the types hold inside step() below.
-    const meta = metaMaybe;
-    const line = lineMaybe;
-
-    const full = meta.getAttribute('data-meta') || line.textContent || '';
-    const key = 'sn-meta-typed:' + window.location.pathname;
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // Repeat views / reduced-motion: leave the server-rendered line in place.
-    if (sessionStorage.getItem(key) || reduced) return;
-    sessionStorage.setItem(key, '1');
-
-    line.textContent = '';
-    meta.classList.add('is-typing');
-
-    const typeSpeed = 55;
-    const startDelay = 450;
-    let i = 0;
-
-    function step() {
-      if (i <= full.length) {
-        line.textContent = full.slice(0, i);
-        i += 1;
-        setTimeout(step, typeSpeed);
-      } else {
-        meta.classList.remove('is-typing');
-        meta.classList.add('is-done');
-      }
-    }
-    setTimeout(step, startDelay);
-  })();
 
   // Hide the fixed top nav when the bottom CTA is visible
   const nav = document.querySelector<HTMLElement>('.case-nav');
