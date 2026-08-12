@@ -16,22 +16,18 @@
    and the footer, so every page shares one left edge. */
 .hero { padding: 160px var(--gutter) var(--space-hero); max-width: 1818px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; }
 .hero__eyebrow { color: var(--color-secondary); font-weight: 300; margin-bottom: 16px; }
-.hero__title { font-family: var(--font-serif); font-size: clamp(3rem, 7vw, 7rem); line-height: 0.95; letter-spacing: -0.025em; font-weight: 400; margin: 0 0 24px; }
+.hero__title { font-family: var(--font-serif); font-size: clamp(3rem, 7vw, 7rem); line-height: 0.95; letter-spacing: -0.025em; font-weight: 400; margin: 0 0 88px; }
 .hero__title em { font-style: italic; color: var(--color-secondary); }
 .hero__lede { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw, 2rem); line-height: 1.3; font-weight: 400; font-style: italic; letter-spacing: -0.01em; margin: 0 0 48px; color: var(--color-primary); opacity: 0.85; }
-.hero__meta { margin: 0 0 64px; padding: 0; }
-.hero__meta-line::after { content: ""; display: inline-block; width: 2px; height: 0.95em; background: var(--color-primary); margin-left: 3px; vertical-align: -1px; opacity: 0; }
-.hero__meta.is-typing .hero__meta-line::after { opacity: 1; animation: metaBlink 1s ease-in-out infinite; }
-.hero__meta.is-done .hero__meta-line::after { animation: metaFadeOut 1.2s ease forwards; }
+/* Caret animations for the hero intro title typewriter. */
 @keyframes metaBlink { 50% { opacity: 0; } }
 @keyframes metaFadeOut { to { opacity: 0; } }
-.hero__meta-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .hero__desc { max-width: calc(56ch + 160px); }
 
-/* ---- Hero intro (commission): title + meta type in centred, then slide up ----
-   .hero__lead groups the two typed lines so they move as a unit. It is a no-op
-   wrapper (display:contents) on every other case study, so their hero layout is
-   unchanged; only .hero--intro turns it into a real, transformable box. */
+/* ---- Hero intro: the title types in centred, then slides up ----
+   .hero__lead wraps the typed title so it can be transformed as a unit. It is a
+   no-op wrapper (display:contents) unless .hero--intro turns it into a real,
+   transformable box. */
 .hero__lead { display: contents; }
 .hero--intro .hero__lead { display: flex; flex-direction: column; will-change: transform; }
 /* Commission intro title: uniform primary colour, upright (drop the italic
@@ -42,9 +38,8 @@
    while the hero stays tall. */
 .hero--intro.is-tall { min-height: 100vh; min-height: 100dvh; }
 .hero--intro.is-centred { justify-content: center; }
-.hero--intro.is-centred .hero__meta,
 .hero--intro.is-centred .hero__desc { display: none; }
-/* Title caret, mirroring the meta-line caret and the homepage name cursor. */
+/* Title caret, mirroring the homepage name cursor. */
 .hero--intro .hero__title.is-typing::after,
 .hero--intro .hero__title.is-done::after { content: ""; display: inline-block; width: 3px; height: 0.75em; background: var(--color-primary); margin-left: 8px; vertical-align: baseline; }
 .hero--intro .hero__title.is-typing::after { animation: metaBlink 1s ease-in-out infinite; }
@@ -101,9 +96,8 @@
   .case-nav { top: 20px; left: 20px; }
   .hero { padding: 96px 20px var(--space-hero); }
   .hero__eyebrow { margin-bottom: 12px; }
-  .hero__title { font-size: clamp(3rem, 13vw, 4.5rem); margin-bottom: 20px; }
+  .hero__title { font-size: clamp(3rem, 13vw, 4.5rem); margin-bottom: 60px; }
   .hero__lede { font-size: clamp(1.375rem, 5.5vw, 1.75rem); margin-bottom: 32px; }
-  .hero__meta { margin: 0 0 40px; }
   .hero__desc { max-width: 100%; }
   .figure { padding: 0 16px; }
   .figure + .figure { margin-top: -44px; }
