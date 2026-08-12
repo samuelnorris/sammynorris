@@ -23,6 +23,10 @@
   --space-act-max: 160px; /* biggest break — the pause before the payoff */
   --space-hero: 128px;    /* hero's bottom padding — used to bind the first figure up under it */
 
+  /* Horizontal page gutter: space between content and the viewport edge on every
+     container that sits on the 1818px site grid. Overridden for mobile below. */
+  --gutter: 48px;
+
   /* Colour tokens: light mode — warm paper set */
   --color-bg: #F7F3EC;
   --color-primary: #1C1815;
@@ -67,6 +71,7 @@
     --space-act: 88px;
     --space-act-max: 96px;
     --space-hero: 80px;
+    --gutter: 20px;
   }
 }
 

@@ -288,7 +288,7 @@ const projects = [
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 0 72px;
+    padding: 0 var(--gutter);
     overflow: hidden;
   }
 
@@ -354,7 +354,7 @@ const projects = [
 
   /* ===================== Work ===================== */
   .work {
-    padding: var(--space-act) 72px var(--space-rhythm);
+    padding: var(--space-act) var(--gutter) var(--space-rhythm);
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -518,7 +518,7 @@ const projects = [
 
   /* ===================== About ===================== */
   .about {
-    padding: var(--space-act) 72px;
+    padding: var(--space-act) var(--gutter);
     max-width: 1818px;
     box-sizing: border-box;
     width: 100%;
@@ -604,7 +604,7 @@ const projects = [
 
   /* ===================== Closing CTA ===================== */
   .home-cta {
-    padding: var(--space-act) 72px 0;
+    padding: var(--space-act) var(--gutter) 0;
     max-width: 1818px;
     box-sizing: border-box;
     width: 100%;
@@ -677,7 +677,7 @@ const projects = [
       align-items: flex-start;
     }
 
-    /* Mobile gutter, matching every other container. The desktop 72px would
+    /* Mobile gutter, matching every other container. The desktop gutter would
        leave the nowrap name no room to fit. */
     .hero {
       padding: 0 20px;
