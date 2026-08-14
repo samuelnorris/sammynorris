@@ -400,6 +400,8 @@ import BmxBike from "../components/BmxBike.astro";
     width: 100%;
     max-width: 320px;
   }
+  /* Author `display` beats the UA [hidden] rule, so restate it here. */
+  .score-save[hidden] { display: none; }
   .score-save__input {
     flex: 1;
     min-width: 0;
@@ -491,7 +493,9 @@ import BmxBike from "../components/BmxBike.astro";
     padding: 0;
     counter-reset: rank;
   }
-  .board-list li {
+  /* The rows are built in JS, so they never carry Astro's scope attribute -
+     :global() is what makes these rules reach them. */
+  .board-list :global(li) {
     display: grid;
     grid-template-columns: 28px 1fr auto;
     align-items: baseline;
@@ -501,20 +505,19 @@ import BmxBike from "../components/BmxBike.astro";
     font-family: var(--font-sans);
     font-size: var(--text-b2);
   }
-  .board-list li::before {
+  .board-list :global(li)::before {
     counter-increment: rank;
     content: counter(rank);
     color: var(--color-secondary);
     font-family: var(--font-serif);
     font-size: var(--text-b1);
   }
-  .board-list li.is-new { color: var(--color-secondary); }
-  .board-list .b-name {
+  .board-list :global(.b-name) {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .board-list .b-score { font-variant-numeric: tabular-nums; font-weight: 500; }
+  .board-list :global(.b-score) { font-variant-numeric: tabular-nums; font-weight: 500; }
   .board-empty {
     font-family: var(--font-sans);
     font-size: var(--text-b3);
@@ -586,6 +589,7 @@ import BmxBike from "../components/BmxBike.astro";
   const btnRestart = $el("btn-restart");
   const nameInput = $el<HTMLInputElement>("name-input");
   const scoreSaveForm = $el<HTMLFormElement>("score-save");
+  const btnSave = $el<HTMLButtonElement>("btn-save");
   const scoreSaved = $el("score-saved");
   const boardBtn = $el("board-btn");
   const boardModal = $el("board-modal");
@@ -871,39 +875,68 @@ import BmxBike from "../components/BmxBike.astro";
     btnStart.addEventListener("click", startRun);
     btnRestart.addEventListener("click", startRun);
 
-    // ---- Scoreboard (saved in this browser) ----
-    const SCORE_KEY = "bmx-scores";
+    // ---- Scoreboard (shared across devices, via /api/scores) ----
+    // Only the rider's name is kept locally, to prefill the box next time.
     const NAME_KEY = "bmx-name";
     type ScoreRow = { name: string; score: number };
-    function loadScores(): ScoreRow[] {
-      try { return JSON.parse(localStorage.getItem(SCORE_KEY) || "[]") || []; }
-      catch { return []; }
-    }
     function fmtName(v: string) { return (v || "").trim().slice(0, 14) || "Rider"; }
     function resetSaveForm() {
       if (!scoreSaveForm) return;
       scoreSaveForm.hidden = false;
       if (scoreSaved) scoreSaved.hidden = true;
+      if (btnSave) { btnSave.disabled = false; btnSave.textContent = "Save score"; }
       if (nameInput) {
         try { nameInput.value = localStorage.getItem(NAME_KEY) || ""; } catch { nameInput.value = ""; }
       }
     }
-    function doSave() {
+    async function doSave() {
       if (!scoreSaveForm || scoreSaveForm.hidden) return;   // already saved this run
       const name = fmtName(nameInput ? nameInput.value : "");
       try { localStorage.setItem(NAME_KEY, name); } catch {}
-      const list = loadScores();
-      list.push({ name, score: s.final });
-      list.sort((a, b) => b.score - a.score);
-      try { localStorage.setItem(SCORE_KEY, JSON.stringify(list.slice(0, 20))); } catch {}
-      scoreSaveForm.hidden = true;
-      if (scoreSaved) scoreSaved.hidden = false;
+      if (btnSave) { btnSave.disabled = true; btnSave.textContent = "Saving..."; }
+      let ok = false;
+      try {
+        const res = await fetch("/api/scores", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, score: s.final }),
+        });
+        ok = res.ok;
+      } catch {}
+      if (scoreSaved) {
+        scoreSaved.textContent = ok
+          ? "Saved to the scoreboard ✓"
+          : "Couldn't reach the scoreboard - try again.";
+        scoreSaved.hidden = false;
+      }
+      if (ok) scoreSaveForm.hidden = true;
+      else if (btnSave) { btnSave.disabled = false; btnSave.textContent = "Save score"; }
     }
-    function renderBoard() {
+    // The board is fetched fresh each time it opens; boardReq drops the reply of
+    // an earlier open that lands after a later one.
+    let boardReq = 0;
+    async function renderBoard() {
       if (!boardList) return;
-      const list = loadScores();
+      const req = ++boardReq;
       boardList.innerHTML = "";
-      if (boardEmpty) boardEmpty.hidden = list.length > 0;
+      if (boardEmpty) {
+        boardEmpty.textContent = "Loading the scoreboard...";
+        boardEmpty.hidden = false;
+      }
+      let list: ScoreRow[] | null = null;
+      try {
+        const res = await fetch("/api/scores");
+        if (res.ok) list = (await res.json()).scores as ScoreRow[];
+      } catch {}
+      if (req !== boardReq) return;
+      if (!list) {
+        if (boardEmpty) boardEmpty.textContent = "Couldn't reach the scoreboard.";
+        return;
+      }
+      if (boardEmpty) {
+        boardEmpty.textContent = "No scores yet - drop in and set one.";
+        boardEmpty.hidden = list.length > 0;
+      }
       list.forEach((row) => {
         const li = document.createElement("li");
         const name = document.createElement("span");
