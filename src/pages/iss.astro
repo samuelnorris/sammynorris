@@ -317,7 +317,7 @@ import { SATELLITES } from "../components/satellites";
   // Validated against the WhereTheISS.at API this page used to call: over 1.5
   // orbits the local solution stayed within 0.3 km on the ground, 0.06 km in
   // altitude, and agreed on sunlit/eclipsed at every sample.
-  import { twoline2satrec, propagate, gstime, eciToGeodetic, degreesLat, degreesLong } from "satellite.js";
+  import { twoline2satrec, propagate, gstime, eciToGeodetic, degreesLat, degreesLong, type SatRec } from "satellite.js";
   import { SATELLITES } from "../components/satellites";
 
   (function () {
@@ -327,6 +327,8 @@ import { SATELLITES } from "../components/satellites";
     const SIDEREAL_DAY = 1436.068;               // minutes
     const TLE_URL = "https://celestrak.org/NORAD/elements/gp.php?FORMAT=tle&CATNR=";
     const TLE_TTL = 6 * 60 * 60 * 1000;          // TLEs drift slowly; don't refetch often
+    const TLE_RETRY = 30 * 1000;                 // pause between attempts when nothing loads
+    const TLE_TIMEOUT = 10 * 1000;               // cap a hung TLE request
 
     const svg = document.querySelector(".iss-map__svg") as SVGSVGElement | null;
     const track = document.getElementById("sat-track");
@@ -347,17 +349,25 @@ import { SATELLITES } from "../components/satellites";
       return Math.abs(n).toFixed(2) + "° " + (n >= 0 ? pos : neg);
     }
 
+    // The note doubles as the failure message; keep its markup so a successful
+    // retry can put the original text back.
+    const noteHtml = note ? note.innerHTML : "";
     let noteFailShown = false;
     function showError() {
       if (noteFailShown || !note) return;
       noteFailShown = true;
       note.textContent = "Couldn't fetch orbital elements just now — retrying shortly.";
     }
+    function clearError() {
+      if (!noteFailShown || !note) return;
+      noteFailShown = false;
+      note.innerHTML = noteHtml;
+    }
 
     // ---- Satellite state ----------------------------------------------------
     type Tracked = {
       id: string; catnr: number; name: string; primary?: boolean;
-      satrec: any | null; visible: boolean;
+      satrec: SatRec | null; visible: boolean;
       el: SVGGElement | null; btn: HTMLButtonElement | null;
     };
     const sats: Tracked[] = SATELLITES.map((s) => ({
@@ -380,7 +390,8 @@ import { SATELLITES } from "../components/satellites";
         if (cached && Date.now() - cached.t < TLE_TTL) return cached.l as string[];
       } catch { /* private mode, corrupt entry — just refetch */ }
 
-      const res = await fetch(TLE_URL + sat.catnr);
+      // `?.`: browsers without AbortSignal.timeout simply get no timeout.
+      const res = await fetch(TLE_URL + sat.catnr, { signal: AbortSignal.timeout?.(TLE_TIMEOUT) });
       if (!res.ok) throw new Error("TLE " + res.status);
       const lines = (await res.text()).trim().split("\n").map((l) => l.trim());
       if (lines.length < 3 || lines[1][0] !== "1" || lines[2][0] !== "2") throw new Error("bad TLE");
@@ -416,6 +427,7 @@ import { SATELLITES } from "../components/satellites";
     }
 
     function stateAt(sat: Tracked, date: Date) {
+      if (!sat.satrec) return null;
       const pv = propagate(sat.satrec, date);
       if (!pv) return null;
       // On a propagation error satellite.js hands back `true` in place of the
@@ -475,8 +487,8 @@ import { SATELLITES } from "../components/satellites";
     // Degrees of longitude the ground track gains per minute: the orbit's own
     // rate, less the Earth turning underneath it. Derived per satellite from its
     // mean motion, so Hubble's wider orbit draws correctly alongside the ISS.
-    function lonRate(sat: Tracked) {
-      const periodMin = (2 * Math.PI) / sat.satrec.no;
+    function lonRate(satrec: SatRec) {
+      const periodMin = (2 * Math.PI) / satrec.no;
       return (360 - (360 * periodMin) / SIDEREAL_DAY) / periodMin;
     }
 
@@ -543,7 +555,7 @@ import { SATELLITES } from "../components/satellites";
       // Wind back to the track's most recent crossing of the left edge, with a
       // margin so the samples bracket it (the rate is an average, so the
       // estimate drifts a little); clipping below fixes the exact endpoints.
-      const rate = lonRate(sat);
+      const rate = lonRate(sat.satrec);
       const degSinceEdge = ((((here.lon + 180) % 360) + 360) % 360);
       const startMin = -(degSinceEdge / rate) - 8;
       const spanMin = 360 / rate + 16;          // one full map width, plus margin
@@ -631,17 +643,30 @@ import { SATELLITES } from "../components/satellites";
     });
 
     // Fetch every satellite's elements, then start. One failure doesn't stop the
-    // others: a satellite without a TLE simply never appears.
-    Promise.all(
-      sats.map((sat) =>
-        loadTle(sat)
-          .then((l) => { sat.satrec = twoline2satrec(l[0], l[1]); })
-          .catch(() => { sat.satrec = null; if (sat.btn) sat.btn.disabled = true; })
-      )
-    ).then(() => {
-      if (!sats.some((s) => s.satrec)) { showError(); return; }
-      for (const sat of sats) if (!sat.satrec) setVisible(sat, false);
-      start();
-    });
+    // others: a satellite without a TLE simply never appears. When nothing loads
+    // at all (offline, CelesTrak down), keep retrying quietly so the page
+    // recovers on its own once the network comes back.
+    function loadAll() {
+      Promise.all(
+        sats.filter((s) => !s.satrec).map((sat) =>
+          loadTle(sat)
+            .then((l) => {
+              sat.satrec = twoline2satrec(l[0], l[1]);
+              if (sat.btn) sat.btn.disabled = false;
+            })
+            .catch(() => { if (sat.btn) sat.btn.disabled = true; })
+        )
+      ).then(() => {
+        if (!sats.some((s) => s.satrec)) {
+          showError();
+          setTimeout(loadAll, TLE_RETRY);
+          return;
+        }
+        clearError();
+        for (const sat of sats) if (!sat.satrec) setVisible(sat, false);
+        start();
+      });
+    }
+    loadAll();
   })();
 </script>
