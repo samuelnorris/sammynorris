@@ -597,6 +597,7 @@ import BmxBike from "../components/BmxBike.astro";
   const rampLine = document.getElementById("ramp-line") as Element | null;
   const copeL = document.getElementById("cope-l") as Element | null;
   const copeR = document.getElementById("cope-r") as Element | null;
+  const flipBtn = document.getElementById("flip-btn");
 
   if (stage && world && bike && pop && elScore && elTime && elCombo &&
       ovStart && ovEnd && endScore && endBest && btnStart && btnRestart) {
@@ -630,7 +631,7 @@ import BmxBike from "../components/BmxBike.astro";
     const DEG = 180 / Math.PI;
 
     const s = {
-      mode: "ready",          // ready | play | over
+      mode: "ready",          // ready | play | paused | over
       phi: -0.6, phiVel: 0,
       airborne: false,
       x: 0, y: 0, vx: 0, vy: 0,
@@ -1039,7 +1040,6 @@ import BmxBike from "../components/BmxBike.astro";
     stage.addEventListener("gesturechange", blockGesture);
 
     // Touch backflip button (doesn't trigger a spin via the stage handler)
-    const flipBtn = document.getElementById("flip-btn");
     flipBtn?.addEventListener("pointerdown", (e) => {
       if (s.mode !== "play") return;
       e.preventDefault();
