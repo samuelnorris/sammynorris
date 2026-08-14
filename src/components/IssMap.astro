@@ -28,25 +28,28 @@ const LAND = "M335 472L333 475L327 475L321 475L317 474L322 473L328 473L332 471ZM
   aria-label="World map showing the current position of the International Space Station"
   preserveAspectRatio="xMidYMid meet"
 >
-  <!-- Latitude / longitude grid -->
-  <g class="iss-map__grid" aria-hidden="true">
-    {lonLines.map((x) => (
-      <line x1={x} y1="0" x2={x} y2={H} class:list={["iss-map__grid-line", { "is-axis": Math.round(x) === W / 2 }]} />
-    ))}
-    {latLines.map((y) => (
-      <line x1="0" y1={y} x2={W} y2={y} class:list={["iss-map__grid-line", { "is-axis": Math.round(y) === H / 2 }]} />
-    ))}
+  <!-- Base art (grid + continents), grouped so the mobile follow-cam can show
+       a second copy one world-width to the right when its window hangs past
+       the antimeridian. On desktop the copy sits outside the viewBox. -->
+  <g id="world-base" aria-hidden="true">
+    <g class="iss-map__grid">
+      {lonLines.map((x) => (
+        <line x1={x} y1="0" x2={x} y2={H} class:list={["iss-map__grid-line", { "is-axis": Math.round(x) === W / 2 }]} />
+      ))}
+      {latLines.map((y) => (
+        <line x1="0" y1={y} x2={W} y2={y} class:list={["iss-map__grid-line", { "is-axis": Math.round(y) === H / 2 }]} />
+      ))}
+    </g>
+    <path class="iss-map__land" d={LAND} />
   </g>
-
-  <!-- Continents -->
-  <path class="iss-map__land" d={LAND} aria-hidden="true" />
+  <use href="#world-base" x={W} aria-hidden="true" />
 
   <!-- Ground track for whichever satellite is hovered. One path, recoloured by
        the client script via a data-sat attribute. -->
   <path id="sat-track" class="iss-map__track" aria-hidden="true" />
 
-  <!-- Live markers (positioned + revealed by the client script). The ISS keeps
-       the glow and pulse; the rest stay quieter so the page keeps its subject. -->
+  <!-- Live markers (positioned + revealed by the client script). Every marker
+       carries a glow and pulse, lit while it is hovered or selected. -->
   {SATELLITES.map((sat) => (
     <g
       id={`sat-marker-${sat.id}`}
@@ -55,10 +58,10 @@ const LAND = "M335 472L333 475L327 475L321 475L317 474L322 473L328 473L332 471ZM
       aria-hidden="true"
       style="opacity:0"
     >
-      {sat.primary && <circle class="iss-marker__glow" r="30" />}
-      {sat.primary && <circle class="iss-marker__pulse" r="8" />}
-      <circle class="iss-marker__ring" r={sat.primary ? 8 : 5.5} />
-      <circle class="iss-marker__core" r={sat.primary ? 3.4 : 2.4} />
+      <circle class="iss-marker__glow" r={sat.primary ? 36 : 25} />
+      <circle class="iss-marker__pulse" r={sat.primary ? 9.6 : 6.6} />
+      <circle class="iss-marker__ring" r={sat.primary ? 9.6 : 6.6} />
+      <circle class="iss-marker__core" r={sat.primary ? 4.1 : 2.9} />
       <!-- Generous invisible target so hovering the marker isn't fiddly. -->
       <circle class="iss-marker__hit" r="18" />
     </g>
@@ -103,19 +106,16 @@ const LAND = "M335 472L333 475L327 475L321 475L317 474L322 473L328 473L332 471ZM
     opacity: 0.5;
   }
 
-  /* Per-satellite colours. The ISS keeps the site accent; the other two get
-     hues that hold up on both the light and dark page backgrounds. */
+  /* Per-satellite colours. The ISS keeps the site accent; Hubble gets a hue
+     that holds up on both the light and dark page backgrounds. */
   .iss-map__svg {
     --sat-iss: var(--color-secondary);
-    --sat-css: #1F7A6B;
     --sat-hst: #6A4FB6;
   }
   :global(.dark) .iss-map__svg {
-    --sat-css: #35C2A8;
     --sat-hst: #A98CFF;
   }
   .is-iss { --sat-color: var(--sat-iss); }
-  .is-css { --sat-color: var(--sat-css); }
   .is-hst { --sat-color: var(--sat-hst); }
 
   .iss-map__track {
@@ -145,9 +145,18 @@ const LAND = "M335 472L333 475L327 475L321 475L317 474L322 473L328 473L332 471ZM
     cursor: pointer;
   }
 
+  /* Markers rest as quiet dots; the glow lights while hovered or active, and
+     on the mobile map the selected satellite keeps it on. */
   .iss-marker__glow {
     fill: var(--sat-color);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .iss-marker.is-active .iss-marker__glow {
     opacity: 0.16;
+  }
+  @media (hover: none) and (max-width: 768px) {
+    .iss-marker__glow { opacity: 0.16; }
   }
   .iss-marker__ring {
     fill: none;
@@ -166,7 +175,16 @@ const LAND = "M335 472L333 475L327 475L321 475L317 474L322 473L328 473L332 471ZM
     transform-origin: center;
     transform: scale(1);
     opacity: 0;
+  }
+  /* The hovered / tapped marker pulses; on the mobile map the selected
+     satellite pulses without needing a tap. */
+  .iss-marker.is-active .iss-marker__pulse {
     animation: iss-pulse 2.4s var(--ease-out, ease-out) infinite;
+  }
+  @media (hover: none) and (max-width: 768px) {
+    .iss-marker__pulse {
+      animation: iss-pulse 2.4s var(--ease-out, ease-out) infinite;
+    }
   }
 
   @keyframes iss-pulse {

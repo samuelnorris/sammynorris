@@ -15,6 +15,5 @@ export interface Satellite {
 
 export const SATELLITES: Satellite[] = [
   { id: "iss", catnr: 25544, name: "ISS", blurb: "Crewed since 2000", primary: true },
-  { id: "css", catnr: 48274, name: "Tiangong", blurb: "China's space station" },
   { id: "hst", catnr: 20580, name: "Hubble", blurb: "Space telescope" },
 ];

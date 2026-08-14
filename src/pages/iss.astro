@@ -34,7 +34,6 @@ import { SATELLITES } from "../components/satellites";
           </span>
         </button>
       ))}
-      <p class="sat-toggles__hint">Hover a satellite to trace its orbit.</p>
     </div>
 
     <figure class="iss-page__map" id="iss-map">
@@ -61,10 +60,6 @@ import { SATELLITES } from "../components/satellites";
       <div class="iss-stats__item">
         <dt>Speed</dt>
         <dd id="s-spd">&mdash;</dd>
-      </div>
-      <div class="iss-stats__item">
-        <dt>Sunlight</dt>
-        <dd id="s-sun">&mdash;</dd>
       </div>
     </dl>
 
@@ -176,15 +171,12 @@ import { SATELLITES } from "../components/satellites";
     gap: 12px;
     margin: 0 0 24px;
     --sat-iss: var(--color-secondary);
-    --sat-css: #1F7A6B;
     --sat-hst: #6A4FB6;
   }
   :global(.dark) .sat-toggles {
-    --sat-css: #35C2A8;
     --sat-hst: #A98CFF;
   }
   .sat-toggle.is-iss { --sat-color: var(--sat-iss); }
-  .sat-toggle.is-css { --sat-color: var(--sat-css); }
   .sat-toggle.is-hst { --sat-color: var(--sat-hst); }
 
   .sat-toggle {
@@ -239,24 +231,14 @@ import { SATELLITES } from "../components/satellites";
     line-height: 1.2;
   }
 
-  /* Pushed to the far end of the row, so it lands on the map's right edge. */
-  .sat-toggles__hint {
-    font-family: var(--font-sans);
-    font-size: var(--text-b4);
-    font-weight: 300;
-    opacity: 0.5;
-    margin: 0 0 0 auto;
-    text-align: right;
-  }
-  /* Pointer-only affordance: on touch there is nothing to hover. */
-  @media (hover: none) {
-    .sat-toggles__hint { display: none; }
-  }
-
   .iss-stats {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    display: flex;
+    justify-content: space-between;
     gap: 24px;
+    /* Clusters left at half the measure, but never tighter than the values:
+       the row grows instead of wrapping and the gaps take up the slack. */
+    width: max-content;
+    min-width: 50%;
     margin: 0 0 var(--space-bind);
   }
 
@@ -266,13 +248,13 @@ import { SATELLITES } from "../components/satellites";
     gap: 6px;
   }
 
+  /* b3 labels (matches the .b3 utility), kept muted. */
   .iss-stats dt {
     font-family: var(--font-sans);
-    font-size: var(--text-b4);
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
+    font-size: var(--text-b3);
+    letter-spacing: -0.01em;
     opacity: 0.55;
-    font-weight: 400;
+    font-weight: 250;
   }
 
   .iss-stats dd {
@@ -281,6 +263,7 @@ import { SATELLITES } from "../components/satellites";
     font-size: clamp(1.4rem, 3.4vw, 2rem);
     line-height: 1;
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
 
   .iss-page__note {
@@ -297,14 +280,15 @@ import { SATELLITES } from "../components/satellites";
     .case-nav { top: 16px; left: 16px; }
     .iss-page { padding: 96px 20px var(--space-act); }
     .iss-page__map { margin-bottom: 32px; }
+    /* Full width, tighter gaps and smaller numbers so all four fit unwrapped. */
+    .iss-stats {
+      width: auto;
+      min-width: 0;
+      gap: 12px;
+    }
+    .iss-stats dd { font-size: 1.1rem; }
     .sat-toggles { margin-bottom: 20px; gap: 8px; }
     .sat-toggle { padding: 6px 14px 6px 10px; }
-    .iss-stats {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px 24px;
-    }
-    /* Sunlight spans the full width on the last row of the 2-col grid. */
-    .iss-stats__item:last-child { grid-column: 1 / -1; }
   }
 </style>
 
@@ -315,15 +299,13 @@ import { SATELLITES } from "../components/satellites";
   // and markers live in <IssMap />; we find them by id and drive them here.
   //
   // Validated against the WhereTheISS.at API this page used to call: over 1.5
-  // orbits the local solution stayed within 0.3 km on the ground, 0.06 km in
-  // altitude, and agreed on sunlit/eclipsed at every sample.
+  // orbits the local solution stayed within 0.3 km on the ground and 0.06 km
+  // in altitude.
   import { twoline2satrec, propagate, gstime, eciToGeodetic, degreesLat, degreesLong, type SatRec } from "satellite.js";
   import { SATELLITES } from "../components/satellites";
 
   (function () {
     const W = 1000, H = 500;
-    const R_EARTH = 6378.137;                    // km
-    const AU = 149597870.7;                      // km
     const SIDEREAL_DAY = 1436.068;               // minutes
     const TLE_URL = "https://celestrak.org/NORAD/elements/gp.php?FORMAT=tle&CATNR=";
     const TLE_TTL = 6 * 60 * 60 * 1000;          // TLEs drift slowly; don't refetch often
@@ -337,7 +319,6 @@ import { SATELLITES } from "../components/satellites";
     const elLng = document.getElementById("s-lng");
     const elAlt = document.getElementById("s-alt");
     const elSpd = document.getElementById("s-spd");
-    const elSun = document.getElementById("s-sun");
     const note = document.getElementById("iss-note");
     if (!svg || !track) return;
 
@@ -382,6 +363,34 @@ import { SATELLITES } from "../components/satellites";
     let sticky = false;      // set by tap/click, so touch users get a track too
     let ready = false;
 
+    // ---- Mobile follow-cam ---------------------------------------------------
+    // Below the mobile breakpoint the map becomes a square window on half the
+    // world, auto-panned to keep the followed satellite centred. Everything is
+    // done through the viewBox, so the art, markers and track scale together;
+    // the <use> world copy in IssMap fills the window past the antimeridian.
+    const FOLLOW_W = 500, FOLLOW_H = 500;
+    const mobileMq = window.matchMedia("(max-width: 768px)");
+    let follow = mobileMq.matches;
+    let viewX = (W - FOLLOW_W) / 2;      // window origin, recentred every tick
+
+    function followTarget() {
+      if (active && active.visible && active.satrec) return active;
+      const primary = sats.find((s) => s.primary);
+      if (primary && primary.visible && primary.satrec) return primary;
+      return sats.find((s) => s.visible && s.satrec) || null;
+    }
+    function applyViewBox() {
+      svg!.setAttribute(
+        "viewBox",
+        follow ? viewX.toFixed(1) + " 0 " + FOLLOW_W + " " + FOLLOW_H : "0 0 " + W + " " + H
+      );
+    }
+    applyViewBox();   // settle the square layout before the first fix arrives
+    mobileMq.addEventListener("change", () => {
+      if (ready) updateNow();   // its breakpoint re-read handles the flip
+      else { follow = mobileMq.matches; applyViewBox(); }
+    });
+
     // ---- Orbital elements ---------------------------------------------------
     async function loadTle(sat: Tracked) {
       const key = "tle:" + sat.catnr;
@@ -400,32 +409,6 @@ import { SATELLITES } from "../components/satellites";
       return l;
     }
 
-    // ---- Sun position + eclipse --------------------------------------------
-    // Low-precision solar coordinates (Astronomical Almanac). Plenty for a
-    // sunlit/eclipsed flag, which only needs to be right to a few km.
-    function sunEci(date: Date) {
-      const jd = date.getTime() / 86400000 + 2440587.5;
-      const n = jd - 2451545.0;
-      const rad = Math.PI / 180;
-      const L = (280.46 + 0.9856474 * n) * rad;
-      const g = (357.528 + 0.9856003 * n) * rad;
-      const lambda = L + (1.915 * Math.sin(g) + 0.02 * Math.sin(2 * g)) * rad;
-      const eps = (23.439 - 0.0000004 * n) * rad;
-      const R = (1.00014 - 0.01671 * Math.cos(g) - 0.00014 * Math.cos(2 * g)) * AU;
-      return { x: R * Math.cos(lambda), y: R * Math.cos(eps) * Math.sin(lambda), z: R * Math.sin(eps) * Math.sin(lambda) };
-    }
-
-    // Cylindrical shadow: on the far side of Earth from the Sun, and within one
-    // Earth radius of the Earth-Sun axis.
-    function isEclipsed(pos: { x: number; y: number; z: number }, date: Date) {
-      const s = sunEci(date);
-      const mag = Math.hypot(s.x, s.y, s.z);
-      const ux = s.x / mag, uy = s.y / mag, uz = s.z / mag;
-      const along = pos.x * ux + pos.y * uy + pos.z * uz;
-      if (along > 0) return false;
-      return Math.hypot(pos.x - along * ux, pos.y - along * uy, pos.z - along * uz) < R_EARTH;
-    }
-
     function stateAt(sat: Tracked, date: Date) {
       if (!sat.satrec) return null;
       const pv = propagate(sat.satrec, date);
@@ -441,40 +424,76 @@ import { SATELLITES } from "../components/satellites";
         lon: degreesLong(gd.longitude),
         alt: gd.height,
         vel: Math.hypot(velocity.x, velocity.y, velocity.z) * 3600,
-        eclipsed: isEclipsed(position, date),
       };
     }
 
     // ---- Live markers + stats ------------------------------------------------
-    // Everything here is local maths, so this can run often and cheaply. The
-    // stats panel stays on the ISS: it's the subject of the page, and swapping
-    // the numbers on hover would make an aria-live region announce constantly.
+    // Everything here is local maths, so this can run often and cheaply. On
+    // desktop the stats panel stays on the ISS: it's the subject of the page,
+    // and swapping the numbers on hover would make an aria-live region announce
+    // constantly. On mobile the chips are a radio, so the stats follow the
+    // selected satellite — switching is deliberate there, not a hover flap.
     function updateNow() {
       const now = new Date();
+      // Re-read the breakpoint each tick: cheap, and self-healing anywhere the
+      // media-query change event gets deferred (e.g. hidden documents).
+      if (follow !== mobileMq.matches) {
+        follow = mobileMq.matches;
+        applyViewBox();
+        // Entering mobile: collapse to a single selected satellite. Leaving:
+        // hand the always-on track back to the hover state (usually hidden).
+        if (follow) {
+          const t = followTarget();
+          if (t) for (const s of sats) setVisible(s, s.id === t.id);
+        } else {
+          track!.setAttribute(
+            "class",
+            "iss-map__track" + (active ? " is-visible is-" + active.id : "")
+          );
+        }
+      }
+      // Recentre the follow window before positioning anything inside it.
+      let statsSat: Tracked | null = null;
+      if (follow) {
+        const target = followTarget();
+        const st = target && stateAt(target, now);
+        if (st) viewX = (((projX(st.lon) - FOLLOW_W / 2) % W) + W) % W;
+        applyViewBox();
+        statsSat = target;
+      }
       for (const sat of sats) {
         if (!sat.satrec || !sat.el) continue;
         const st = stateAt(sat, now);
         if (!st) continue;
+        let mx = projX(st.lon);
+        if (follow && mx < viewX) mx += W;   // appear on the wrapped world copy
         sat.el.setAttribute(
           "transform",
-          "translate(" + projX(st.lon).toFixed(1) + " " + projY(st.lat).toFixed(1) + ")"
+          "translate(" + mx.toFixed(1) + " " + projY(st.lat).toFixed(1) + ")"
         );
         sat.el.style.opacity = sat.visible ? "1" : "0";
         sat.el.style.pointerEvents = sat.visible ? "" : "none";
 
-        if (sat.primary) {
+        if (statsSat ? sat.id === statsSat.id : sat.primary) {
           if (elLat) elLat.textContent = fmtCoord(st.lat, "N", "S");
           if (elLng) elLng.textContent = fmtCoord(st.lon, "E", "W");
           if (elAlt) elAlt.textContent = Math.round(st.alt) + " km";
           if (elSpd) elSpd.textContent = Math.round(st.vel).toLocaleString("en-GB") + " km/h";
-          if (elSun) elSun.textContent = st.eclipsed ? "Eclipsed" : "Sunlit";
         }
       }
       if (!ready) {
         ready = true;
         if (mapFigure) mapFigure.classList.add("is-loaded");   // hide the loader on the first fix
       }
-      if (active) drawTrack(active, now);
+      // Mobile has no hover, so the selected satellite always shows its track.
+      if (follow) {
+        if (statsSat) {
+          track!.setAttribute("class", "iss-map__track is-visible is-" + statsSat.id);
+          drawTrack(statsSat, now);
+        }
+      } else if (active) {
+        drawTrack(active, now);
+      }
     }
 
     // ---- Orbital ground track ------------------------------------------------
@@ -569,6 +588,22 @@ import { SATELLITES } from "../components/satellites";
       if (samples.length < 2) return;
 
       const pts = unwrap(samples);
+
+      if (follow) {
+        // Window space: anchor the unwrapped series to the marker's on-screen x
+        // so the track passes exactly through the satellite, wrapped copy and
+        // all. No clipping needed — the viewBox crops the overrun.
+        let mx = projX(here.lon);
+        if (mx < viewX) mx += W;
+        const step = spanMin / (TRACK_SAMPLES - 1);
+        const i0 = Math.max(0, Math.min(pts.length - 1, Math.round(-startMin / step)));
+        const lonHere = here.lon + 360 * Math.round((pts[i0].lon - here.lon) / 360);
+        track!.setAttribute("d", buildTrackPath(
+          pts.map((p) => ({ x: mx + ((p.lon - lonHere) * W) / 360, y: projY(p.lat) }))
+        ));
+        return;
+      }
+
       // First multiple of 360 off -180 at or after the first sample: the
       // longitude that sits exactly on the map's left edge.
       const from = pts[0].lon + ((((-180 - pts[0].lon) % 360) + 360) % 360);
@@ -586,7 +621,8 @@ import { SATELLITES } from "../components/satellites";
         "class",
         "iss-map__track" + (sat ? " is-visible is-" + sat.id : "")
       );
-      if (sat) drawTrack(sat, new Date());
+      if (follow && ready) updateNow();   // recentre the window on the new target
+      else if (sat) drawTrack(sat, new Date());
     }
 
     function setVisible(sat: Tracked, on: boolean) {
@@ -599,6 +635,14 @@ import { SATELLITES } from "../components/satellites";
       if (!on && active && active.id === sat.id) setActive(null);
     }
 
+    // Mobile: the chips act as a radio — exactly one satellite is shown and
+    // followed, and tapping a chip switches the map to it.
+    function selectOnly(sat: Tracked) {
+      if (!sat.satrec) return;
+      for (const s of sats) setVisible(s, s.id === sat.id);
+      if (ready) updateNow();   // recentre the window on the new selection
+    }
+
     for (const sat of sats) {
       sat.el?.addEventListener("pointerenter", () => { if (!sticky) setActive(sat); });
       sat.el?.addEventListener("pointerleave", (e) => {
@@ -609,7 +653,10 @@ import { SATELLITES } from "../components/satellites";
         setActive(active && active.id === sat.id ? null : sat, true);
       });
 
-      sat.btn?.addEventListener("click", () => setVisible(sat, !sat.visible));
+      sat.btn?.addEventListener("click", () => {
+        if (follow) selectOnly(sat);
+        else setVisible(sat, !sat.visible);
+      });
       sat.btn?.addEventListener("pointerenter", () => { if (!sticky) setActive(sat); });
       sat.btn?.addEventListener("pointerleave", (e) => {
         if ((e as PointerEvent).pointerType !== "touch" && !sticky) setActive(null);
@@ -664,6 +711,11 @@ import { SATELLITES } from "../components/satellites";
         }
         clearError();
         for (const sat of sats) if (!sat.satrec) setVisible(sat, false);
+        // Mobile starts with just the primary satellite selected.
+        if (follow) {
+          const first = sats.find((s) => s.primary && s.satrec) || sats.find((s) => s.satrec);
+          if (first) for (const s of sats) setVisible(s, s.id === first.id);
+        }
         start();
       });
     }
