@@ -232,11 +232,13 @@ import { SATELLITES } from "../components/satellites";
   }
 
   .iss-stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
+    justify-content: space-between;
     gap: 24px;
-    /* Half the measure, so the stats cluster left instead of spanning the map. */
-    max-width: 50%;
+    /* Clusters left at half the measure, but never tighter than the values:
+       the row grows instead of wrapping and the gaps take up the slack. */
+    width: max-content;
+    min-width: 50%;
     margin: 0 0 var(--space-bind);
   }
 
@@ -261,6 +263,7 @@ import { SATELLITES } from "../components/satellites";
     font-size: clamp(1.4rem, 3.4vw, 2rem);
     line-height: 1;
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
 
   .iss-page__note {
@@ -277,7 +280,13 @@ import { SATELLITES } from "../components/satellites";
     .case-nav { top: 16px; left: 16px; }
     .iss-page { padding: 96px 20px var(--space-act); }
     .iss-page__map { margin-bottom: 32px; }
-    .iss-stats { max-width: none; }
+    /* Full width, tighter gaps and smaller numbers so all four fit unwrapped. */
+    .iss-stats {
+      width: auto;
+      min-width: 0;
+      gap: 12px;
+    }
+    .iss-stats dd { font-size: 1.1rem; }
     .sat-toggles { margin-bottom: 20px; gap: 8px; }
     .sat-toggle { padding: 6px 14px 6px 10px; }
   }
