@@ -440,10 +440,16 @@ import { SATELLITES } from "../components/satellites";
       if (follow !== mobileMq.matches) {
         follow = mobileMq.matches;
         applyViewBox();
-        // Entering mobile: collapse to a single selected satellite.
+        // Entering mobile: collapse to a single selected satellite. Leaving:
+        // hand the always-on track back to the hover state (usually hidden).
         if (follow) {
           const t = followTarget();
           if (t) for (const s of sats) setVisible(s, s.id === t.id);
+        } else {
+          track!.setAttribute(
+            "class",
+            "iss-map__track" + (active ? " is-visible is-" + active.id : "")
+          );
         }
       }
       // Recentre the follow window before positioning anything inside it.
@@ -479,7 +485,15 @@ import { SATELLITES } from "../components/satellites";
         ready = true;
         if (mapFigure) mapFigure.classList.add("is-loaded");   // hide the loader on the first fix
       }
-      if (active) drawTrack(active, now);
+      // Mobile has no hover, so the selected satellite always shows its track.
+      if (follow) {
+        if (statsSat) {
+          track!.setAttribute("class", "iss-map__track is-visible is-" + statsSat.id);
+          drawTrack(statsSat, now);
+        }
+      } else if (active) {
+        drawTrack(active, now);
+      }
     }
 
     // ---- Orbital ground track ------------------------------------------------
