@@ -149,6 +149,17 @@ const LAND = "M335 472L333 475L327 475L321 475L317 474L322 473L328 473L332 471ZM
     fill: var(--sat-color);
     opacity: 0.16;
   }
+  /* Pointer devices: the ISS rests as a quiet dot like the others, and the
+     glow only lights up on hover / while active. Touch keeps it always on. */
+  @media (hover: hover) {
+    .iss-marker__glow {
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .iss-marker.is-active .iss-marker__glow {
+      opacity: 0.16;
+    }
+  }
   .iss-marker__ring {
     fill: none;
     stroke: var(--sat-color);
@@ -167,9 +178,17 @@ const LAND = "M335 472L333 475L327 475L321 475L317 474L322 473L328 473L332 471ZM
     transform: scale(1);
     opacity: 0;
   }
-  /* The pulse only plays while the marker is hovered or tapped active. */
-  .iss-marker.is-active .iss-marker__pulse {
-    animation: iss-pulse 2.4s var(--ease-out, ease-out) infinite;
+  /* Pointer devices pulse on hover / while active; touch pulses permanently
+     (there is no hover, and the ISS is the followed subject). */
+  @media (hover: hover) {
+    .iss-marker.is-active .iss-marker__pulse {
+      animation: iss-pulse 2.4s var(--ease-out, ease-out) infinite;
+    }
+  }
+  @media (hover: none) {
+    .iss-marker__pulse {
+      animation: iss-pulse 2.4s var(--ease-out, ease-out) infinite;
+    }
   }
 
   @keyframes iss-pulse {
