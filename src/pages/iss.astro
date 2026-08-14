@@ -34,7 +34,6 @@ import { SATELLITES } from "../components/satellites";
           </span>
         </button>
       ))}
-      <p class="sat-toggles__hint">Hover a satellite to trace its orbit.</p>
     </div>
 
     <figure class="iss-page__map" id="iss-map">
@@ -233,20 +232,6 @@ import { SATELLITES } from "../components/satellites";
     font-weight: 300;
     opacity: 0.6;
     line-height: 1.2;
-  }
-
-  /* Pushed to the far end of the row, so it lands on the map's right edge. */
-  .sat-toggles__hint {
-    font-family: var(--font-sans);
-    font-size: var(--text-b4);
-    font-weight: 300;
-    opacity: 0.5;
-    margin: 0 0 0 auto;
-    text-align: right;
-  }
-  /* Pointer-only affordance: on touch there is nothing to hover. */
-  @media (hover: none) {
-    .sat-toggles__hint { display: none; }
   }
 
   .iss-stats {
