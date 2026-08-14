@@ -106,19 +106,16 @@ const LAND = "M335 472L333 475L327 475L321 475L317 474L322 473L328 473L332 471ZM
     opacity: 0.5;
   }
 
-  /* Per-satellite colours. The ISS keeps the site accent; the other two get
-     hues that hold up on both the light and dark page backgrounds. */
+  /* Per-satellite colours. The ISS keeps the site accent; Hubble gets a hue
+     that holds up on both the light and dark page backgrounds. */
   .iss-map__svg {
     --sat-iss: var(--color-secondary);
-    --sat-css: #1F7A6B;
     --sat-hst: #6A4FB6;
   }
   :global(.dark) .iss-map__svg {
-    --sat-css: #35C2A8;
     --sat-hst: #A98CFF;
   }
   .is-iss { --sat-color: var(--sat-iss); }
-  .is-css { --sat-color: var(--sat-css); }
   .is-hst { --sat-color: var(--sat-hst); }
 
   .iss-map__track {
@@ -169,6 +166,9 @@ const LAND = "M335 472L333 475L327 475L321 475L317 474L322 473L328 473L332 471ZM
     transform-origin: center;
     transform: scale(1);
     opacity: 0;
+  }
+  /* The pulse only plays while the marker is hovered or tapped active. */
+  .iss-marker.is-active .iss-marker__pulse {
     animation: iss-pulse 2.4s var(--ease-out, ease-out) infinite;
   }
 

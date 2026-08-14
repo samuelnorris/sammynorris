@@ -171,15 +171,12 @@ import { SATELLITES } from "../components/satellites";
     gap: 12px;
     margin: 0 0 24px;
     --sat-iss: var(--color-secondary);
-    --sat-css: #1F7A6B;
     --sat-hst: #6A4FB6;
   }
   :global(.dark) .sat-toggles {
-    --sat-css: #35C2A8;
     --sat-hst: #A98CFF;
   }
   .sat-toggle.is-iss { --sat-color: var(--sat-iss); }
-  .sat-toggle.is-css { --sat-color: var(--sat-css); }
   .sat-toggle.is-hst { --sat-color: var(--sat-hst); }
 
   .sat-toggle {
@@ -238,6 +235,8 @@ import { SATELLITES } from "../components/satellites";
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 24px;
+    /* Half the measure, so the stats cluster left instead of spanning the map. */
+    max-width: 50%;
     margin: 0 0 var(--space-bind);
   }
 
@@ -277,12 +276,8 @@ import { SATELLITES } from "../components/satellites";
   @media (max-width: 768px) {
     .case-nav { top: 16px; left: 16px; }
     .iss-page { padding: 96px 20px var(--space-act); }
-    /* Full-bleed follow-cam map: edge to edge, square, no card chrome. */
-    .iss-page__map {
-      margin: 0 -20px 32px;
-      border-radius: 0;
-      outline: none;
-    }
+    .iss-page__map { margin-bottom: 32px; }
+    .iss-stats { max-width: none; }
     .sat-toggles { margin-bottom: 20px; gap: 8px; }
     .sat-toggle { padding: 6px 14px 6px 10px; }
   }
