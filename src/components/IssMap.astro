@@ -48,8 +48,8 @@ const LAND = "M335 472L333 475L327 475L321 475L317 474L322 473L328 473L332 471ZM
        the client script via a data-sat attribute. -->
   <path id="sat-track" class="iss-map__track" aria-hidden="true" />
 
-  <!-- Live markers (positioned + revealed by the client script). The ISS keeps
-       the glow and pulse; the rest stay quieter so the page keeps its subject. -->
+  <!-- Live markers (positioned + revealed by the client script). Every marker
+       carries a glow and pulse, lit while it is hovered or selected. -->
   {SATELLITES.map((sat) => (
     <g
       id={`sat-marker-${sat.id}`}
@@ -58,8 +58,8 @@ const LAND = "M335 472L333 475L327 475L321 475L317 474L322 473L328 473L332 471ZM
       aria-hidden="true"
       style="opacity:0"
     >
-      {sat.primary && <circle class="iss-marker__glow" r="36" />}
-      {sat.primary && <circle class="iss-marker__pulse" r="9.6" />}
+      <circle class="iss-marker__glow" r={sat.primary ? 36 : 25} />
+      <circle class="iss-marker__pulse" r={sat.primary ? 9.6 : 6.6} />
       <circle class="iss-marker__ring" r={sat.primary ? 9.6 : 6.6} />
       <circle class="iss-marker__core" r={sat.primary ? 4.1 : 2.9} />
       <!-- Generous invisible target so hovering the marker isn't fiddly. -->
@@ -145,20 +145,18 @@ const LAND = "M335 472L333 475L327 475L321 475L317 474L322 473L328 473L332 471ZM
     cursor: pointer;
   }
 
+  /* Markers rest as quiet dots; the glow lights while hovered or active, and
+     on the mobile map the selected satellite keeps it on. */
   .iss-marker__glow {
     fill: var(--sat-color);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .iss-marker.is-active .iss-marker__glow {
     opacity: 0.16;
   }
-  /* Pointer devices: the ISS rests as a quiet dot like the others, and the
-     glow only lights up on hover / while active. Touch keeps it always on. */
-  @media (hover: hover) {
-    .iss-marker__glow {
-      opacity: 0;
-      transition: opacity 0.25s ease;
-    }
-    .iss-marker.is-active .iss-marker__glow {
-      opacity: 0.16;
-    }
+  @media (hover: none) and (max-width: 768px) {
+    .iss-marker__glow { opacity: 0.16; }
   }
   .iss-marker__ring {
     fill: none;
@@ -178,14 +176,12 @@ const LAND = "M335 472L333 475L327 475L321 475L317 474L322 473L328 473L332 471ZM
     transform: scale(1);
     opacity: 0;
   }
-  /* Pointer devices pulse on hover / while active; touch pulses permanently
-     (there is no hover, and the ISS is the followed subject). */
-  @media (hover: hover) {
-    .iss-marker.is-active .iss-marker__pulse {
-      animation: iss-pulse 2.4s var(--ease-out, ease-out) infinite;
-    }
+  /* The hovered / tapped marker pulses; on the mobile map the selected
+     satellite pulses without needing a tap. */
+  .iss-marker.is-active .iss-marker__pulse {
+    animation: iss-pulse 2.4s var(--ease-out, ease-out) infinite;
   }
-  @media (hover: none) {
+  @media (hover: none) and (max-width: 768px) {
     .iss-marker__pulse {
       animation: iss-pulse 2.4s var(--ease-out, ease-out) infinite;
     }

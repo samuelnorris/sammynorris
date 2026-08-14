@@ -387,9 +387,8 @@ import { SATELLITES } from "../components/satellites";
     }
     applyViewBox();   // settle the square layout before the first fix arrives
     mobileMq.addEventListener("change", () => {
-      follow = mobileMq.matches;
-      applyViewBox();
-      if (ready) updateNow();
+      if (ready) updateNow();   // its breakpoint re-read handles the flip
+      else { follow = mobileMq.matches; applyViewBox(); }
     });
 
     // ---- Orbital elements ---------------------------------------------------
@@ -429,20 +428,32 @@ import { SATELLITES } from "../components/satellites";
     }
 
     // ---- Live markers + stats ------------------------------------------------
-    // Everything here is local maths, so this can run often and cheaply. The
-    // stats panel stays on the ISS: it's the subject of the page, and swapping
-    // the numbers on hover would make an aria-live region announce constantly.
+    // Everything here is local maths, so this can run often and cheaply. On
+    // desktop the stats panel stays on the ISS: it's the subject of the page,
+    // and swapping the numbers on hover would make an aria-live region announce
+    // constantly. On mobile the chips are a radio, so the stats follow the
+    // selected satellite — switching is deliberate there, not a hover flap.
     function updateNow() {
       const now = new Date();
       // Re-read the breakpoint each tick: cheap, and self-healing anywhere the
       // media-query change event gets deferred (e.g. hidden documents).
-      if (follow !== mobileMq.matches) { follow = mobileMq.matches; applyViewBox(); }
+      if (follow !== mobileMq.matches) {
+        follow = mobileMq.matches;
+        applyViewBox();
+        // Entering mobile: collapse to a single selected satellite.
+        if (follow) {
+          const t = followTarget();
+          if (t) for (const s of sats) setVisible(s, s.id === t.id);
+        }
+      }
       // Recentre the follow window before positioning anything inside it.
+      let statsSat: Tracked | null = null;
       if (follow) {
         const target = followTarget();
         const st = target && stateAt(target, now);
         if (st) viewX = (((projX(st.lon) - FOLLOW_W / 2) % W) + W) % W;
         applyViewBox();
+        statsSat = target;
       }
       for (const sat of sats) {
         if (!sat.satrec || !sat.el) continue;
@@ -457,7 +468,7 @@ import { SATELLITES } from "../components/satellites";
         sat.el.style.opacity = sat.visible ? "1" : "0";
         sat.el.style.pointerEvents = sat.visible ? "" : "none";
 
-        if (sat.primary) {
+        if (statsSat ? sat.id === statsSat.id : sat.primary) {
           if (elLat) elLat.textContent = fmtCoord(st.lat, "N", "S");
           if (elLng) elLng.textContent = fmtCoord(st.lon, "E", "W");
           if (elAlt) elAlt.textContent = Math.round(st.alt) + " km";
@@ -610,6 +621,14 @@ import { SATELLITES } from "../components/satellites";
       if (!on && active && active.id === sat.id) setActive(null);
     }
 
+    // Mobile: the chips act as a radio — exactly one satellite is shown and
+    // followed, and tapping a chip switches the map to it.
+    function selectOnly(sat: Tracked) {
+      if (!sat.satrec) return;
+      for (const s of sats) setVisible(s, s.id === sat.id);
+      if (ready) updateNow();   // recentre the window on the new selection
+    }
+
     for (const sat of sats) {
       sat.el?.addEventListener("pointerenter", () => { if (!sticky) setActive(sat); });
       sat.el?.addEventListener("pointerleave", (e) => {
@@ -620,7 +639,10 @@ import { SATELLITES } from "../components/satellites";
         setActive(active && active.id === sat.id ? null : sat, true);
       });
 
-      sat.btn?.addEventListener("click", () => setVisible(sat, !sat.visible));
+      sat.btn?.addEventListener("click", () => {
+        if (follow) selectOnly(sat);
+        else setVisible(sat, !sat.visible);
+      });
       sat.btn?.addEventListener("pointerenter", () => { if (!sticky) setActive(sat); });
       sat.btn?.addEventListener("pointerleave", (e) => {
         if ((e as PointerEvent).pointerType !== "touch" && !sticky) setActive(null);
@@ -675,6 +697,11 @@ import { SATELLITES } from "../components/satellites";
         }
         clearError();
         for (const sat of sats) if (!sat.satrec) setVisible(sat, false);
+        // Mobile starts with just the primary satellite selected.
+        if (follow) {
+          const first = sats.find((s) => s.primary && s.satrec) || sats.find((s) => s.satrec);
+          if (first) for (const s of sats) setVisible(s, s.id === first.id);
+        }
         start();
       });
     }
