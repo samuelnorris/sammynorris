@@ -277,7 +277,12 @@ import { SATELLITES } from "../components/satellites";
   @media (max-width: 768px) {
     .case-nav { top: 16px; left: 16px; }
     .iss-page { padding: 96px 20px var(--space-act); }
-    .iss-page__map { margin-bottom: 32px; }
+    /* Full-bleed follow-cam map: edge to edge, square, no card chrome. */
+    .iss-page__map {
+      margin: 0 -20px 32px;
+      border-radius: 0;
+      outline: none;
+    }
     .sat-toggles { margin-bottom: 20px; gap: 8px; }
     .sat-toggle { padding: 6px 14px 6px 10px; }
   }
@@ -354,6 +359,35 @@ import { SATELLITES } from "../components/satellites";
     let sticky = false;      // set by tap/click, so touch users get a track too
     let ready = false;
 
+    // ---- Mobile follow-cam ---------------------------------------------------
+    // Below the mobile breakpoint the map becomes a square window on half the
+    // world, auto-panned to keep the followed satellite centred. Everything is
+    // done through the viewBox, so the art, markers and track scale together;
+    // the <use> world copy in IssMap fills the window past the antimeridian.
+    const FOLLOW_W = 500, FOLLOW_H = 500;
+    const mobileMq = window.matchMedia("(max-width: 768px)");
+    let follow = mobileMq.matches;
+    let viewX = (W - FOLLOW_W) / 2;      // window origin, recentred every tick
+
+    function followTarget() {
+      if (active && active.visible && active.satrec) return active;
+      const primary = sats.find((s) => s.primary);
+      if (primary && primary.visible && primary.satrec) return primary;
+      return sats.find((s) => s.visible && s.satrec) || null;
+    }
+    function applyViewBox() {
+      svg!.setAttribute(
+        "viewBox",
+        follow ? viewX.toFixed(1) + " 0 " + FOLLOW_W + " " + FOLLOW_H : "0 0 " + W + " " + H
+      );
+    }
+    applyViewBox();   // settle the square layout before the first fix arrives
+    mobileMq.addEventListener("change", () => {
+      follow = mobileMq.matches;
+      applyViewBox();
+      if (ready) updateNow();
+    });
+
     // ---- Orbital elements ---------------------------------------------------
     async function loadTle(sat: Tracked) {
       const key = "tle:" + sat.catnr;
@@ -396,13 +430,25 @@ import { SATELLITES } from "../components/satellites";
     // the numbers on hover would make an aria-live region announce constantly.
     function updateNow() {
       const now = new Date();
+      // Re-read the breakpoint each tick: cheap, and self-healing anywhere the
+      // media-query change event gets deferred (e.g. hidden documents).
+      if (follow !== mobileMq.matches) { follow = mobileMq.matches; applyViewBox(); }
+      // Recentre the follow window before positioning anything inside it.
+      if (follow) {
+        const target = followTarget();
+        const st = target && stateAt(target, now);
+        if (st) viewX = (((projX(st.lon) - FOLLOW_W / 2) % W) + W) % W;
+        applyViewBox();
+      }
       for (const sat of sats) {
         if (!sat.satrec || !sat.el) continue;
         const st = stateAt(sat, now);
         if (!st) continue;
+        let mx = projX(st.lon);
+        if (follow && mx < viewX) mx += W;   // appear on the wrapped world copy
         sat.el.setAttribute(
           "transform",
-          "translate(" + projX(st.lon).toFixed(1) + " " + projY(st.lat).toFixed(1) + ")"
+          "translate(" + mx.toFixed(1) + " " + projY(st.lat).toFixed(1) + ")"
         );
         sat.el.style.opacity = sat.visible ? "1" : "0";
         sat.el.style.pointerEvents = sat.visible ? "" : "none";
@@ -513,6 +559,22 @@ import { SATELLITES } from "../components/satellites";
       if (samples.length < 2) return;
 
       const pts = unwrap(samples);
+
+      if (follow) {
+        // Window space: anchor the unwrapped series to the marker's on-screen x
+        // so the track passes exactly through the satellite, wrapped copy and
+        // all. No clipping needed — the viewBox crops the overrun.
+        let mx = projX(here.lon);
+        if (mx < viewX) mx += W;
+        const step = spanMin / (TRACK_SAMPLES - 1);
+        const i0 = Math.max(0, Math.min(pts.length - 1, Math.round(-startMin / step)));
+        const lonHere = here.lon + 360 * Math.round((pts[i0].lon - here.lon) / 360);
+        track!.setAttribute("d", buildTrackPath(
+          pts.map((p) => ({ x: mx + ((p.lon - lonHere) * W) / 360, y: projY(p.lat) }))
+        ));
+        return;
+      }
+
       // First multiple of 360 off -180 at or after the first sample: the
       // longitude that sits exactly on the map's left edge.
       const from = pts[0].lon + ((((-180 - pts[0].lon) % 360) + 360) % 360);
@@ -530,7 +592,8 @@ import { SATELLITES } from "../components/satellites";
         "class",
         "iss-map__track" + (sat ? " is-visible is-" + sat.id : "")
       );
-      if (sat) drawTrack(sat, new Date());
+      if (follow && ready) updateNow();   // recentre the window on the new target
+      else if (sat) drawTrack(sat, new Date());
     }
 
     function setVisible(sat: Tracked, on: boolean) {

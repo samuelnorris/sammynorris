@@ -28,18 +28,21 @@ const LAND = "M335 472L333 475L327 475L321 475L317 474L322 473L328 473L332 471ZM
   aria-label="World map showing the current position of the International Space Station"
   preserveAspectRatio="xMidYMid meet"
 >
-  <!-- Latitude / longitude grid -->
-  <g class="iss-map__grid" aria-hidden="true">
-    {lonLines.map((x) => (
-      <line x1={x} y1="0" x2={x} y2={H} class:list={["iss-map__grid-line", { "is-axis": Math.round(x) === W / 2 }]} />
-    ))}
-    {latLines.map((y) => (
-      <line x1="0" y1={y} x2={W} y2={y} class:list={["iss-map__grid-line", { "is-axis": Math.round(y) === H / 2 }]} />
-    ))}
+  <!-- Base art (grid + continents), grouped so the mobile follow-cam can show
+       a second copy one world-width to the right when its window hangs past
+       the antimeridian. On desktop the copy sits outside the viewBox. -->
+  <g id="world-base" aria-hidden="true">
+    <g class="iss-map__grid">
+      {lonLines.map((x) => (
+        <line x1={x} y1="0" x2={x} y2={H} class:list={["iss-map__grid-line", { "is-axis": Math.round(x) === W / 2 }]} />
+      ))}
+      {latLines.map((y) => (
+        <line x1="0" y1={y} x2={W} y2={y} class:list={["iss-map__grid-line", { "is-axis": Math.round(y) === H / 2 }]} />
+      ))}
+    </g>
+    <path class="iss-map__land" d={LAND} />
   </g>
-
-  <!-- Continents -->
-  <path class="iss-map__land" d={LAND} aria-hidden="true" />
+  <use href="#world-base" x={W} aria-hidden="true" />
 
   <!-- Ground track for whichever satellite is hovered. One path, recoloured by
        the client script via a data-sat attribute. -->
