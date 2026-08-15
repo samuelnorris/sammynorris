@@ -7,7 +7,7 @@ import { SATELLITES } from "../components/satellites";
 
 <Layout
   title="Where are the satellites? - Sammy Norris"
-  description="A live tracker showing where the International Space Station, Tiangong and Hubble are right now, plotted on a world map with their altitude, speed and orbital ground tracks."
+  description="A live tracker showing where the International Space Station, Tiangong and Hubble are right now, plotted on a world map with their position, speed and orbital ground tracks."
 >
   <nav class="case-nav">
     <BackButton href="/" label="Back to home" />
@@ -52,10 +52,6 @@ import { SATELLITES } from "../components/satellites";
       <div class="iss-stats__item">
         <dt>Longitude</dt>
         <dd id="s-lng">&mdash;</dd>
-      </div>
-      <div class="iss-stats__item">
-        <dt>Altitude</dt>
-        <dd id="s-alt">&mdash;</dd>
       </div>
       <div class="iss-stats__item">
         <dt>Speed</dt>
@@ -280,13 +276,16 @@ import { SATELLITES } from "../components/satellites";
     .case-nav { top: 16px; left: 16px; }
     .iss-page { padding: 96px 20px var(--space-act); }
     .iss-page__map { margin-bottom: 32px; }
-    /* Full width, tighter gaps and smaller numbers so all four fit unwrapped. */
+    /* Packed left with a fixed 32px gap rather than spread across the width.
+       The widest values total ~10.4em in Instrument Serif, so 6.4vw is the
+       most the numbers can take and still clear both gaps at 320px. */
     .iss-stats {
       width: auto;
       min-width: 0;
-      gap: 12px;
+      justify-content: flex-start;
+      gap: 32px;
     }
-    .iss-stats dd { font-size: 1.1rem; }
+    .iss-stats dd { font-size: clamp(1.25rem, 6.4vw, 1.9rem); }
     .sat-toggles { margin-bottom: 20px; gap: 8px; }
     .sat-toggle { padding: 6px 14px 6px 10px; }
   }
@@ -317,7 +316,6 @@ import { SATELLITES } from "../components/satellites";
     const mapFigure = document.getElementById("iss-map");
     const elLat = document.getElementById("s-lat");
     const elLng = document.getElementById("s-lng");
-    const elAlt = document.getElementById("s-alt");
     const elSpd = document.getElementById("s-spd");
     const note = document.getElementById("iss-note");
     if (!svg || !track) return;
@@ -477,7 +475,6 @@ import { SATELLITES } from "../components/satellites";
         if (statsSat ? sat.id === statsSat.id : sat.primary) {
           if (elLat) elLat.textContent = fmtCoord(st.lat, "N", "S");
           if (elLng) elLng.textContent = fmtCoord(st.lon, "E", "W");
-          if (elAlt) elAlt.textContent = Math.round(st.alt) + " km";
           if (elSpd) elSpd.textContent = Math.round(st.vel).toLocaleString("en-GB") + " km/h";
         }
       }
