@@ -1,0 +1,155 @@
+// Regenerates src/components/land.ts — the world outline used by the ISS map.
+//
+// Run with: node scripts/build-land.mjs
+//
+// The map is a filled silhouette rather than an outline, so what matters is the
+// smoothness of the shape's edge. Natural Earth 110m (the previous source) put
+// its vertices roughly 9px apart once the 1000-unit viewBox is stretched across
+// a wide screen, which read as visible facets. 50m data at the tolerance below
+// lands nearer 3px, which is under the threshold where an edge stops looking
+// straight.
+//
+// Output is committed, so this only needs rerunning if the tolerances change.
+
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+// Pinned so a rerun produces the same file. Bump deliberately, not by accident.
+const SOURCE =
+  "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_50m_land.geojson";
+
+// The ISS map's viewBox. Longitude -180..180 maps to x 0..W, latitude 90..-90
+// to y 0..H — the same plate carrée projection the grid and marker use.
+const W = 1000;
+const H = 500;
+
+// Douglas-Peucker tolerance in viewBox units. At 0.6 the outline never strays
+// more than about a pixel from the true coast at full width.
+const TOLERANCE = 0.6;
+
+// Rings with a bounding box smaller than this are dropped: at map scale they
+// are a fraction of a pixel and only add weight.
+const MIN_BBOX = 1.5;
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const OUT = path.join(root, "src/components/land.ts");
+const CACHE = path.join(os.tmpdir(), "ne_50m_land.geojson");
+
+async function loadSource() {
+  if (fs.existsSync(CACHE)) {
+    console.log(`Using cached source at ${CACHE}`);
+    return JSON.parse(fs.readFileSync(CACHE, "utf8"));
+  }
+  console.log(`Downloading ${SOURCE}`);
+  const res = await fetch(SOURCE);
+  if (!res.ok) throw new Error(`Download failed: ${res.status} ${res.statusText}`);
+  const text = await res.text();
+  fs.writeFileSync(CACHE, text);
+  return JSON.parse(text);
+}
+
+const project = ([lon, lat]) => [((lon + 180) / 360) * W, ((90 - lat) / 180) * H];
+
+function perpendicularDistance(p, a, b) {
+  const dx = b[0] - a[0];
+  const dy = b[1] - a[1];
+  const lengthSquared = dx * dx + dy * dy;
+  if (lengthSquared === 0) return Math.hypot(p[0] - a[0], p[1] - a[1]);
+  let t = ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / lengthSquared;
+  t = Math.max(0, Math.min(1, t));
+  return Math.hypot(p[0] - (a[0] + t * dx), p[1] - (a[1] + t * dy));
+}
+
+// Iterative Douglas-Peucker: keep a vertex only where dropping it would move
+// the line further than the tolerance. Recursion would blow the stack on the
+// larger rings, hence the explicit stack.
+function simplify(points, tolerance) {
+  if (points.length < 3) return points;
+  const keep = new Uint8Array(points.length);
+  keep[0] = keep[points.length - 1] = 1;
+  const stack = [[0, points.length - 1]];
+  while (stack.length) {
+    const [start, end] = stack.pop();
+    let furthest = 0;
+    let index = -1;
+    for (let i = start + 1; i < end; i++) {
+      const distance = perpendicularDistance(points[i], points[start], points[end]);
+      if (distance > furthest) {
+        furthest = distance;
+        index = i;
+      }
+    }
+    if (furthest > tolerance && index > 0) {
+      keep[index] = 1;
+      stack.push([start, index], [index, end]);
+    }
+  }
+  return points.filter((_, i) => keep[i]);
+}
+
+const geojson = await loadSource();
+
+// Flatten every polygon and multipolygon down to a list of rings. Interior
+// rings (there is exactly one in this dataset) come through as their own
+// subpath; the fill-rule in IssMap.astro punches them out.
+const rings = [];
+for (const feature of geojson.features) {
+  const geometry = feature.geometry;
+  const polygons = geometry.type === "Polygon" ? [geometry.coordinates] : geometry.coordinates;
+  for (const polygon of polygons) for (const ring of polygon) rings.push(ring);
+}
+
+const round = (n) => Math.round(n * 10) / 10;
+const subpaths = [];
+let dropped = 0;
+let vertices = 0;
+
+for (const ring of rings) {
+  let points = ring.map(project);
+
+  const xs = points.map((p) => p[0]);
+  const ys = points.map((p) => p[1]);
+  const width = Math.max(...xs) - Math.min(...xs);
+  const height = Math.max(...ys) - Math.min(...ys);
+  if (width * height < MIN_BBOX) {
+    dropped++;
+    continue;
+  }
+
+  points = simplify(points, TOLERANCE);
+  if (points.length < 4) {
+    dropped++;
+    continue;
+  }
+
+  // Z closes the subpath, so the repeated final vertex is redundant.
+  const first = points[0];
+  const last = points[points.length - 1];
+  if (first[0] === last[0] && first[1] === last[1]) points.pop();
+
+  vertices += points.length;
+  subpaths.push("M" + points.map(([x, y]) => `${round(x)} ${round(y)}`).join("L") + "Z");
+}
+
+const d = subpaths.join("");
+
+const file = `// Generated by scripts/build-land.mjs — do not edit by hand.
+//
+// Natural Earth 1:50m land, projected to the ISS map's 1000x500 equirectangular
+// viewBox and simplified to a ${TOLERANCE}-unit tolerance. Drawn as a filled
+// silhouette, so interior rings rely on fill-rule: evenodd.
+//
+// ${subpaths.length} rings, ${vertices} vertices.
+
+export const LAND =
+  "${d}";
+`;
+
+fs.writeFileSync(OUT, file);
+
+console.log(
+  `Wrote ${path.relative(root, OUT)} — ${subpaths.length} rings kept, ${dropped} dropped, ` +
+    `${vertices} vertices, ${(d.length / 1024).toFixed(1)} KB of path data.`
+);
