@@ -36,6 +36,9 @@ const projects = [
           class="card"
           data-reveal
           data-cursor-label={project.read}
+          data-cuelume-hover="tick"
+          data-cuelume-press
+          data-cuelume-release
           style={`--delay: ${i * 0.08}s`}
         >
           <div class="card__image">
@@ -74,7 +77,7 @@ const projects = [
           delivery - collaborating with engineering, legal, and compliance teams.
         </p>
         <div class="about__ctas">
-          <a href="/about" class="about__cta" aria-label="More about me">
+          <a href="/about" class="about__cta" aria-label="More about me" data-cuelume-hover="tick" data-cuelume-press data-cuelume-release>
             <span class="about__cta-label">More about me</span>
             <span class="about__cta-icon">
               <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -82,7 +85,7 @@ const projects = [
               </svg>
             </span>
           </a>
-          <a href="/iss" class="about__cta" aria-label="Where is the ISS?">
+          <a href="/iss" class="about__cta" aria-label="Where is the ISS?" data-cuelume-hover="tick" data-cuelume-press data-cuelume-release>
             <span class="about__cta-label">Where is the ISS?</span>
             <span class="about__cta-icon">
               <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -99,7 +102,7 @@ const projects = [
   <section class="home-cta">
     <div class="footer__cta" data-reveal>
       <h2 class="footer__heading">Let&rsquo;s work together.</h2>
-      <a href="mailto:hello@sammynorris.com" class="footer__email">hello@sammynorris.com</a>
+      <a href="mailto:hello@sammynorris.com" class="footer__email" data-cuelume-hover="chime" data-cuelume-press="pulse">hello@sammynorris.com</a>
     </div>
   </section>
 

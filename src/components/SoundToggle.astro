@@ -1,0 +1,109 @@
+---
+interface Props {
+  delayed?: boolean;
+}
+const { delayed = false } = Astro.props;
+---
+
+<button
+  class:list={["sound-toggle", { "sound-toggle--delayed": delayed }]}
+  id="soundToggle"
+  aria-label="Mute interaction sounds"
+  aria-pressed="true"
+>
+  <svg class="sound-toggle__icon sound-toggle__icon--on" aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M11 5 6.5 9H3v6h3.5L11 19z" />
+    <path d="M15.5 9.5a3.5 3.5 0 0 1 0 5M18.5 7a7 7 0 0 1 0 10" />
+  </svg>
+  <svg class="sound-toggle__icon sound-toggle__icon--off" aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M11 5 6.5 9H3v6h3.5L11 19z" />
+    <path d="M16 10l4 4M20 10l-4 4" />
+  </svg>
+</button>
+
+<style>
+  /* Positioning lives on the .site-controls wrapper in Layout.astro. */
+  .sound-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-tertiary);
+    border-radius: 99px;
+    color: var(--color-primary);
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.3s ease, transform 0.45s var(--ease-spring);
+  }
+
+  .sound-toggle:hover {
+    border-color: var(--color-primary);
+  }
+
+  .sound-toggle:active {
+    transform: scale(0.96);
+    transition-duration: 0.1s;
+  }
+
+  .sound-toggle--delayed {
+    opacity: 0;
+    animation: soundToggleFadeIn 1.2s ease 3.9s forwards;
+  }
+
+  .sound-toggle__icon {
+    display: block;
+  }
+
+  /* Sound on (the default): speaker with waves. */
+  .sound-toggle__icon--off {
+    display: none;
+  }
+
+  /* Muted: the class is set before first paint in Layout, so the icon never
+     flashes the wrong way round on a page load. */
+  :global(.sound-off) .sound-toggle__icon--on {
+    display: none;
+  }
+  :global(.sound-off) .sound-toggle__icon--off {
+    display: block;
+  }
+
+  /* Muted: the icon drops back to the quiet tone, so a glance tells you the
+     site is silent without reading the label. (Not --color-secondary, which
+     is the orange accent — that would read as "on", loudly.) */
+  :global(.sound-off) .sound-toggle {
+    color: var(--color-tertiary);
+  }
+
+  @keyframes soundToggleFadeIn {
+    to { opacity: 1; }
+  }
+</style>
+
+<script>
+  import { cue, isSoundOn, setSoundOn } from "../scripts/sound";
+
+  const toggle = document.getElementById("soundToggle");
+  const html = document.documentElement;
+
+  function render(on: boolean) {
+    html.classList.toggle("sound-off", !on);
+    toggle?.setAttribute("aria-pressed", String(on));
+    toggle?.setAttribute(
+      "aria-label",
+      on ? "Mute interaction sounds" : "Unmute interaction sounds"
+    );
+  }
+
+  render(isSoundOn());
+
+  toggle?.addEventListener("click", () => {
+    const on = !isSoundOn();
+    setSoundOn(on);
+    render(on);
+    // Unmuting confirms itself out loud; muting stays silent, as asked.
+    if (on) cue("ready");
+  });
+</script>
