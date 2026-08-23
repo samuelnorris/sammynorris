@@ -1,6 +1,7 @@
 ---
 import Analytics from "@vercel/analytics/astro";
 import ThemeToggle from "../components/ThemeToggle.astro";
+import SoundToggle from "../components/SoundToggle.astro";
 // Self-hosted fonts (Fontsource): served same-origin from /_astro with
 // immutable caching — no Google round-trip, no visitor IPs to Google.
 import "@fontsource-variable/geist";
@@ -53,6 +54,12 @@ const personSchema = {
         // Dark is the default; only opt out when explicitly set to 'light'.
         if (theme !== 'light') {
           document.documentElement.classList.add('dark');
+        }
+
+        // Interaction sounds are on unless muted. Set before first paint so
+        // the speaker icon never flashes the wrong state.
+        if (localStorage.getItem('sound') === 'off') {
+          document.documentElement.classList.add('sound-off');
         }
 
         // Refresh should always start at the top of the page.
@@ -114,7 +121,7 @@ const personSchema = {
     )}
 
     <style is:global>
-      /* Holds the theme toggle, fixed top right. */
+      /* Holds the sound and theme toggles, fixed top right. */
       .site-controls {
         position: fixed;
         top: 24px;
@@ -129,6 +136,7 @@ const personSchema = {
   <body class="page-enter">
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <div class="site-controls">
+      <SoundToggle delayed={isHomepage} />
       <ThemeToggle delayed={isHomepage} />
     </div>
     <main id="main-content" tabindex="-1">
@@ -171,6 +179,9 @@ const personSchema = {
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         e.preventDefault();
         var back = link.hasAttribute('data-nav-back');
+        // Sound the page turn here, on the outgoing document: the next one
+        // loads without a gesture of its own, so audio would be blocked there.
+        document.dispatchEvent(new CustomEvent('sn:navigate'));
         if (back) {
           try { sessionStorage.setItem('sn-nav-dir', 'back'); } catch (err) {}
         }

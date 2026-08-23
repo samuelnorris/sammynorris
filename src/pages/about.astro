@@ -55,10 +55,10 @@ import Footer from "../components/Footer.astro";
            decorative scroll chevron lives beside it in the scroll row.
            display:contents means it doesn't affect the flex layout. -->
       <div class="timeline__tablist" role="tablist" aria-label="Career timeline">
-        <button class="timeline__pill active" type="button" role="tab" id="tl-tab-0" aria-controls="tl-panel-0" aria-selected="true" tabindex="0" data-tab="0">Present - 2021</button>
-        <button class="timeline__pill" type="button" role="tab" id="tl-tab-1" aria-controls="tl-panel-1" aria-selected="false" tabindex="-1" data-tab="1">2021 - 2020</button>
-        <button class="timeline__pill" type="button" role="tab" id="tl-tab-2" aria-controls="tl-panel-2" aria-selected="false" tabindex="-1" data-tab="2">2020 - 2018</button>
-        <button class="timeline__pill" type="button" role="tab" id="tl-tab-3" aria-controls="tl-panel-3" aria-selected="false" tabindex="-1" data-tab="3">2018 - 2015</button>
+        <button class="timeline__pill active" type="button" role="tab" data-cuelume-hover="tick" data-cuelume-toggle id="tl-tab-0" aria-controls="tl-panel-0" aria-selected="true" tabindex="0" data-tab="0">Present - 2021</button>
+        <button class="timeline__pill" type="button" role="tab" data-cuelume-hover="tick" data-cuelume-toggle id="tl-tab-1" aria-controls="tl-panel-1" aria-selected="false" tabindex="-1" data-tab="1">2021 - 2020</button>
+        <button class="timeline__pill" type="button" role="tab" data-cuelume-hover="tick" data-cuelume-toggle id="tl-tab-2" aria-controls="tl-panel-2" aria-selected="false" tabindex="-1" data-tab="2">2020 - 2018</button>
+        <button class="timeline__pill" type="button" role="tab" data-cuelume-hover="tick" data-cuelume-toggle id="tl-tab-3" aria-controls="tl-panel-3" aria-selected="false" tabindex="-1" data-tab="3">2018 - 2015</button>
       </div>
       <span class="timeline__chevron" aria-hidden="true">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -95,7 +95,7 @@ import Footer from "../components/Footer.astro";
     <h2 class="contact__h2">
       Want to chat? <em>Drop me a line.</em>
     </h2>
-    <a href="mailto:hello@sammynorris.com" class="contact__cta" aria-label="Email Sammy">
+    <a href="mailto:hello@sammynorris.com" class="contact__cta" aria-label="Email Sammy" data-cuelume-hover="chime" data-cuelume-press="pulse">
       <span class="contact__cta-label">hello@sammynorris.com</span>
       <span class="contact__cta-icon">
         <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">

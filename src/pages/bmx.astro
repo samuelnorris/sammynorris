@@ -37,7 +37,7 @@ import BmxBike from "../components/BmxBike.astro";
       </div>
 
       <!-- Touch backflip button -->
-      <button class="flip-btn" id="flip-btn" type="button" aria-label="Backflip">
+      <button class="flip-btn" id="flip-btn" type="button" aria-label="Backflip" data-cuelume-press="pulse">
         <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M3.5 12a8.5 8.5 0 1 1 2.2 5.7" />
           <path d="M3.5 17.5v-5h5" />
@@ -61,7 +61,7 @@ import BmxBike from "../components/BmxBike.astro";
             <li><span class="hint">Flip</span> tap the <span class="ico">↻</span> button to backflip - even just before you launch</li>
             <li><span class="hint">Auto-land</span> the bike always drops back in the right way up</li>
           </ul>
-          <button class="overlay__btn" id="btn-start" type="button">Drop in</button>
+          <button class="overlay__btn" id="btn-start" type="button" data-cuelume-hover="tick">Drop in</button>
         </div>
       </div>
 
@@ -73,15 +73,15 @@ import BmxBike from "../components/BmxBike.astro";
           <p class="overlay__best" id="end-best">Best: 0</p>
           <form class="score-save" id="score-save">
             <input class="score-save__input" id="name-input" type="text" maxlength="14" placeholder="Your name" autocomplete="off" aria-label="Your name for the scoreboard" />
-            <button class="score-save__btn" id="btn-save" type="submit">Save score</button>
+            <button class="score-save__btn" id="btn-save" type="submit" data-cuelume-hover="tick">Save score</button>
           </form>
           <p class="score-saved" id="score-saved" hidden>Saved to the scoreboard&nbsp;✓</p>
-          <button class="overlay__btn" id="btn-restart" type="button">Ride again</button>
+          <button class="overlay__btn" id="btn-restart" type="button" data-cuelume-hover="tick">Ride again</button>
         </div>
       </div>
     </div>
 
-    <button class="board-btn" id="board-btn" type="button">
+    <button class="board-btn" id="board-btn" type="button" data-cuelume-hover="tick">
       <span aria-hidden="true">🏆</span> Scoreboard
     </button>
     </div>
@@ -89,7 +89,7 @@ import BmxBike from "../components/BmxBike.astro";
     <!-- Scoreboard popup -->
     <div class="board-modal board-modal--hidden" id="board-modal" role="dialog" aria-modal="true" aria-label="Scoreboard">
       <div class="board-modal__card">
-        <button class="board-modal__close" id="board-close" type="button" aria-label="Close scoreboard">&times;</button>
+        <button class="board-modal__close" id="board-close" type="button" aria-label="Close scoreboard" data-cuelume-hover="tick">&times;</button>
         <h2 class="board-modal__title">Scoreboard</h2>
         <ol class="board-list" id="board-list"></ol>
         <p class="board-empty" id="board-empty" hidden>No scores yet - drop in and set one.</p>
@@ -570,6 +570,10 @@ import BmxBike from "../components/BmxBike.astro";
 </style>
 
 <script>
+  // Game audio goes through the site's shared sound module, so muting with
+  // the speaker control silences the ramp along with everything else.
+  import { cue } from "../scripts/sound";
+
   // All these elements are static markup in this same component, so the
   // assertion is safe; the big runtime guard below is kept as a belt-and-braces.
   const $el = <T extends HTMLElement = HTMLElement>(id: string) =>
@@ -716,6 +720,8 @@ import BmxBike from "../components/BmxBike.astro";
     }
 
     function launch() {
+      // Air time: a breath, kept quiet because it happens every few seconds.
+      cue("whisper", { volume: 0.28 });
       s.airborne = true;
       const cos = Math.cos(s.phi), sin = Math.sin(s.phi);
       const p = ridePos(s.phi);
@@ -753,7 +759,10 @@ import BmxBike from "../components/BmxBike.astro";
           ? (Math.abs(flips) > 1 ? Math.abs(flips) + "× " : "") + (flips < 0 ? "Backflip" : "Frontflip")
           : deg + "°";
         showPop(label + "  +" + pts);
+        cue("sparkle");                        // a trick landed: twinkle
         s.combo = Math.min(s.combo + 1, 9);
+      } else {
+        cue("press", { volume: 0.3 });         // plain landing: tyres down
       }
     }
 
@@ -851,6 +860,7 @@ import BmxBike from "../components/BmxBike.astro";
 
     // ---- Flow ----
     function startRun() {
+      cue("ready");
       reset(true);
       applyKeys();   // honour a direction key that's already held down
       s.mode = "play";
@@ -859,6 +869,7 @@ import BmxBike from "../components/BmxBike.astro";
       ovEnd.classList.add("overlay--hidden");
     }
     function endRun() {
+      cue("droplet");                          // time's up: the run drops away
       s.mode = "over";
       s.input = 0;
       stage.classList.remove("playing");
@@ -909,6 +920,7 @@ import BmxBike from "../components/BmxBike.astro";
           : "Couldn't reach the scoreboard - try again.";
         scoreSaved.hidden = false;
       }
+      cue(ok ? "success" : "error");
       if (ok) scoreSaveForm.hidden = true;
       else if (btnSave) { btnSave.disabled = false; btnSave.textContent = "Save score"; }
     }
@@ -952,6 +964,7 @@ import BmxBike from "../components/BmxBike.astro";
     let resumeMode: "play" | null = null;
     let boardReturnFocus: Element | null = null;
     function openBoard() {
+      cue("bloom");
       renderBoard();
       boardModal?.classList.remove("board-modal--hidden");
       if (s.mode === "play") { resumeMode = "play"; s.mode = "paused"; }  // pause a live run
@@ -961,6 +974,7 @@ import BmxBike from "../components/BmxBike.astro";
       boardClose?.focus();
     }
     function closeBoard() {
+      cue("droplet");
       boardModal?.classList.add("board-modal--hidden");
       if (resumeMode === "play") { s.mode = "play"; resumeMode = null; }
       if (boardReturnFocus instanceof HTMLElement) boardReturnFocus.focus();
