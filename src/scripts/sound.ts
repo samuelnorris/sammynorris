@@ -2,10 +2,13 @@
 // cues synthesised live with Web Audio, so there are no audio files to
 // download and nothing to wait for.
 //
-// Sound is on by default and muted with the speaker control beside the theme
-// toggle; the choice is remembered in localStorage. Browsers keep audio
-// silent until the visitor's first gesture, so nobody is met by noise on
-// arrival — the first thing they hear is the click they made themselves.
+// Sound is on by default — except for visitors who have asked their system to
+// reduce motion, who start muted, since the same "less, please" applies to
+// noise. Either way the speaker control beside the theme toggle switches it,
+// and the choice is remembered in localStorage, overriding the default in both
+// directions. Browsers keep audio silent until the visitor's first gesture, so
+// nobody is met by noise on arrival — the first thing they hear is the click
+// they made themselves.
 import { bind, play, setEnabled, setVolume, type SoundName } from "cuelume";
 
 const STORAGE_KEY = "sound";
@@ -14,13 +17,28 @@ const VOLUME = 0.55; // full scale is louder than a portfolio ever needs
 /** Mirrors the stored preference so the toggle can render the right state. */
 let on = true;
 
-function readPreference(): boolean {
+/**
+ * The default for a visitor who has never touched the toggle: on, unless the
+ * system asks for reduced motion. Kept in step with the pre-paint script in
+ * Layout.astro, which decides the same thing before this module loads.
+ */
+function defaultPreference(): boolean {
   try {
-    // On unless explicitly muted, so a first-time visitor hears the site.
-    return localStorage.getItem(STORAGE_KEY) !== "off";
+    return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   } catch {
     return true;
   }
+}
+
+function readPreference(): boolean {
+  try {
+    // An explicit choice wins in both directions, so someone on reduced motion
+    // can still turn the sound on and have it stay on.
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored === "on") return true;
+    if (stored === "off") return false;
+  } catch {}
+  return defaultPreference();
 }
 
 /**

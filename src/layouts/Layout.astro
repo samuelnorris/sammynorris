@@ -56,9 +56,13 @@ const personSchema = {
           document.documentElement.classList.add('dark');
         }
 
-        // Interaction sounds are on unless muted. Set before first paint so
-        // the speaker icon never flashes the wrong state.
-        if (localStorage.getItem('sound') === 'off') {
+        // Interaction sounds are on by default, but start muted for anyone on
+        // reduced motion — a stored choice overrides that either way. Set
+        // before first paint so the speaker icon never flashes the wrong
+        // state. Mirrors readPreference() in scripts/sound.ts.
+        var sound = localStorage.getItem('sound');
+        var quiet = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (sound === 'off' || (sound !== 'on' && quiet)) {
           document.documentElement.classList.add('sound-off');
         }
 
