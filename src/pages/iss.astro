@@ -308,10 +308,30 @@ import { SATELLITES } from "../components/satellites";
   (function () {
     const W = 1000, H = 500;
     const SIDEREAL_DAY = 1436.068;               // minutes
-    const TLE_URL = "https://celestrak.org/NORAD/elements/gp.php?FORMAT=tle&CATNR=";
     const TLE_TTL = 6 * 60 * 60 * 1000;          // TLEs drift slowly; don't refetch often
     const TLE_RETRY = 30 * 1000;                 // pause between attempts when nothing loads
     const TLE_TIMEOUT = 10 * 1000;               // cap a hung TLE request
+
+    // Two ways to the same elements. CelesTrak publishes them; the TLE API
+    // mirrors CelesTrak's data. CelesTrak refuses or silently drops connections
+    // from whole networks from time to time, which used to leave the map stuck
+    // on "Locating the satellites", so both are asked at once and the first
+    // usable answer wins — the page keeps working while either one is down.
+    const TLE_SOURCES = [
+      {
+        url: (catnr: number) =>
+          "https://celestrak.org/NORAD/elements/gp.php?FORMAT=tle&CATNR=" + catnr,
+        // Three lines: name, then the two element lines.
+        parse: (body: string) => body.trim().split("\n").map((l) => l.trim()).slice(1, 3),
+      },
+      {
+        url: (catnr: number) => "https://tle.ivanstanojevic.me/api/tle/" + catnr,
+        parse: (body: string) => {
+          const j = JSON.parse(body);
+          return [j.line1, j.line2];
+        },
+      },
+    ];
 
     const svg = document.querySelector(".iss-map__svg") as SVGSVGElement | null;
     const track = document.getElementById("sat-track");
@@ -399,14 +419,30 @@ import { SATELLITES } from "../components/satellites";
         if (cached && Date.now() - cached.t < TLE_TTL) return cached.l as string[];
       } catch { /* private mode, corrupt entry — just refetch */ }
 
-      // `?.`: browsers without AbortSignal.timeout simply get no timeout.
-      const res = await fetch(TLE_URL + sat.catnr, { signal: AbortSignal.timeout?.(TLE_TIMEOUT) });
-      if (!res.ok) throw new Error("TLE " + res.status);
-      const lines = (await res.text()).trim().split("\n").map((l) => l.trim());
-      if (lines.length < 3 || lines[1][0] !== "1" || lines[2][0] !== "2") throw new Error("bad TLE");
-      const l = [lines[1], lines[2]];
-      try { localStorage.setItem(key, JSON.stringify({ t: Date.now(), l })); } catch { /* ignore */ }
-      return l;
+      // One controller for the whole race: it caps a hung request, and aborts
+      // whichever source is still in flight once another has answered.
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), TLE_TIMEOUT);
+      try {
+        // Promise.any resolves on the first source that returns a usable pair,
+        // and rejects only if every one of them fails.
+        const l = await Promise.any(
+          TLE_SOURCES.map(async (src) => {
+            const res = await fetch(src.url(sat.catnr), { signal: ctrl.signal });
+            if (!res.ok) throw new Error("TLE " + res.status);
+            const pair = src.parse(await res.text());
+            if (pair.length !== 2 || pair[0]?.[0] !== "1" || pair[1]?.[0] !== "2") {
+              throw new Error("bad TLE");
+            }
+            return pair as string[];
+          })
+        );
+        try { localStorage.setItem(key, JSON.stringify({ t: Date.now(), l })); } catch { /* ignore */ }
+        return l;
+      } finally {
+        clearTimeout(timer);
+        ctrl.abort();
+      }
     }
 
     function stateAt(sat: Tracked, date: Date) {
