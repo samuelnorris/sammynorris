@@ -84,14 +84,6 @@ import { SATELLITES } from "../components/satellites";
       </button>
     </figure>
 
-    <!-- The numbers live in the bubble now, so this says how to get at them.
-         Which line shows is decided in CSS, at the same breakpoint the map
-         uses to switch to its follow-cam. -->
-    <p class="iss-hint">
-      <span class="iss-hint__pointer">Hover a satellite for its speed, altitude and position.</span>
-      <span class="iss-hint__touch">Tap a satellite for its speed, altitude and position.</span>
-    </p>
-
     <!-- The bubble is announced through here instead of directly: its numbers
          retick every second, which a live region would read out non-stop. This
          is written once, when a satellite is opened. -->
@@ -143,11 +135,9 @@ import { SATELLITES } from "../components/satellites";
     color: var(--color-secondary);
   }
 
-  /* 32px down to the stats — set here rather than via --space-bind so the
-     map-to-stats gap can be tuned on its own. */
   .iss-page__map {
     position: relative;
-    margin: 0 0 32px;
+    margin: 0 0 var(--space-bind);
     border-radius: 18px;
     overflow: hidden;
     background:
@@ -253,12 +243,6 @@ import { SATELLITES } from "../components/satellites";
     visibility: hidden;
     transition: opacity 0.5s var(--ease-out), backdrop-filter 0.5s var(--ease-out),
                 visibility 0s linear 0.5s;
-  }
-
-  /* The reminder under the map only earns its place once the intro — which
-     says the same thing, at greater length — has gone. */
-  .iss-page__map:not(.is-open) ~ .iss-hint {
-    opacity: 0;
   }
 
   /* The readout: a speech bubble above the satellite, with a tail pointing
@@ -455,24 +439,9 @@ import { SATELLITES } from "../components/satellites";
     line-height: 1.2;
   }
 
-  /* Sits where the stats used to, in the same b3 as the note below it but a
-     touch more present, since it's an instruction rather than small print. */
-  .iss-hint {
-    font-family: var(--font-sans);
-    font-size: var(--text-b3);
-    font-weight: 300;
-    letter-spacing: -0.01em;
-    opacity: 0.7;
-    margin: 0 0 var(--space-bind);
-    /* Arrives just behind the intro's fade, rather than with it. */
-    transition: opacity 0.5s var(--ease-out) 0.15s;
-  }
-  /* Only one of the two ever shows: hover on pointer devices, tap at the
-     breakpoint where the map becomes a follow-cam. */
-  .iss-hint__touch { display: none; }
+  /* The intro's instruction swaps to tap at the breakpoint where the map
+     becomes a follow-cam. */
   @media (max-width: 768px) {
-    .iss-hint__pointer { display: none; }
-    .iss-hint__touch { display: inline; }
     .iss-intro__pointer { display: none; }
     .iss-intro__touch { display: inline; }
   }
@@ -498,7 +467,6 @@ import { SATELLITES } from "../components/satellites";
   @media (max-width: 768px) {
     .case-nav { top: 16px; left: 16px; }
     .iss-page { padding: 96px 20px var(--space-act); }
-    .iss-page__map { margin-bottom: 32px; }
     .sat-toggles { margin-bottom: 20px; gap: 8px; }
     .sat-toggle { padding: 6px 14px 6px 10px; }
   }
