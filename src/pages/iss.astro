@@ -44,22 +44,58 @@ import { SATELLITES } from "../components/satellites";
         <span class="iss-loader__spinner" aria-hidden="true"></span>
         <span class="iss-loader__text">Locating the satellites&hellip;</span>
       </div>
+      <!-- The readout. Parked until a satellite is hovered or tapped, then
+           positioned above its marker by the client script and kept there as
+           the dot moves. Hidden from assistive tech, which is served by the
+           status line further down instead. -->
+      <div class="iss-bubble" id="iss-bubble" aria-hidden="true">
+        <div class="iss-bubble__box">
+          <p class="iss-bubble__name" id="b-name">ISS</p>
+          <dl class="iss-bubble__stats">
+            <div class="iss-bubble__row">
+              <dt>Speed</dt>
+              <dd id="b-spd">&mdash;</dd>
+            </div>
+            <div class="iss-bubble__row">
+              <dt>Altitude</dt>
+              <dd id="b-alt">&mdash;</dd>
+            </div>
+            <div class="iss-bubble__row">
+              <dt>Latitude</dt>
+              <dd id="b-lat">&mdash;</dd>
+            </div>
+            <div class="iss-bubble__row">
+              <dt>Longitude</dt>
+              <dd id="b-lng">&mdash;</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+      <!-- Opening state, over everything else in the figure. A button rather
+           than a div so it can be dismissed from the keyboard as well as by
+           clicking. The map is already live underneath it — this covers the
+           map, it doesn't hold it back. -->
+      <button type="button" class="iss-intro" id="iss-intro">
+        <span class="iss-intro__title">Open the map</span>
+        <span class="iss-intro__sub">
+          <span class="iss-intro__pointer">Then hover a satellite for its speed, altitude and position.</span>
+          <span class="iss-intro__touch">Then tap a satellite for its speed, altitude and position.</span>
+        </span>
+      </button>
     </figure>
 
-    <dl class="iss-stats" aria-live="polite">
-      <div class="iss-stats__item">
-        <dt>Latitude</dt>
-        <dd id="s-lat">&mdash;</dd>
-      </div>
-      <div class="iss-stats__item">
-        <dt>Longitude</dt>
-        <dd id="s-lng">&mdash;</dd>
-      </div>
-      <div class="iss-stats__item">
-        <dt>Speed</dt>
-        <dd id="s-spd">&mdash;</dd>
-      </div>
-    </dl>
+    <!-- The numbers live in the bubble now, so this says how to get at them.
+         Which line shows is decided in CSS, at the same breakpoint the map
+         uses to switch to its follow-cam. -->
+    <p class="iss-hint">
+      <span class="iss-hint__pointer">Hover a satellite for its speed, altitude and position.</span>
+      <span class="iss-hint__touch">Tap a satellite for its speed, altitude and position.</span>
+    </p>
+
+    <!-- The bubble is announced through here instead of directly: its numbers
+         retick every second, which a live region would read out non-stop. This
+         is written once, when a satellite is opened. -->
+    <p class="visually-hidden" role="status" id="b-sr"></p>
 
     <p class="iss-page__note" id="iss-note">
       Orbits are propagated in your browser from public
@@ -161,6 +197,196 @@ import { SATELLITES } from "../components/satellites";
     .iss-loader__spinner { animation: none; }
   }
 
+  /* Opening state: the map sits behind glass until it's opened. It covers the
+     loader as well, so the sequence reads as one thing — open the map, and
+     either it's there or it's still finding the satellites. */
+  .iss-intro {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 24px;
+    border: 0;
+    /* Enough to mute the map, not enough to hide it — the world showing
+       through is the reason to open it. */
+    background: color-mix(in srgb, var(--color-bg) 46%, transparent);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    color: var(--color-primary);
+    cursor: pointer;
+    text-align: center;
+    transition: opacity 0.5s var(--ease-out), backdrop-filter 0.5s var(--ease-out);
+  }
+  /* Lifts a little on approach, so it reads as the thing you press. */
+  .iss-intro:hover,
+  .iss-intro:focus-visible {
+    background: color-mix(in srgb, var(--color-bg) 36%, transparent);
+  }
+
+  .iss-intro__title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.75rem, 3.4vw, 2.75rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .iss-intro__sub {
+    font-family: var(--font-sans);
+    font-size: var(--text-b3);
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    opacity: 0.65;
+    max-width: 34ch;
+  }
+  .iss-intro__touch { display: none; }
+
+  /* Dismissed: faded out and taken out of the tab order. */
+  .iss-page__map.is-open .iss-intro {
+    opacity: 0;
+    backdrop-filter: blur(0);
+    -webkit-backdrop-filter: blur(0);
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity 0.5s var(--ease-out), backdrop-filter 0.5s var(--ease-out),
+                visibility 0s linear 0.5s;
+  }
+
+  /* The reminder under the map only earns its place once the intro — which
+     says the same thing, at greater length — has gone. */
+  .iss-page__map:not(.is-open) ~ .iss-hint {
+    opacity: 0;
+  }
+
+  /* The readout: a speech bubble above the satellite, with a tail pointing
+     back down at the dot. Opened by hovering with a mouse, or by tapping the
+     dot on touch.
+
+     The script sets left/top from the marker's own box and --tail-x for where
+     the tail meets it, so a bubble pushed away from the map edge still points
+     at the right dot. */
+  .iss-bubble {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    /* Anchored by its bottom centre: the point the tail comes out of. */
+    transform: translate(-50%, -100%);
+    /* Must never take the hover off the marker underneath it. */
+    pointer-events: none;
+    --sat-iss: var(--color-secondary);
+    --sat-hst: #6A4FB6;
+  }
+  :global(.dark) .iss-bubble {
+    --sat-hst: #A98CFF;
+  }
+  .iss-bubble.is-iss { --sat-color: var(--sat-iss); }
+  .iss-bubble.is-hst { --sat-color: var(--sat-hst); }
+  /* Flipped under the dot when there isn't room above — the map is clipped to
+     its rounded corners, so a bubble that overran the top would be cut off. */
+  .iss-bubble.is-below {
+    transform: translate(-50%, 0);
+  }
+
+  .iss-bubble__box {
+    position: relative;
+    min-width: 196px;
+    padding: 11px 14px 12px;
+    background: var(--color-card-bg);
+    border: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px -14px rgba(0, 0, 0, 0.5);
+    /* Grows out of the tail rather than its own middle, so it reads as speech
+       coming from the dot. */
+    transform-origin: var(--tail-x, 50%) 100%;
+    transform: scale(0.94);
+    opacity: 0;
+    transition: transform 0.34s var(--ease-pop), opacity 0.16s ease;
+  }
+  .iss-bubble.is-below .iss-bubble__box {
+    transform-origin: var(--tail-x, 50%) 0;
+  }
+  .iss-bubble.is-open .iss-bubble__box {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  /* The tail: a square rotated onto its corner, showing the two borders that
+     continue the box's outline. */
+  .iss-bubble__box::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: var(--tail-x, 50%);
+    width: 10px;
+    height: 10px;
+    margin-left: -5px;
+    background: var(--color-card-bg);
+    border-right: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+    border-bottom-right-radius: 3px;
+    transform: rotate(45deg);
+  }
+  .iss-bubble.is-below .iss-bubble__box::after {
+    bottom: auto;
+    top: -5px;
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+    border-top: 1px solid color-mix(in srgb, var(--color-primary) 12%, transparent);
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 3px;
+  }
+
+  /* Named in its own colour, tying the bubble to the chip and the marker. */
+  .iss-bubble__name {
+    font-family: var(--font-sans);
+    font-size: var(--text-b3);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--sat-color);
+    margin: 0 0 9px;
+  }
+
+  .iss-bubble__stats {
+    display: grid;
+    gap: 5px;
+  }
+  /* Label left, value right: at this size a stacked pair would make the bubble
+     twice as tall for no more information. */
+  .iss-bubble__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .iss-bubble__row dt {
+    font-family: var(--font-sans);
+    font-size: var(--text-b4);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    opacity: 0.55;
+  }
+  .iss-bubble__row dd {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: var(--text-b3);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .iss-bubble__box,
+    .iss-bubble.is-open .iss-bubble__box {
+      transform: none;
+      transition: opacity 0.16s ease;
+    }
+  }
   /* Satellite toggles. Colours mirror the marker colours in IssMap.astro. */
   .sat-toggles {
     display: flex;
@@ -229,39 +455,34 @@ import { SATELLITES } from "../components/satellites";
     line-height: 1.2;
   }
 
-  .iss-stats {
-    display: flex;
-    justify-content: space-between;
-    gap: 24px;
-    /* Clusters left at half the measure, but never tighter than the values:
-       the row grows instead of wrapping and the gaps take up the slack. */
-    width: max-content;
-    min-width: 50%;
-    margin: 0 0 var(--space-bind);
-  }
-
-  .iss-stats__item {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  /* b3 labels (matches the .b3 utility), kept muted. */
-  .iss-stats dt {
+  /* Sits where the stats used to, in the same b3 as the note below it but a
+     touch more present, since it's an instruction rather than small print. */
+  .iss-hint {
     font-family: var(--font-sans);
     font-size: var(--text-b3);
+    font-weight: 300;
     letter-spacing: -0.01em;
-    opacity: 0.55;
-    font-weight: 250;
+    opacity: 0.7;
+    margin: 0 0 var(--space-bind);
+    /* Arrives just behind the intro's fade, rather than with it. */
+    transition: opacity 0.5s var(--ease-out) 0.15s;
+  }
+  /* Only one of the two ever shows: hover on pointer devices, tap at the
+     breakpoint where the map becomes a follow-cam. */
+  .iss-hint__touch { display: none; }
+  @media (max-width: 768px) {
+    .iss-hint__pointer { display: none; }
+    .iss-hint__touch { display: inline; }
+    .iss-intro__pointer { display: none; }
+    .iss-intro__touch { display: inline; }
   }
 
-  .iss-stats dd {
-    margin: 0;
-    font-family: var(--font-serif);
-    font-size: clamp(1.4rem, 3.4vw, 2rem);
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
+  .visually-hidden {
+    position: absolute;
+    width: 1px; height: 1px;
+    margin: -1px; padding: 0; border: 0;
+    clip: rect(0 0 0 0); clip-path: inset(50%);
+    overflow: hidden; white-space: nowrap;
   }
 
   .iss-page__note {
@@ -278,16 +499,6 @@ import { SATELLITES } from "../components/satellites";
     .case-nav { top: 16px; left: 16px; }
     .iss-page { padding: 96px 20px var(--space-act); }
     .iss-page__map { margin-bottom: 32px; }
-    /* Packed left with a fixed 32px gap rather than spread across the width.
-       The widest values total ~10.4em in Instrument Serif, so 6.4vw is the
-       most the numbers can take and still clear both gaps at 320px. */
-    .iss-stats {
-      width: auto;
-      min-width: 0;
-      justify-content: flex-start;
-      gap: 32px;
-    }
-    .iss-stats dd { font-size: clamp(1.25rem, 6.4vw, 1.9rem); }
     .sat-toggles { margin-bottom: 20px; gap: 8px; }
     .sat-toggle { padding: 6px 14px 6px 10px; }
   }
@@ -336,9 +547,6 @@ import { SATELLITES } from "../components/satellites";
     const svg = document.querySelector(".iss-map__svg") as SVGSVGElement | null;
     const track = document.getElementById("sat-track");
     const mapFigure = document.getElementById("iss-map");
-    const elLat = document.getElementById("s-lat");
-    const elLng = document.getElementById("s-lng");
-    const elSpd = document.getElementById("s-spd");
     const note = document.getElementById("iss-note");
     if (!svg || !track) return;
 
@@ -463,6 +671,85 @@ import { SATELLITES } from "../components/satellites";
       };
     }
 
+    // ---- Hover bubble --------------------------------------------------------
+    // The readout that pops above whichever satellite is being pointed at. It
+    // takes its position from the marker's own box rather than from the
+    // projection, so it stays right whatever the viewBox is doing, and it is
+    // repositioned every tick so it rides along with the dot.
+    const bubble = document.getElementById("iss-bubble");
+    const bName = document.getElementById("b-name");
+    const bSpd = document.getElementById("b-spd");
+    const bAlt = document.getElementById("b-alt");
+    const bLat = document.getElementById("b-lat");
+    const bLng = document.getElementById("b-lng");
+    const bSr = document.getElementById("b-sr");
+    const BUBBLE_GAP = 18;    // clearance between the dot and the tip of the tail
+    const BUBBLE_EDGE = 10;   // keeps the bubble off the map's rounded corners
+    const TAIL_INSET = 18;    // keeps the tail clear of the bubble's own corners
+
+    type Fix = { lat: number; lon: number; alt: number; vel: number };
+
+    function placeBubble(sat: Tracked, st: Fix) {
+      if (!bubble || !mapFigure || !sat.el) return;
+      const mr = sat.el.getBoundingClientRect();
+      if (!mr.width) return;
+      const fr = mapFigure.getBoundingClientRect();
+      const cx = mr.left + mr.width / 2 - fr.left;
+      const cy = mr.top + mr.height / 2 - fr.top;
+
+      // Written before the box is measured: the values set its width, so
+      // measuring first would place the bubble using the previous reading.
+      if (bSpd) bSpd.textContent = Math.round(st.vel).toLocaleString("en-GB") + " km/h";
+      if (bAlt) bAlt.textContent = Math.round(st.alt).toLocaleString("en-GB") + " km";
+      if (bLat) bLat.textContent = fmtCoord(st.lat, "N", "S");
+      if (bLng) bLng.textContent = fmtCoord(st.lon, "E", "W");
+
+      const box = bubble.firstElementChild as HTMLElement | null;
+      const w = box ? box.offsetWidth : 0;
+      const h = box ? box.offsetHeight : 0;
+
+      // The map is clipped to its rounded corners, so a bubble that overran the
+      // top would be cut in half. Put it under the dot instead when high up.
+      const below = cy - BUBBLE_GAP - h < BUBBLE_EDGE;
+      bubble.classList.toggle("is-below", below);
+
+      // Held inside the map, then the tail is slid along the bubble by however
+      // far that clamp moved it, so it still points at the satellite. The tail
+      // itself is kept off the rounded corners: with the satellite that far out
+      // the dot is nearly at the map's edge anyway, and a tail hanging off the
+      // side of the bubble looks broken.
+      const half = w / 2;
+      const x = Math.min(Math.max(cx, half + BUBBLE_EDGE), fr.width - half - BUBBLE_EDGE);
+      const tail = Math.min(Math.max(cx - x + half, TAIL_INSET), w - TAIL_INSET);
+      bubble.style.left = x.toFixed(1) + "px";
+      bubble.style.top = (below ? cy + BUBBLE_GAP : cy - BUBBLE_GAP).toFixed(1) + "px";
+      bubble.style.setProperty("--tail-x", tail.toFixed(1) + "px");
+    }
+
+    function showBubble(sat: Tracked) {
+      if (!bubble) return;
+      const st = stateAt(sat, new Date());
+      if (!st) return;
+      // Reset to this satellite's colour, then place it before opening so it
+      // never animates in from where the last one was.
+      bubble.className = "iss-bubble is-" + sat.id;
+      if (bName) bName.textContent = sat.name;
+      placeBubble(sat, st);
+      bubble.classList.add("is-open");
+      // One snapshot for screen readers, rather than the per-second retick.
+      if (bSr) {
+        bSr.textContent =
+          sat.name + ": " + Math.round(st.vel).toLocaleString("en-GB") + " km/h, " +
+          Math.round(st.alt).toLocaleString("en-GB") + " km altitude, " +
+          fmtCoord(st.lat, "north", "south") + ", " + fmtCoord(st.lon, "east", "west");
+      }
+    }
+
+    function hideBubble() {
+      bubble?.classList.remove("is-open");
+      if (bSr) bSr.textContent = "";
+    }
+
     // ---- Live markers + stats ------------------------------------------------
     // Everything here is local maths, so this can run often and cheaply. On
     // desktop the stats panel stays on the ISS: it's the subject of the page,
@@ -479,6 +766,7 @@ import { SATELLITES } from "../components/satellites";
         // Entering mobile: collapse to a single selected satellite. Leaving:
         // hand the always-on track back to the hover state (usually hidden).
         if (follow) {
+          hideBubble();   // the layout is changing under it; start closed
           const t = followTarget();
           if (t) for (const s of sats) setVisible(s, s.id === t.id);
         } else {
@@ -489,13 +777,13 @@ import { SATELLITES } from "../components/satellites";
         }
       }
       // Recentre the follow window before positioning anything inside it.
-      let statsSat: Tracked | null = null;
+      let followSat: Tracked | null = null;
       if (follow) {
         const target = followTarget();
         const st = target && stateAt(target, now);
         if (st) viewX = (((projX(st.lon) - FOLLOW_W / 2) % W) + W) % W;
         applyViewBox();
-        statsSat = target;
+        followSat = target;
       }
       for (const sat of sats) {
         if (!sat.satrec || !sat.el) continue;
@@ -510,11 +798,8 @@ import { SATELLITES } from "../components/satellites";
         sat.el.style.opacity = sat.visible ? "1" : "0";
         sat.el.style.pointerEvents = sat.visible ? "" : "none";
 
-        if (statsSat ? sat.id === statsSat.id : sat.primary) {
-          if (elLat) elLat.textContent = fmtCoord(st.lat, "N", "S");
-          if (elLng) elLng.textContent = fmtCoord(st.lon, "E", "W");
-          if (elSpd) elSpd.textContent = Math.round(st.vel).toLocaleString("en-GB") + " km/h";
-        }
+        // Ride the bubble along with the dot, and keep its numbers live.
+        if (active && active.id === sat.id) placeBubble(sat, st);
       }
       if (!ready) {
         ready = true;
@@ -522,9 +807,9 @@ import { SATELLITES } from "../components/satellites";
       }
       // Mobile has no hover, so the selected satellite always shows its track.
       if (follow) {
-        if (statsSat) {
-          track!.setAttribute("class", "iss-map__track is-visible is-" + statsSat.id);
-          drawTrack(statsSat, now);
+        if (followSat) {
+          track!.setAttribute("class", "iss-map__track is-visible is-" + followSat.id);
+          drawTrack(followSat, now);
         }
       } else if (active) {
         drawTrack(active, now);
@@ -656,6 +941,8 @@ import { SATELLITES } from "../components/satellites";
         "class",
         "iss-map__track" + (sat ? " is-visible is-" + sat.id : "")
       );
+      if (sat) showBubble(sat);
+      else hideBubble();
       if (follow && ready) updateNow();   // recentre the window on the new target
       else if (sat) drawTrack(sat, new Date());
     }
@@ -679,11 +966,18 @@ import { SATELLITES } from "../components/satellites";
     }
 
     for (const sat of sats) {
-      sat.el?.addEventListener("pointerenter", () => { if (!sticky) setActive(sat); });
+      // Touch is left to the click handler below. A finger fires pointerenter
+      // on the way down too, which would open the bubble here and then let the
+      // click read it as already-open and immediately close it again.
+      sat.el?.addEventListener("pointerenter", (e) => {
+        if ((e as PointerEvent).pointerType === "touch") return;
+        if (!sticky) setActive(sat);
+      });
       sat.el?.addEventListener("pointerleave", (e) => {
         if ((e as PointerEvent).pointerType !== "touch" && !sticky) setActive(null);
       });
-      // Tap is the touch equivalent of hover: it pins the track until tapped off.
+      // Tap is the touch equivalent of hover: it pins the bubble and track
+      // until tapped off.
       sat.el?.addEventListener("click", () => {
         setActive(active && active.id === sat.id ? null : sat, true);
       });
@@ -692,13 +986,32 @@ import { SATELLITES } from "../components/satellites";
         if (follow) selectOnly(sat);
         else setVisible(sat, !sat.visible);
       });
-      sat.btn?.addEventListener("pointerenter", () => { if (!sticky) setActive(sat); });
+      // Same again: on touch a chip switches which satellite is followed, and
+      // the bubble is opened by tapping the dot itself.
+      sat.btn?.addEventListener("pointerenter", (e) => {
+        if ((e as PointerEvent).pointerType === "touch") return;
+        if (!sticky) setActive(sat);
+      });
       sat.btn?.addEventListener("pointerleave", (e) => {
         if ((e as PointerEvent).pointerType !== "touch" && !sticky) setActive(null);
       });
       sat.btn?.addEventListener("focus", () => { if (!sticky) setActive(sat); });
       sat.btn?.addEventListener("blur", () => { if (!sticky) setActive(null); });
     }
+
+    // ---- Opening the map -----------------------------------------------------
+    // The tracker has been running since page load; this only lifts the cover
+    // off it, so the map is live the moment it's revealed rather than starting
+    // a fetch on the click. Dismissing from the keyboard would otherwise strand
+    // focus on a control that no longer exists, so it's handed to the first
+    // chip — but only for keyboard use, since moving focus after a mouse click
+    // would pop a bubble open on its own.
+    const intro = document.getElementById("iss-intro");
+    intro?.addEventListener("click", () => {
+      const byKeyboard = intro.matches(":focus-visible");
+      mapFigure?.classList.add("is-open");
+      if (byKeyboard) sats.find((s) => s.btn)?.btn?.focus();
+    });
 
     // A tap anywhere else releases a pinned track.
     document.addEventListener("click", (e) => {
