@@ -79,7 +79,10 @@ import { SATELLITES } from "../components/satellites";
         <span class="iss-intro__title">Open the map</span>
         <span class="iss-intro__sub">
           <span class="iss-intro__pointer">Then hover a satellite for its speed, altitude and position.</span>
-          <span class="iss-intro__touch">Then tap a satellite for its speed, altitude and position.</span>
+          <span class="iss-intro__touch">
+            <span class="iss-intro__line">The map follows one satellite at a time &mdash; switch between them above.</span>
+            <span class="iss-intro__line">Then tap it for speed, altitude and position.</span>
+          </span>
         </span>
       </button>
     </figure>
@@ -233,6 +236,10 @@ import { SATELLITES } from "../components/satellites";
     max-width: 34ch;
   }
   .iss-intro__touch { display: none; }
+  /* Two separate instructions on touch — the chips above, then the dot below —
+     so they don't run together into one sentence. */
+  .iss-intro__line { display: block; }
+  .iss-intro__line + .iss-intro__line { margin-top: 6px; }
 
   /* Dismissed: faded out and taken out of the tab order. */
   .iss-page__map.is-open .iss-intro {
@@ -469,6 +476,18 @@ import { SATELLITES } from "../components/satellites";
     .iss-page { padding: 96px 20px var(--space-act); }
     .sat-toggles { margin-bottom: 20px; gap: 8px; }
     .sat-toggle { padding: 6px 14px 6px 10px; }
+
+    /* Here the chips are a radio: one satellite is shown and followed, and
+       tapping the other switches to it. So the unselected chip is the other
+       choice, not a switched-off one — it keeps full contrast, and the
+       selection is marked on the chosen chip rather than by fading the rest.
+       A chip whose elements never loaded is still disabled, and still fades. */
+    .sat-toggle[aria-pressed="false"]:not(:disabled) { opacity: 1; }
+    .sat-toggle[aria-pressed="true"] {
+      border-color: var(--sat-color);
+      background-color: color-mix(in srgb, var(--sat-color) 12%, var(--color-card-bg));
+    }
+    .sat-toggle[aria-pressed="true"] .sat-toggle__name { font-weight: 500; }
   }
 </style>
 
@@ -575,10 +594,19 @@ import { SATELLITES } from "../components/satellites";
       if (primary && primary.visible && primary.satrec) return primary;
       return sats.find((s) => s.visible && s.satrec) || null;
     }
+    // Also carries the mode into the chips' group label. They mean different
+    // things either side of the breakpoint — on/off switches on desktop, a
+    // pick-one on mobile — and the styling that says so doesn't reach a
+    // screen reader.
+    const toggleGroup = document.querySelector(".sat-toggles");
     function applyViewBox() {
       svg!.setAttribute(
         "viewBox",
         follow ? viewX.toFixed(1) + " 0 " + FOLLOW_W + " " + FOLLOW_H : "0 0 " + W + " " + H
+      );
+      toggleGroup?.setAttribute(
+        "aria-label",
+        follow ? "Satellite shown on the map" : "Satellites shown on the map"
       );
     }
     applyViewBox();   // settle the square layout before the first fix arrives
