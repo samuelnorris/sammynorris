@@ -1,5 +1,5 @@
 ---
-// Site-wide footer: copyright and the BMX link.
+// Site-wide footer: copyright only.
 // Used on the homepage (below the closing CTA), every case study and the
 // about page so the footer is identical across the site.
 const year = new Date().getFullYear();
@@ -8,9 +8,6 @@ const year = new Date().getFullYear();
 <footer class="site-footer">
   <div class="site-footer__bar">
     <span class="b4">&copy; {year} Sammy Norris</span>
-    <div class="site-footer__links">
-      <a href="/bmx" class="site-footer__link" data-cuelume-hover="sparkle" data-cuelume-press="pulse">Can you ride a BMX?</a>
-    </div>
   </div>
 </footer>
 
@@ -30,29 +27,6 @@ const year = new Date().getFullYear();
     flex-wrap: wrap;
     padding-top: 24px;
     border-top: 1px solid color-mix(in srgb, var(--color-primary) 10%, transparent);
-  }
-
-  .site-footer__links {
-    display: flex;
-    gap: 24px;
-  }
-
-  .site-footer__link {
-    font-family: var(--font-sans);
-    font-size: var(--text-b4);
-    font-weight: 300;
-    color: var(--color-secondary);
-    text-decoration: none;
-    transition: opacity 0.2s ease;
-  }
-
-  .site-footer__link:hover {
-    opacity: 0.6;
-  }
-
-  .site-footer__link:active {
-    opacity: 0.4;
-    transition-duration: 0.05s;
   }
 
   @media (max-width: 768px) {

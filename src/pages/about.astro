@@ -95,14 +95,24 @@ import Footer from "../components/Footer.astro";
     <h2 class="contact__h2">
       Want to chat? <em>Drop me a line.</em>
     </h2>
-    <a href="mailto:hello@sammynorris.com" class="contact__cta" aria-label="Email Sammy" data-cuelume-hover="chime" data-cuelume-press="pulse">
-      <span class="contact__cta-label">hello@sammynorris.com</span>
-      <span class="contact__cta-icon">
-        <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M5 12h14M12 5l7 7-7 7" />
-        </svg>
-      </span>
-    </a>
+    <div class="contact__ctas">
+      <a href="mailto:hello@sammynorris.com" class="contact__cta" aria-label="Email Sammy" data-cuelume-hover="chime" data-cuelume-press="pulse">
+        <span class="contact__cta-label">hello@sammynorris.com</span>
+        <span class="contact__cta-icon">
+          <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </span>
+      </a>
+      <a href="/bmx" class="contact__cta" aria-label="Can you ride a BMX?" data-cuelume-hover="sparkle" data-cuelume-press="pulse">
+        <span class="contact__cta-label">Can you ride a BMX?</span>
+        <span class="contact__cta-icon">
+          <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </span>
+      </a>
+    </div>
   </section>
 
   <Footer />
@@ -367,6 +377,13 @@ import Footer from "../components/Footer.astro";
     max-width: 80%;
   }
   .contact__h2 em { font-style: italic; opacity: 0.6; }
+
+  /* The pair of pills sit side by side, wrapping on narrow screens. */
+  .contact__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
 
   .contact__cta {
     display: inline-flex;
