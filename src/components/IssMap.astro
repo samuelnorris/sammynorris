@@ -106,16 +106,21 @@ for (let lat = 90; lat >= -90; lat -= 30) latLines.push(((90 - lat) / 180) * H);
     stroke: none;
   }
 
-  /* Per-satellite colours. The ISS keeps the site accent; Hubble gets a hue
-     that holds up on both the light and dark page backgrounds. */
+  /* Per-satellite colours. The ISS keeps the site accent; Hubble and Tiangong
+     get hues that hold up on both the light and dark page backgrounds. Each is
+     tuned to roughly the accent's contrast against its background, so no marker
+     shouts louder than the others. */
   .iss-map__svg {
     --sat-iss: var(--color-secondary);
+    --sat-css: #0F6F63;
     --sat-hst: #6A4FB6;
   }
   :global(.dark) .iss-map__svg {
+    --sat-css: #22AE96;
     --sat-hst: #A98CFF;
   }
   .is-iss { --sat-color: var(--sat-iss); }
+  .is-css { --sat-color: var(--sat-css); }
   .is-hst { --sat-color: var(--sat-hst); }
 
   .iss-map__track {
