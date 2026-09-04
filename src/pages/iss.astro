@@ -269,12 +269,15 @@ import { SATELLITES } from "../components/satellites";
     /* Must never take the hover off the marker underneath it. */
     pointer-events: none;
     --sat-iss: var(--color-secondary);
+    --sat-css: #0F6F63;
     --sat-hst: #6A4FB6;
   }
   :global(.dark) .iss-bubble {
+    --sat-css: #22AE96;
     --sat-hst: #A98CFF;
   }
   .iss-bubble.is-iss { --sat-color: var(--sat-iss); }
+  .iss-bubble.is-css { --sat-color: var(--sat-css); }
   .iss-bubble.is-hst { --sat-color: var(--sat-hst); }
   /* Flipped under the dot when there isn't room above — the map is clipped to
      its rounded corners, so a bubble that overran the top would be cut off. */
@@ -386,12 +389,15 @@ import { SATELLITES } from "../components/satellites";
     gap: 12px;
     margin: 0 0 24px;
     --sat-iss: var(--color-secondary);
+    --sat-css: #0F6F63;
     --sat-hst: #6A4FB6;
   }
   :global(.dark) .sat-toggles {
+    --sat-css: #22AE96;
     --sat-hst: #A98CFF;
   }
   .sat-toggle.is-iss { --sat-color: var(--sat-iss); }
+  .sat-toggle.is-css { --sat-color: var(--sat-css); }
   .sat-toggle.is-hst { --sat-color: var(--sat-hst); }
 
   .sat-toggle {
@@ -474,8 +480,30 @@ import { SATELLITES } from "../components/satellites";
   @media (max-width: 768px) {
     .case-nav { top: 16px; left: 16px; }
     .iss-page { padding: 96px 20px var(--space-act); }
-    .sat-toggles { margin-bottom: 20px; gap: 8px; }
-    .sat-toggle { padding: 6px 14px 6px 10px; }
+
+    /* One scrolling row rather than a wrap. Three chips don't fit across a
+       phone, and wrapping left the third stranded on a line of its own; here
+       it's cut by the screen edge instead, which says "keep going" where the
+       orphan said "bad layout".
+
+       The -20px/+20px bleeds the scroller out to the screen edges and puts the
+       gutter back inside it, so the cut happens at the edge of the display
+       rather than at the page gutter with dead space beside it. The 4px of
+       block padding is room for the focus ring, which the scroll container
+       would otherwise clip; the bottom margin drops by the same 4px so the gap
+       under the chips stays 20px. */
+    .sat-toggles {
+      gap: 8px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      margin: -4px -20px 16px;
+      padding: 4px 20px;
+      scrollbar-width: none;
+    }
+    .sat-toggles::-webkit-scrollbar { display: none; }
+    /* Chips size to their content and never squash to fit the row. */
+    .sat-toggle { padding: 6px 14px 6px 10px; flex: 0 0 auto; }
 
     /* Here the chips are a radio: one satellite is shown and followed, and
        tapping the other switches to it. So the unselected chip is the other
