@@ -14,14 +14,6 @@ interface Props {
   description?: string;
   ogImage?: string;
   ogImageAlt?: string;
-  /**
-   * App-shell pages: fill the viewport, never scroll the document, and drop
-   * the floating sound/theme controls. Opt-in — every existing page leaves it
-   * off and behaves exactly as before.
-   */
-  shell?: boolean;
-  /** Keep a page out of search results (work-in-progress routes). */
-  noindex?: boolean;
 }
 
 const {
@@ -29,8 +21,6 @@ const {
   description = "A product designer based in London, specialising in creating clear, intuitive, and accessible digital experiences. Skilled across UI and UX design, research, service blueprints, and full product journeys.",
   ogImage = "/social-preview.jpg",
   ogImageAlt = "Sammy Norris, a product designer based in London",
-  shell = false,
-  noindex = false,
 } = Astro.props;
 
 const isHomepage = Astro.url.pathname === "/";
@@ -56,7 +46,7 @@ const personSchema = {
   Designed & built by Sammy, Shy & Nova Norris.
 
 -->
-<html lang="en-GB" class:list={{ "shell-page": shell }}>
+<html lang="en-GB">
   <head>
  <script is:inline>
       (function() {
@@ -107,7 +97,6 @@ const personSchema = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
-    {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32" />
@@ -150,12 +139,10 @@ const personSchema = {
   </head>
   <body class="page-enter">
     <a href="#main-content" class="skip-link">Skip to main content</a>
-    {!shell && (
-      <div class="site-controls">
-        <SoundToggle delayed={isHomepage} />
-        <ThemeToggle delayed={isHomepage} />
-      </div>
-    )}
+    <div class="site-controls">
+      <SoundToggle delayed={isHomepage} />
+      <ThemeToggle delayed={isHomepage} />
+    </div>
     <main id="main-content" tabindex="-1">
       <slot />
     </main>
