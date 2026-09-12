@@ -1,0 +1,78 @@
+---
+// The dock: four targets at the foot of the screen. Three toggle a panel
+// state, one is a plain mailto. The active button widens to reveal its label.
+//
+// Buttons carry the same cuelume sound hooks as every other control on the
+// site, so the shell sounds like the rest of it.
+---
+
+<nav class="dock" aria-label="Primary">
+  <button
+    type="button"
+    class="dock__btn"
+    data-state="home"
+    aria-label="Home"
+    aria-expanded="false"
+    aria-controls="shell-panel"
+    data-cuelume-hover="tick"
+    data-cuelume-press
+    data-cuelume-release
+  >
+    <svg class="dock__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+      <path d="M3 10.2 12 3l9 7.2V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" />
+    </svg>
+    <span class="dock__label" aria-hidden="true">Home</span>
+  </button>
+
+  <button
+    type="button"
+    class="dock__btn"
+    data-state="work"
+    aria-label="Work"
+    aria-expanded="false"
+    aria-controls="shell-panel"
+    data-cuelume-hover="tick"
+    data-cuelume-press
+    data-cuelume-release
+  >
+    <svg class="dock__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+      <rect x="3" y="3" width="7" height="7" rx="1.5" />
+      <rect x="14" y="3" width="7" height="7" rx="1.5" />
+      <rect x="3" y="14" width="7" height="7" rx="1.5" />
+      <rect x="14" y="14" width="7" height="7" rx="1.5" />
+    </svg>
+    <span class="dock__label" aria-hidden="true">Work</span>
+  </button>
+
+  <button
+    type="button"
+    class="dock__btn"
+    data-state="about"
+    aria-label="About"
+    aria-expanded="false"
+    aria-controls="shell-panel"
+    data-cuelume-hover="tick"
+    data-cuelume-press
+    data-cuelume-release
+  >
+    <svg class="dock__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M4.5 20a7.5 7.5 0 0 1 15 0" />
+    </svg>
+    <span class="dock__label" aria-hidden="true">About</span>
+  </button>
+
+  <a
+    class="dock__btn"
+    href="mailto:hello@sammynorris.com"
+    aria-label="Email Sammy"
+    data-cuelume-hover="chime"
+    data-cuelume-press="pulse"
+  >
+    <svg class="dock__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+      <rect x="3" y="5" width="18" height="14" rx="2.5" />
+      <path d="m3.5 7.5 7.4 5.2a2 2 0 0 0 2.2 0l7.4-5.2" />
+    </svg>
+    <span class="dock__label" aria-hidden="true">Contact</span>
+  </a>
+</nav>

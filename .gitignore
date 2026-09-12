@@ -18,6 +18,10 @@ pnpm-debug.log*
 .env.production
 .env*.local
 
+# Placeholder backdrop footage — a third-party clip used only to preview the
+# homepage shell. Not ours to ship; delete once the real backdrop lands.
+public/video/
+
 # macOS-specific files
 .DS_Store
 
