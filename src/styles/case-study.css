@@ -51,9 +51,6 @@
 .figure picture > img, .figure > img { display: block; width: 100%; height: auto; border-radius: 18px; }
 
 .chapter { margin: 0 0 var(--space-rhythm); padding: 0 var(--gutter); max-width: 1818px; width: 100%; box-sizing: border-box; }
-.chapter__head { position: relative; display: flex; align-items: baseline; gap: 24px; margin-bottom: 24px; }
-.chapter__num { font-family: var(--font-serif); font-size: clamp(2rem, 3vw, 2.5rem); line-height: 1; font-weight: 400; color: var(--color-secondary); }
-.chapter__label { color: var(--color-primary); font-weight: 300; font-size: var(--text-b1); }
 .chapter__quote { font-family: var(--font-serif); font-size: clamp(1.75rem, 3.5vw, 2.75rem); line-height: 1.2; font-weight: 400; letter-spacing: -0.015em; margin: 0 0 64px; padding: 0; border: 0; max-width: 80%; }
 .chapter__h2 { font-family: var(--font-serif); font-size: clamp(2.25rem, 4.5vw, 3.5rem); line-height: 1.15; font-weight: 400; letter-spacing: -0.02em; margin: 0 0 32px; }
 .chapter__h2 em { font-style: italic; opacity: 0.6; }
@@ -102,8 +99,6 @@
   .figure { padding: 0 16px; }
   .figure + .figure { margin-top: -44px; }
   .chapter { padding: 0 20px; }
-  .chapter__head { margin-bottom: 32px; padding-bottom: 16px; }
-  .chapter__num { font-size: 1.5rem; }
   .chapter__quote { font-size: clamp(1.25rem, 5.5vw, 1.5rem); margin-bottom: 40px; max-width: 100%; }
   .chapter__h2 { font-size: clamp(1.625rem, 7vw, 2rem); margin-bottom: 20px; }
   .chapter__body--double { gap: 20px; }

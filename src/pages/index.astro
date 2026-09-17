@@ -28,7 +28,6 @@ const projects = [
 
   <!-- Work -->
   <section class="work" id="work">
-    <h2 class="section-label" data-reveal>Selected work</h2>
     <div class="work__grid">
       {projects.map((project, i) => (
         <a
@@ -374,15 +373,6 @@ const projects = [
     max-width: 1818px;
     box-sizing: border-box;
     width: 100%;
-  }
-
-  .section-label {
-    font-family: var(--font-serif);
-    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
-    line-height: 1.25;
-    font-weight: 400;
-    letter-spacing: -0.01em;
-    margin: 0;
   }
 
   .work__grid {
